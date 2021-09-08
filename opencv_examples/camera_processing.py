@@ -20,7 +20,7 @@ cv2.namedWindow('Original')
 cv2.namedWindow('Processed')
 
 # config file
-cfg_dir = os.listdir("C:")
+cfg_dir = os.listdir()
 if "trackbar_defaults.txt" in cfg_dir:
     cfg = open("trackbar_defaults.txt")
     c = []
