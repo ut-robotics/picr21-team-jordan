@@ -10,7 +10,7 @@ import cv2
 import time
 import os
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(4)
 
 def updateValue(new_value):
     global trackbar_value
@@ -20,7 +20,11 @@ cv2.namedWindow('Original')
 cv2.namedWindow('Processed')
 
 # config file
+<<<<<<< HEAD
 cfg_dir = os.listdir()
+=======
+cfg_dir = os.listdir("/home/")
+>>>>>>> 173bbbfeae44c3f116c2803b44bf7dce3779e533
 if "trackbar_defaults.txt" in cfg_dir:
     cfg = open("trackbar_defaults.txt")
     c = []
