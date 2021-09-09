@@ -10,7 +10,7 @@ import cv2
 import time
 import os
 
-cap = cv2.VideoCapture(4)
+cap = cv2.VideoCapture(1)
 
 def updateValue(new_value):
     global trackbar_value
@@ -20,11 +20,7 @@ cv2.namedWindow('Original')
 cv2.namedWindow('Processed')
 
 # config file
-<<<<<<< HEAD
-cfg_dir = os.listdir()
-=======
-cfg_dir = os.listdir("/home/")
->>>>>>> 173bbbfeae44c3f116c2803b44bf7dce3779e533
+cfg_dir = os.getcwd() 
 if "trackbar_defaults.txt" in cfg_dir:
     cfg = open("trackbar_defaults.txt")
     c = []
@@ -52,26 +48,11 @@ blobparams.maxArea = 999999
 blobparams.filterByInertia = False
 blobparams.filterByConvexity = False
 detector = cv2.SimpleBlobDetector_create(blobparams)
-
-#fps
-a = []
-time1 = time.time()
 fps = 0
 
 while True:
     
-    #fps
-    time2 = time.time()
-    vahe = time2 - time1
-    if vahe == 0:
-        pass
-    else:
-        fps = round(1.0/vahe, 2)
-        
-    time1 = time2
-    a.append(fps)
-    fps1 = int(sum(a)/len(a))
-    ##
+    start_time = time.time()
     
     ret, frame = cap.read()
     
@@ -98,7 +79,7 @@ while True:
     
     
     keypoints = detector.detect(thresh)
-    cv2.putText(frame, str(fps1), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(frame, str(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     cv2.drawKeypoints(frame, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     for keypoint in keypoints:
         xy = "  x: " + str(int(keypoint.pt[0])) + " y: " + str(int(keypoint.pt[0]))
@@ -112,9 +93,7 @@ while True:
     cv2.imshow('Original', frame)
     cv2.imshow('Processed', thresh)
     
-    ##fps 2
-    if len(a) >10:
-        a = []
+    fps = round(1.0 / (time.time() - start_time), 2)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         ##config part 2
