@@ -10,7 +10,8 @@ import cv2
 import time
 import os
 
-cap = cv2.VideoCapture(1)
+# 2 and 
+cap = cv2.VideoCapture(4)
 
 def updateValue(new_value):
     global trackbar_value
