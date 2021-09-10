@@ -20,8 +20,8 @@ def updateValue(new_value):
 cv2.namedWindow('Original')
 cv2.namedWindow('Processed')
 
-# config file
-cfg_dir = os.getcwd() 
+path = "/home/jordan_team/picr21-team-jordan/temp/"
+cfg_dir = os.listdir(path)
 if "trackbar_defaults.txt" in cfg_dir:
     cfg = open("trackbar_defaults.txt")
     c = []
@@ -99,7 +99,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         ##config part 2
         c = [hl, sl, vl, hh, sh, vh]
-        cfg = open("trackbar_defaults.txt", "w")
+        cfg = open(f"{path}trackbar_defaults.txt", "w")
         for i in c:
             i = str(i) + "\n"
             cfg.write(i)
