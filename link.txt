@@ -1,1 +1,6 @@
 https://github.com/IntelRealSense/librealsense/tree/master/wrappers/python/examples
+
+python3.7 -m pip install opencv-python
+python3.7 -m pip install matplotlib
+pyhton3.7 -m pip install -U Pillow
+pyhton3.7 -m pip install pyrealsense2
