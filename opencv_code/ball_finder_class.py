@@ -28,6 +28,11 @@ class BallFinder():
         cv2.createTrackbar('hh', self.target_window, default_values[3], 255, self.updateValue)
         cv2.createTrackbar('sh', self.target_window, default_values[4], 255, self.updateValue)
         cv2.createTrackbar('vh', self.target_window, default_values[5], 255, self.updateValue)
+        cv2.createTrackbar('closing1', self.target_window,12, 100, self.updateValue)
+        cv2.createTrackbar('closing2', self.target_window, 11, 100, self.updateValue)
+        cv2.createTrackbar('dilation1', self.target_window,5, 100, self.updateValue)
+        cv2.createTrackbar('dilation2', self.target_window, 4, 100, self.updateValue)
+
 
     def updateValue(self, new_value):
         self.trackbar_value = new_value
@@ -36,24 +41,37 @@ class BallFinder():
         while True:
             start_time = time.time()
             ret, frame = self.cap.read()
-            frame = cv2.cvtColor(frame, self.color_type)
 
+            hsv = cv2.cvtColor(frame, self.color_type)
+            hsv_blured = cv2.medianBlur(hsv, 5)
             hl = cv2.getTrackbarPos('hl', self.target_window)
             sl = cv2.getTrackbarPos('sl', self.target_window)
             vl = cv2.getTrackbarPos('vl', self.target_window)
             hh = cv2.getTrackbarPos('hh', self.target_window)
             sh = cv2.getTrackbarPos('sh', self.target_window)
             vh = cv2.getTrackbarPos('vh', self.target_window)
+            closing1 = cv2.getTrackbarPos('closing1', self.target_window)
+            closing2 = cv2.getTrackbarPos('closing2', self.target_window)
+            dilation1 = cv2.getTrackbarPos('dilation1', self.target_window)
+            dilation2 = cv2.getTrackbarPos('dilation2', self.target_window)
+
+            kernel1 = np.ones((closing1, closing2),np.uint8)
+            kernel2 = np.ones((dilation1, dilation2),np.uint8)
             lowerLimits = np.array([hl, sl, vl])
             upperLimits = np.array([hh, sh, vh])
-            thresh = cv2.inRange(frame, lowerLimits, upperLimits)
-            thresh = cv2.bitwise_not(thresh)
 
-            #outimage = cv2.bitwise_and(frame, frame, mask = thresh)
-            
+            mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
+            mask_inverted = cv2.bitwise_not(mask)
+            closing = cv2.morphologyEx(mask_inverted, cv2.MORPH_CLOSE, kernel1)
+            processed_image = cv2.dilate(closing,kernel2,iterations = 1)
+
+
+
+
+
             cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow('Original', frame)
-            cv2.imshow('Thresh', thresh)
+            cv2.imshow('Thresh', processed_image)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 input_manager.save_default_values(self.path, [str(x) for x in [hl, sl, vl, hh, sh, vh]])
