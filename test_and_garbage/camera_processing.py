@@ -1,7 +1,7 @@
 """
 This code contains example of image processing in hsv format. Programm should
 detect ball coordinates after proper threshold.
-This is unoptimized code, should! be refactored.
+This is unoptimized code, should be refactored.
 Used pyhton 3.7.0
 """
 
