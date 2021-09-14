@@ -125,3 +125,36 @@
   125  v4l2-ctl --list-formats-ext
   126  cd picr21-team-jordan/
   127  history >> history.txt
+  128  less history.txt 
+  129  python3.7 -m pip install imutils
+  130  HISTORY
+  131  history
+  132  python3.7 -m pip install --upgrade imutils
+  133  /bin/python3.7 /home/jordan_team/picr21-team-jordan/opencv_examples/camtest.py
+  134  python3.7 -m pip install pyrealsense2
+  135  /bin/python3.7 /home/jordan_team/picr21-team-jordan/test_and_garbage/pyrealsense_test.py
+  136  /bin/python3.7 /home/jordan_team/picr21-team-jordan/test_and_garbage/pyrrealsense_test2.py
+  137  /bin/python3.7 /home/jordan_team/picr21-team-jordan/test_and_garbage/depth_test.py
+  138  /bin/python3.7 /home/jordan_team/picr21-team-jordan/opencv_code/camera_processing.py
+  139  /bin/python3.7 -m pip install -U pylint
+  140  /bin/python3.7 -m pip install -U flake8
+  141  cd picr21-team-jordan/
+  142  ls
+  143  cd opencv_code/
+  144  pwd
+  145  cd picr21-team-jordan/
+  146  git pull
+  147  code
+  148  cd picr21-team-jordan/
+  149  git pull
+  150  code
+  151  cd picr21-team-jordan/
+  152  git pull
+  153  sudo nano /etc/rc.local
+  154  cd picr21-team-jordan/
+  155  giit status
+  156  git status
+  157  cd picr21-team-jordan/
+  158  git pull
+  159  code
+  160  history > history.txt

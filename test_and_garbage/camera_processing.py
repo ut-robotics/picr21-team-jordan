@@ -20,7 +20,7 @@ def updateValue(new_value):
 cv2.namedWindow('Original')
 cv2.namedWindow('Processed')
 
-path = "/home/jordan_team/picr21-team-jordan/temp/"
+path = "/home/jordan_team/picr21-team-jordan/"
 cfg_dir = os.listdir(path)
 if "trackbar_defaults.txt" in cfg_dir:
     cfg = open("trackbar_defaults.txt")
@@ -83,7 +83,7 @@ while True:
     cv2.putText(frame, str(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     cv2.drawKeypoints(frame, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     for keypoint in keypoints:
-        xy = "  x: " + str(int(keypoint.pt[0])) + " y: " + str(int(keypoint.pt[0]))
+        xy = "  x: " + str(int(keypoint.pt[0])) + " y: " + str(int(keypoint.pt[1]))
         cv2.putText(frame, xy , (int(keypoint.pt[0]), int(keypoint.pt[1])), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     
     kernel = np.ones((5,5),np.float32)/25
