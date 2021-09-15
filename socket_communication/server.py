@@ -4,8 +4,6 @@ import threading
 import time
 from select import select
 
-pin_led = [23, 24]
-pin_matrix = [25, 16, 20, 21, 26, 6, 5]
 
 try:
     port = 1228
