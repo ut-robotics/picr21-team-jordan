@@ -12,9 +12,9 @@ import input_manager
 
 class BallFinder():
     def __init__(self, color_type):
-        self.path = os.path.abspath(os.getcwd()) + "/main_folder/"
-        # self.path = "/home/jordan_team/picr21-team-jordan/main_folder/"
-        self.fps = 0
+        self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
+        default_values_ball: list = input_manager.get_default_values(self.path, "trackbar_values_ball") 
+        self.fps: int = 0
 
         self.color_type = color_type
         self.cap = cv2.VideoCapture(1)
@@ -24,18 +24,18 @@ class BallFinder():
         cv2.namedWindow('Original')
         cv2.namedWindow('Thresh')
 
-        default_values = input_manager.get_default_values(self.path)
+        
         self.target_window = 'Thresh'
-        cv2.createTrackbar('hl', self.target_window, default_values[0], 255, self.updateValue)
-        cv2.createTrackbar('sl', self.target_window, default_values[1], 255, self.updateValue)
-        cv2.createTrackbar('vl', self.target_window, default_values[2], 255, self.updateValue)
-        cv2.createTrackbar('hh', self.target_window, default_values[3], 255, self.updateValue)
-        cv2.createTrackbar('sh', self.target_window, default_values[4], 255, self.updateValue)
-        cv2.createTrackbar('vh', self.target_window, default_values[5], 255, self.updateValue)
-        cv2.createTrackbar('closing1', self.target_window,default_values[6], 100, self.updateValue)
-        cv2.createTrackbar('closing2', self.target_window, default_values[7], 100, self.updateValue)
-        cv2.createTrackbar('dilation1', self.target_window, default_values[8], 100, self.updateValue)
-        cv2.createTrackbar('dilation2', self.target_window, default_values[9], 100, self.updateValue)
+        cv2.createTrackbar('hl', self.target_window, default_values_ball[0], 255, self.updateValue)
+        cv2.createTrackbar('sl', self.target_window, default_values_ball[1], 255, self.updateValue)
+        cv2.createTrackbar('vl', self.target_window, default_values_ball[2], 255, self.updateValue)
+        cv2.createTrackbar('hh', self.target_window, default_values_ball[3], 255, self.updateValue)
+        cv2.createTrackbar('sh', self.target_window, default_values_ball[4], 255, self.updateValue)
+        cv2.createTrackbar('vh', self.target_window, default_values_ball[5], 255, self.updateValue)
+        cv2.createTrackbar('closing1', self.target_window,default_values_ball[6], 100, self.updateValue)
+        cv2.createTrackbar('closing2', self.target_window, default_values_ball[7], 100, self.updateValue)
+        cv2.createTrackbar('dilation1', self.target_window, default_values_ball[8], 100, self.updateValue)
+        cv2.createTrackbar('dilation2', self.target_window, default_values_ball[9], 100, self.updateValue)
 
         self.blobparams = cv2.SimpleBlobDetector_Params()
         self.blobparams.filterByArea = True
@@ -82,7 +82,7 @@ class BallFinder():
         black ball and whiite background
         use betwise_not(mask) if needed
         """
-        keypoints = self.detector.detect(inspected_frame)
+        keypoints: list = self.detector.detect(inspected_frame)
         cv2.drawKeypoints(inspected_frame, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         if len(keypoints) > 0:
             for keypoint in keypoints:
@@ -134,15 +134,15 @@ class BallFinder():
             mask = cv2.dilate(mask, kernel2, iterations=1)
             # mask = cv2.bitwise_not(mask)
 
-            self.track_ball_using_imutils(mask, frame)
-            # self.track_ball_using_blob(mask, frame)
+            # self.track_ball_using_imutils(mask, frame)
+            self.track_ball_using_blob(mask, frame)
 
             cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow('Original', frame)
             cv2.imshow('Thresh', mask)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                input_manager.save_default_values(self.path, [str(x) for x in [hl, sl, vl, hh, sh, vh, dil1, dil2, clos1, clos2]])
+                input_manager.save_default_values(self.path, "trackbar_values", [str(x) for x in [hl, sl, vl, hh, sh, vh, dil1, dil2, clos1, clos2]])
                 break
             
             self.fps = round(1.0 / (time.time() - start_time), 2)
