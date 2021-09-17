@@ -10,6 +10,7 @@ import numpy as np
 import imutils
 import input_manager
 
+
 class BallFinder():
     def __init__(self, color_type):
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
@@ -156,3 +157,5 @@ class BallFinder():
 
 ball_finder = BallFinder(cv2.COLOR_BGR2HSV)
 ball_finder.main()
+for module in [cv2, np, imutils]:
+    print(module.__name__, module.__version__)
