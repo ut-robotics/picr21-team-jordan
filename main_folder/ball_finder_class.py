@@ -18,6 +18,7 @@ class BallFinder():
         self.cap = cv2.VideoCapture(4)
         # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        
         cv2.namedWindow('Original')
         cv2.namedWindow('Thresh')
 
