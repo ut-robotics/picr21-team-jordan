@@ -1,6 +1,6 @@
 import cv2
 
-# Open the camera
+# Open the camera 
 cap = cv2.VideoCapture(4)
 
 while True:

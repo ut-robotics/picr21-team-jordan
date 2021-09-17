@@ -4,6 +4,7 @@ Btw, this isnt final resutl, just raw example
 """
 
 import time
+import os
 import cv2
 import numpy as np
 import imutils
@@ -11,11 +12,12 @@ import input_manager
 
 class BallFinder():
     def __init__(self, color_type):
-        self.path = "/home/jordan_team/picr21-team-jordan/main_folder/"
+        self.path = os.path.abspath(os.getcwd()) + "/main_folder/"
+        # self.path = "/home/jordan_team/picr21-team-jordan/main_folder/"
         self.fps = 0
 
         self.color_type = color_type
-        self.cap = cv2.VideoCapture(4)
+        self.cap = cv2.VideoCapture(1)
         # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         
@@ -63,7 +65,10 @@ class BallFinder():
             c = max(cnts, key=cv2.contourArea)
             ((x, y), radius) = cv2.minEnclosingCircle(c)
             M = cv2.moments(c)
-            center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            try:
+                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            except ZeroDivisionError:
+                pass
 
             # To see the centroid clearly
             if radius > 10:
