@@ -4,12 +4,16 @@ import threading
 import time
 from select import select
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> ee52732560bc392f1106fbd230ee6d85a4cb470a
 try:
-    port = 1228
+    port = sys.argv[0]
 except IndexError:
     port = 9999
 
+# 192.168.43.238/24 
 ip = ""
 
 try:
@@ -24,7 +28,6 @@ except socket.error as msg:
     sys.exit()
 
 
-inactive_tasks = ["task1", "task2"]
 def accept_data(client, connection):
     global inactive_tasks
 

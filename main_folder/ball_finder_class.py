@@ -86,9 +86,9 @@ class BallFinder():
                     cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     
                     """
-                    If there's more than oone ball, programm can't define. which keypoint is actually a which ball,
-                    because llist of keypoints is recreated afteer each iteration.
-                    To avoid that mess, programm will remember last coorinates of the ball and move to the new state,
+                    If there's more than one ball, programm can't define which keypoint is actually a which ball,
+                    because list of keypoints is recreated after each iteration.
+                    To avoid that mess, programm will remember last coordinates of the ball and move to the new state,
                     in the new state robot moves to the ball to grab him.
                     """
         
@@ -126,10 +126,10 @@ class BallFinder():
             mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
             mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel1)
             mask = cv2.dilate(mask, kernel2, iterations=1)
-            mask = cv2.bitwise_not(mask)
+            # mask = cv2.bitwise_not(mask)
 
-            # self.track_ball_using_imutils(mask, frame)
-            self.track_ball_using_blob(mask, frame)
+            self.track_ball_using_imutils(mask, frame)
+            # self.track_ball_using_blob(mask, frame)
 
             cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow('Original', frame)
