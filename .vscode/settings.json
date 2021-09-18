@@ -1,6 +1,13 @@
 {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[python]": {
+      "editor.defaultFormatter": null
+    },
+    "python.formatting.blackArgs": ["--line-length", "120"],
+    "python.formatting.provider": "black",
+  }
+
+{
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": false,
-    "python.linting.flake8Enabled": false,
     "python.linting.banditEnabled": true
 }
