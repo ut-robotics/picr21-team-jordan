@@ -8,8 +8,6 @@ while True:
     # Read the image from the camera
     ret, frame = cap.read()
 
-    # You will need this later
-
     # Colour detection limits, we can change them manually
     lB = 125
     lG = 125
@@ -22,19 +20,18 @@ while True:
 
     # Our operations on the frame come here
     thresholded = cv2.inRange(frame, lowerLimits, upperLimits)
-    outimage = cv2.bitwise_and(frame, frame, mask = thresholded)
+    outimage = cv2.bitwise_and(frame, frame, mask=thresholded)
 
-    cv2.imshow('Original', frame)
+    cv2.imshow("Original", frame)
 
     # Display the resulting frame
-    cv2.imshow('Processed', outimage)
+    cv2.imshow("Processed", outimage)
 
     # Quit the program when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 # When everything done, release the capture
-print('closing program')
+print("closing program")
 cap.release()
 cv2.destroyAllWindows()
-

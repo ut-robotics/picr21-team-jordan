@@ -1,6 +1,6 @@
 import cv2
 
-# Open the camera 
+# Open the camera
 cap = cv2.VideoCapture(4)
 
 while True:
@@ -11,13 +11,13 @@ while True:
     cv2.putText(frame, "Hello", (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
     # Show this image on a window named "Original"
-    cv2.imshow('Original', frame)
+    cv2.imshow("Original", frame)
 
     # Quit the program when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 # When everything done, release the capture
-print('closing program')
+print("closing program")
 cap.release()
 cv2.destroyAllWindows()

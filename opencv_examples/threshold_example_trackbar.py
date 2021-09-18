@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-video_capture_device = cv2.VideoCapture(4)
+video_capture_device = cv2.VideoCapture(1)
 detector = cv2.SimpleBlobDetector_create() #detector
 
 trackbar_value = 127
@@ -23,7 +23,6 @@ while True:
     img = cv2.resize(frame, (0,0), fx=1, fy=1) #size
     img = cv2.bitwise_not(img) #invert
     keypoints = detector.detect(img) #detect blops
-    
     ret, th1 = cv2.threshold(img, trackbar_value ,255,cv2.THRESH_BINARY_INV)
     
     cv2.imshow("Output", th1)

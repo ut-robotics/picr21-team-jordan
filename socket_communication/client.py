@@ -7,28 +7,28 @@ try:
     port = int(sys.argv[2])
 except IndexError:
     ip = "localhost"
-    port = 1228
+    port = 9999
 
 try:
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((ip, port))
-    print("<Connected to server: {}: {}>".format(ip, port))
+    print(f"<Connected to server: {ip}: {port}>")
 
 except socket.error as msg:
-    print("<Code: {}, Error: {}>".format(msg.args[0], msg.args[1]))
+    print(f"<Code: {msg.args[0]}, Error: {msg.args[1]}>")
     sys.exit()
 
 
 def accept_response(client_socket):
-    server_response = client_socket.recv(4096)
-    print("Server response: {}".format(server_response.decode()))
+    server_response = client_socket.recv(4096).decode()
+    print(f"Server response: {server_response}")
 
 
 while True:
     data = input("::: ")
-    client_socket.send(data.encode('utf-8'))
+    client_socket.send(data.encode("utf-8"))
 
-    if data == 'exit':
+    if data == "exit":
         print("<Client disconnected>")
         break
 

@@ -6,8 +6,3 @@
     "python.formatting.blackArgs": ["--line-length", "120"],
     "python.formatting.provider": "black",
   }
-
-{
-    "python.linting.pylintEnabled": true,
-    "python.linting.banditEnabled": true
-}
