@@ -13,12 +13,12 @@ import numpy as np
 import input_manager
 
 
-class Camera_Image:
+class CameraImage:
     def __init__(self):
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.fps = 0
         self.color_type = cv2.COLOR_BGR2HSV
-        self.cap = cv2.VideoCapture(4)
+        self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.original_window = "Original"
@@ -184,7 +184,6 @@ class Camera_Image:
         cv2.destroyAllWindows()
 
 
-image = Camera_Image()
-image.main()
-for module in [cv2, np, imutils]:
-    print(module.__name__, module.__version__)
+camera_image = CameraImage()
+camera_image.main()
+

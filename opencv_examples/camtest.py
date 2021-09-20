@@ -1,7 +1,7 @@
 import cv2
 import time
 
-cap = cv2.VideoCapture(4, cv2.CAP_V4L2)
+cap = cv2.VideoCapture(0)
 # cap.set(cv2.CAP_PROP_FRAME_WIDTH, 848)
 # cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
@@ -23,3 +23,4 @@ while True:
 print("closing program")
 cap.release()
 cv2.destroyAllWindows()
+
