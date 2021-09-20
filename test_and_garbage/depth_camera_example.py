@@ -1,28 +1,35 @@
-import sys
+import pyrealsense2 as rs
 import numpy as np
 import cv2
-import pyrealsense2 as rs
-import pyrealsense2_net as rsnet
 
+# Configure depth and color streams
+pipeline = rs.pipeline()
+config = rs.config()
 
-if len(sys.argv) == 1:
-    print( 'syntax: python net_viewer <server-ip-address>' )
-    sys.exit(1)
+# Get device product line for setting a supporting resolution
+pipeline_wrapper = rs.pipeline_wrapper(pipeline)
+pipeline_profile = config.resolve(pipeline_wrapper)
+device = pipeline_profile.get_device()
+device_product_line = str(device.get_info(rs.camera_info.product_line))
 
-ip = sys.argv[1]
+found_rgb = False
+for s in device.sensors:
+    if s.get_info(rs.camera_info.name) == 'RGB Camera':
+        found_rgb = True
+        break
+if not found_rgb:
+    print("The demo requires Depth camera with Color sensor")
+    exit(0)
 
-ctx = rs.context()
-print ('Connecting to ' + ip)
-dev = rsnet.net_device(ip)
-print ('Connected')
-print ('Using device 0,', dev.get_info(rs.camera_info.name), ' Serial number: ', dev.get_info(rs.camera_info.serial_number))
-dev.add_to(ctx)
-pipeline = rs.pipeline(ctx)
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 
+if device_product_line == 'L500':
+    config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+else:
+    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
 # Start streaming
-print ('Start streaming, press ESC to quit...')
-pipeline.start()
+pipeline.start(config)
 
 try:
     while True:
@@ -54,13 +61,9 @@ try:
         # Show images
         cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
         cv2.imshow('RealSense', images)
-        k = cv2.waitKey(1) & 0xFF
-        if k == 27:    # Escape
-            cv2.destroyAllWindows()
-            break
+        cv2.waitKey(1)
 
 finally:
+
     # Stop streaming
     pipeline.stop()
-
-print ("Finished")

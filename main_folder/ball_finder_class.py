@@ -3,40 +3,26 @@ using classes can be uselful in the future with state machine alghorritm.
 Btw, this isnt final resutl, just raw example
 """
 
-import time
 import os
+import time
+
 import cv2
-import numpy as np
 import imutils
+import numpy as np
+
 import input_manager
 
 
-class BallFinder:
-    def __init__(self, color_type):
+class Camera_Image:
+    def __init__(self):
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
-        default_values_ball: list = input_manager.get_default_values(self.path, "trackbar_values_ball")
-        self.fps: int = 0
-
-        self.color_type = color_type
+        self.fps = 0
+        self.color_type = cv2.COLOR_BGR2HSV
         self.cap = cv2.VideoCapture(4)
-        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-
-        cv2.namedWindow("Original")
-        cv2.namedWindow("Thresh")
-
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.original_window = "Original"
         self.target_window = "Thresh"
-        cv2.createTrackbar("hl", self.target_window, default_values_ball[0], 255, self.updateValue)
-        cv2.createTrackbar("sl", self.target_window, default_values_ball[1], 255, self.updateValue)
-        cv2.createTrackbar("vl", self.target_window, default_values_ball[2], 255, self.updateValue)
-        cv2.createTrackbar("hh", self.target_window, default_values_ball[3], 255, self.updateValue)
-        cv2.createTrackbar("sh", self.target_window, default_values_ball[4], 255, self.updateValue)
-        cv2.createTrackbar("vh", self.target_window, default_values_ball[5], 255, self.updateValue)
-        cv2.createTrackbar("closing1", self.target_window, default_values_ball[6], 100, self.updateValue)
-        cv2.createTrackbar("closing2", self.target_window, default_values_ball[7], 100, self.updateValue)
-        cv2.createTrackbar("dilation1", self.target_window, default_values_ball[8], 100, self.updateValue)
-        cv2.createTrackbar("dilation2", self.target_window, default_values_ball[9], 100, self.updateValue)
-
         self.blobparams = cv2.SimpleBlobDetector_Params()
         self.blobparams.filterByArea = True
         self.blobparams.minArea = 300
@@ -44,11 +30,32 @@ class BallFinder:
         self.blobparams.filterByInertia = False
         self.blobparams.filterByConvexity = False
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
+        default_values_ball: list = input_manager.get_default_values(self.path, "trackbar_values_ball")
+        default_values_basket: list = ["TBA"]
 
-    def updateValue(self, new_value):
+        cv2.namedWindow(self.original_window)
+        cv2.namedWindow(self.target_window)
+        cv2.createTrackbar("hl", self.target_window, default_values_ball[0], 255, self.update_value)
+        cv2.createTrackbar("sl", self.target_window, default_values_ball[1], 255, self.update_value)
+        cv2.createTrackbar("vl", self.target_window, default_values_ball[2], 255, self.update_value)
+        cv2.createTrackbar("hh", self.target_window, default_values_ball[3], 255, self.update_value)
+        cv2.createTrackbar("sh", self.target_window, default_values_ball[4], 255, self.update_value)
+        cv2.createTrackbar("vh", self.target_window, default_values_ball[5], 255, self.update_value)
+        cv2.createTrackbar("closing1", self.target_window, default_values_ball[6], 100, self.update_value)
+        cv2.createTrackbar("closing2", self.target_window, default_values_ball[7], 100, self.update_value)
+        cv2.createTrackbar("dilation1", self.target_window, default_values_ball[8], 100, self.update_value)
+        cv2.createTrackbar("dilation2", self.target_window, default_values_ball[9], 100, self.update_value)
+
         """
-        Used for update trackbar values
+        same trackbar creation, just less lines, idk, seems good, but too complicated
+        
+        trackbar_names = ["hl", "sl", "vl", "hh", "sh", "vh", "closing1", "closing2", "dilation1", "dilation2"]
+        indexes = [x for x in range(len(trackbar_names))]
+        for name, index in zip(trackbar_names, indexes):
+            cv2.createTrackbar(name, self.target_window, default_values_ball[index], 255, self.updateValue)
         """
+
+    def update_value(self, new_value):
         self.trackbar_value = new_value
 
     def track_ball_using_imutils(self, inspected_frame, target_frame):
@@ -85,23 +92,18 @@ class BallFinder:
                 )
 
     def track_ball_using_blob(self, inspected_frame, target_frame):
-        """
-        black ball and whiite background
-        use betwise_not(mask) if needed
-        """
         # for debbuging and finding blobs
         contours, _ = cv2.findContours(inspected_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
             approx = cv2.approxPolyDP(cnt, 0.001 * cv2.arcLength(cnt, True), True)
             cv2.drawContours(target_frame, [approx], 0, (255, 0, 0), 2)
-        
-        
+
         keypoints: list = self.detector.detect(inspected_frame)
         cv2.drawKeypoints(
             inspected_frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS
         )
 
-        #detect all keypoints
+        # detect all keypoints
         kp_sizes = []
         if len(keypoints) > 0:
             for keypoint in keypoints:
@@ -117,22 +119,21 @@ class BallFinder:
                     x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
                     cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        #detects biggest keypoint, marks with different color
+        # detects biggest keypoint, marks with different color
         try:
             biggest_keypoint_index = kp_sizes.index(max(kp_sizes))
             biggest_keypoint = keypoints[biggest_keypoint_index]
             x, y = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1])
             text = (
-                        str(round(biggest_keypoint.pt[0]))
-                        + " : "
-                        + str(round(biggest_keypoint.pt[1]))
-                        + ":::"
-                        + str(round(biggest_keypoint.size))
-                    )
+                str(round(biggest_keypoint.pt[0]))
+                + " : "
+                + str(round(biggest_keypoint.pt[1]))
+                + ":::"
+                + str(round(biggest_keypoint.size))
+            )
             cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         except ValueError:
             pass
-        
 
     def main(self):
         while True:
@@ -183,7 +184,7 @@ class BallFinder:
         cv2.destroyAllWindows()
 
 
-ball_finder = BallFinder(cv2.COLOR_BGR2HSV)
-ball_finder.main()
+image = Camera_Image()
+image.main()
 for module in [cv2, np, imutils]:
     print(module.__name__, module.__version__)

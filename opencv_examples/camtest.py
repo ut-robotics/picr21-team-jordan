@@ -1,23 +1,25 @@
 import cv2
+import time
 
-# Open the camera
-cap = cv2.VideoCapture(4)
+cap = cv2.VideoCapture(4, cv2.CAP_V4L2)
+# cap.set(cv2.CAP_PROP_FRAME_WIDTH, 848)
+# cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
 
+fps = 0
 while True:
-    # Read the image from the camera
+    start_time = time.time()
+    
     ret, frame = cap.read()
-
-    # Write some text onto the frame
-    cv2.putText(frame, "Hello", (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-    # Show this image on a window named "Original"
+    cv2.putText(frame, str(fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     cv2.imshow("Original", frame)
 
-    # Quit the program when 'q' is pressed
+    
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
-# When everything done, release the capture
+    fps = round(1.0 / (time.time() - start_time), 2)
+    
 print("closing program")
 cap.release()
 cv2.destroyAllWindows()
