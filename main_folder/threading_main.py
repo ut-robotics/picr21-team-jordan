@@ -1,5 +1,5 @@
 """
-Multithreading example. May be useful later, now just one thread
+Multithreading example. May be useful later, but now use main.oy instead
 """
 
 from image_calibration import CameraImage
@@ -7,12 +7,14 @@ import time
 
 import cv2
 import numpy as np
+import threading
+from queue import Queue
 
 
 class ImageProducer(CameraImage):
     def __init__(self):
         super(ImageProducer, self).__init__()
-        self.state = "initial"
+        cv2.destroyWindow("Thresh")
 
     def apply_image_processing(self, frame):
         hsv = cv2.cvtColor(frame, self.color_type)
@@ -38,15 +40,30 @@ class ImageProducer(CameraImage):
 
         return mask
 
-    def run_current_state(self, frame, mask):
-        if self.state == "initial":
-            x, y = self.get_ball_coordinates(mask, frame)
-            print(x, y) # TODO something wit coord to reach state breakpoint
+    def main(self, out_q):
+        while True:
+            start_time = time.time()
+            _, frame = self.cap.read()
+            mask = self.apply_image_processing(frame)
+            self.track_ball_using_blob(mask, frame)
 
-    def get_ball_coordinates(self, inspected_frame, target_frame):
-        """
-        initial state action
-        """
+            cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.imshow("Original", frame)
+            # cv2.imshow("Thresh", mask)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+            self.fps = round(1.0 / (time.time() - start_time), 2)
+            out_q.put(mask)
+
+        self.cap.release()
+        cv2.destroyAllWindows()
+
+
+class StateMachine():
+    def __init__(self):
+        self.initial_state = "initial"
+
+    def track_ball_using_blob(self, inspected_frame, target_frame):
         # for debbuging and finding blobs
         contours, _ = cv2.findContours(inspected_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
@@ -73,28 +90,29 @@ class ImageProducer(CameraImage):
             x, y = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1])
             text = str(round(biggest_keypoint.pt[0])) + " : " + str(round(biggest_keypoint.pt[1])) + ":::" + str(round(biggest_keypoint.size))
             cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            return x, y
         except ValueError:
-            return 0, 0
+            pass
 
-    def main(self):
+    def main(self, in_q):
+        cv2.namedWindow("Mask")
         while True:
-            start_time = time.time()
-            _, frame = self.cap.read()
-            mask = self.apply_image_processing(frame)
-            self.run_current_state(frame, mask)
-
-            cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.imshow("Original", frame)
-            cv2.imshow("Thresh", mask)
+            mask = in_q.get()
+            cv2.imshow("Mask", mask)
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-            self.fps = round(1.0 / (time.time() - start_time), 2)
+                    break
 
-        self.cap.release()
-        cv2.destroyAllWindows()
 
+def producer(out_q):
+    camera_image = ImageProducer()
+    camera_image.main(out_q)
+
+def consumer(in_q):
+    state_machine = StateMachine()
+    state_machine.main(in_q)
 
 if __name__ == "__main__":
-    camera_image = ImageProducer()
-    camera_image.main()
+    q = Queue()
+    t1 = threading.Thread(target=producer, args =(q, ))
+    t2 = threading.Thread(target=consumer, args =(q, ))
+    t1.start()
+    t2.start()
