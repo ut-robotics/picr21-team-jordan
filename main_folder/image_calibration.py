@@ -21,6 +21,7 @@ class CameraImage:
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.original_window = "Original"
         self.mask_window = "Thresh"
+        self.trackbar_window = "Trackbar"
         self.blobparams = cv2.SimpleBlobDetector_Params()
         self.blobparams.filterByArea = True
         self.blobparams.minArea = 300
@@ -33,6 +34,7 @@ class CameraImage:
 
         cv2.namedWindow(self.original_window)
         cv2.namedWindow(self.mask_window)
+        cv2.namedWindow(self.trackbar_window, cv2.WINDOW_NORMAL)
 
     def update_value(self, new_value):
         self.trackbar_value = new_value
@@ -74,32 +76,32 @@ class CameraImage:
                     cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
     def main(self):
-        cv2.createTrackbar("hl", self.mask_window, self.default_values_ball[0], 255, self.update_value)
-        cv2.createTrackbar("sl", self.mask_window, self.default_values_ball[1], 255, self.update_value)
-        cv2.createTrackbar("vl", self.mask_window, self.default_values_ball[2], 255, self.update_value)
-        cv2.createTrackbar("hh", self.mask_window, self.default_values_ball[3], 255, self.update_value)
-        cv2.createTrackbar("sh", self.mask_window, self.default_values_ball[4], 255, self.update_value)
-        cv2.createTrackbar("vh", self.mask_window, self.default_values_ball[5], 255, self.update_value)
-        cv2.createTrackbar("closing1", self.mask_window, self.default_values_ball[6], 100, self.update_value)
-        cv2.createTrackbar("closing2", self.mask_window, self.default_values_ball[7], 100, self.update_value)
-        cv2.createTrackbar("dilation1", self.mask_window, self.default_values_ball[8], 100, self.update_value)
-        cv2.createTrackbar("dilation2", self.mask_window, self.default_values_ball[9], 100, self.update_value)
+        cv2.createTrackbar("hl", self.trackbar_window, self.default_values_ball[0], 255, self.update_value)
+        cv2.createTrackbar("sl", self.trackbar_window, self.default_values_ball[1], 255, self.update_value)
+        cv2.createTrackbar("vl", self.trackbar_window, self.default_values_ball[2], 255, self.update_value)
+        cv2.createTrackbar("hh", self.trackbar_window, self.default_values_ball[3], 255, self.update_value)
+        cv2.createTrackbar("sh", self.trackbar_window, self.default_values_ball[4], 255, self.update_value)
+        cv2.createTrackbar("vh", self.trackbar_window, self.default_values_ball[5], 255, self.update_value)
+        cv2.createTrackbar("closing1", self.trackbar_window, self.default_values_ball[6], 100, self.update_value)
+        cv2.createTrackbar("closing2", self.trackbar_window, self.default_values_ball[7], 100, self.update_value)
+        cv2.createTrackbar("dilation1", self.trackbar_window, self.default_values_ball[8], 100, self.update_value)
+        cv2.createTrackbar("dilation2", self.trackbar_window, self.default_values_ball[9], 100, self.update_value)
         while True:
             start_time = time.time()
             _, frame = self.cap.read()
 
             hsv = cv2.cvtColor(frame, self.color_type)
             hsv_blured = cv2.medianBlur(hsv, 5)
-            hl = cv2.getTrackbarPos("hl", self.mask_window)
-            sl = cv2.getTrackbarPos("sl", self.mask_window)
-            vl = cv2.getTrackbarPos("vl", self.mask_window)
-            hh = cv2.getTrackbarPos("hh", self.mask_window)
-            sh = cv2.getTrackbarPos("sh", self.mask_window)
-            vh = cv2.getTrackbarPos("vh", self.mask_window)
-            clos1 = cv2.getTrackbarPos("closing1", self.mask_window)
-            clos2 = cv2.getTrackbarPos("closing2", self.mask_window)
-            dil1 = cv2.getTrackbarPos("dilation1", self.mask_window)
-            dil2 = cv2.getTrackbarPos("dilation2", self.mask_window)
+            hl = cv2.getTrackbarPos("hl", self.trackbar_window)
+            sl = cv2.getTrackbarPos("sl", self.trackbar_window)
+            vl = cv2.getTrackbarPos("vl", self.trackbar_window)
+            hh = cv2.getTrackbarPos("hh", self.trackbar_window)
+            sh = cv2.getTrackbarPos("sh", self.trackbar_window)
+            vh = cv2.getTrackbarPos("vh", self.trackbar_window)
+            clos1 = cv2.getTrackbarPos("closing1", self.trackbar_window)
+            clos2 = cv2.getTrackbarPos("closing2", self.trackbar_window)
+            dil1 = cv2.getTrackbarPos("dilation1", self.trackbar_window)
+            dil2 = cv2.getTrackbarPos("dilation2", self.trackbar_window)
 
             kernel1 = np.ones((clos1, clos2), np.uint8)
             kernel2 = np.ones((dil1, dil2), np.uint8)

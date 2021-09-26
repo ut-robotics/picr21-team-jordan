@@ -14,7 +14,8 @@ from queue import Queue
 class ImageProducer(CameraImage):
     def __init__(self):
         super(ImageProducer, self).__init__()
-        cv2.destroyWindow("Thresh")
+        cv2.destroyWindow(self.trackbar_window)
+        cv2.destroyWindow(self.mask_window)
 
     def apply_image_processing(self, frame):
         hsv = cv2.cvtColor(frame, self.color_type)
