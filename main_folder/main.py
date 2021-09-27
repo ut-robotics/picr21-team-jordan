@@ -8,8 +8,8 @@ import numpy as np
 class ImageProducer(CameraImage):
     def __init__(self):
         super(ImageProducer, self).__init__()
-        cv2.destroyWindow(self.trackbar_window)
-        cv2.destroyWindow(self.mask_window)
+        cv2.namedWindow(self.original_window)
+        cv2.namedWindow(self.mask_window)
         self.state = "initial"
 
     def apply_image_processing(self, frame):
