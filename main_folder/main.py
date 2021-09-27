@@ -1,7 +1,3 @@
-"""
-Multithreading example. May be useful later, now just one thread
-"""
-
 from image_calibration import CameraImage
 import time
 
