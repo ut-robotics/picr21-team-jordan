@@ -39,7 +39,7 @@ class ImageProducer(CameraImage):
     def run_current_state(self, frame, mask):
         if self.state == "initial":
             x, y = self.get_ball_coordinates(mask, frame)
-            print(x, y) # TODO something wit coord to reach state breakpoint
+            print(self.state, x, y) # TODO something wit coord to reach state breakpoint
 
     def get_ball_coordinates(self, inspected_frame, target_frame):
         """

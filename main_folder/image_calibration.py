@@ -1,8 +1,3 @@
-"""
-using classes can be uselful in the future with state machine alghorritm.
-Btw, this isnt final resutl, just raw example
-"""
-
 import os
 import time
 
