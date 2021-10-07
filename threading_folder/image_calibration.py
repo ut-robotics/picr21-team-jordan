@@ -10,7 +10,7 @@ class CameraImage:
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]
-
+        
         self.color_type = cv2.COLOR_BGR2HSV
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -18,7 +18,7 @@ class CameraImage:
         self.original_window = "Original"
         self.mask_window = "Thresh"
         self.trackbar_window = "Trackbar"
-
+        
         self.blobparams = cv2.SimpleBlobDetector_Params()
         self.blobparams.filterByArea = True
         self.blobparams.minArea = 300
@@ -56,7 +56,7 @@ class CameraImage:
         cv2.createTrackbar("clos2", self.trackbar_window, self.default_values_ball[7], 100, self.update_value)
         cv2.createTrackbar("dil1", self.trackbar_window, self.default_values_ball[8], 100, self.update_value)
         cv2.createTrackbar("dil2", self.trackbar_window, self.default_values_ball[9], 100, self.update_value)
-
+        
         while True:
             start_time = time.time()
             _, frame = self.cap.read()
