@@ -12,7 +12,7 @@ class CameraImage:
         self.default_values_basket: list = ["TBA"]
 
         self.color_type = cv2.COLOR_BGR2HSV
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(4)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.original_window = "Original"

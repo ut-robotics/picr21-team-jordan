@@ -1,5 +1,5 @@
 ## Project in competitive robotics 2021
-**Compatibility:**
+**Compatibility:**</br>
 `Python 3.7.x` but any one can work as well, since we don't use `pyrealsense`</br>
 `cv2 4.5.3`</br>
 `numpy 1.21.2`</br>
@@ -11,9 +11,9 @@ Sends bytes to motors. works in primitive way (send byte = some of motors move w
 **opencv_examples** </br>
 Mostly contains garbage code and socket server example. sockets works, not implemented into main </br>
 **threading _folder** </br>
-This folder is meant  for future. It is works, but only thins is do: producer makes thresholded images, sends by queue to another thread. convusmer thread takes image and shows. that's it </br>
+This folder is meant  for future. It is works, but only thing is do: producer makes thresholded images, sends by queue to another thread. Consumer thread takes image and shows. That's it </br>
 **main_folder** </br>
-Ss said, main folder :). There's also readme in detail inside, but in two words: just run calibration, play with sliders and adjust the mask image. Then run the main code. Main code can currently understand, does ball in center or not, but movement is not implemented yet. This is our main task now -- implement movement (move forward, backward, left, right) </br>
+As said, main folder :). There's also readme in detail inside, but in two words: just run calibration, play with sliders and adjust the mask image. Then run the main code. Main code can currently understand, does ball in center or not, but movement is not implemented yet. This is our main task now -- implement movement (move forward, backward, left, right) </br>
 </br>
 **Alghoritm:** </br>
 <img src="/alghoritm.png" width=85% height="auto"/> </br>
