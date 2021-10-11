@@ -14,3 +14,7 @@ Mostly contains garbage code and socket server example. sockets works, not imple
 This folder is meant  for future. It is works, but only thins is do: producer makes thresholded images, sends by queue to another thread. convusmer thread takes image and shows. that's it </br>
 **main_folder** </br>
 Ss said, main folder :). There's also readme in detail inside, but in two words: just run calibration, play with sliders and adjust the mask image. Then run the main code. Main code can currently understand, does ball in center or not, but movement is not implemented yet. This is our main task now -- implement movement (move forward, backward, left, right) </br>
+</br>
+**Alghoritm:** </br>
+<img src="/alghoritm.png" width=85% height="auto"/> </br>
+</br>
