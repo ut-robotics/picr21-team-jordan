@@ -1,4 +1,6 @@
+import threading
 import time
+from queue import Queue
 
 import cv2
 import numpy as np
@@ -90,8 +92,11 @@ class StateMachine(CameraImage):
         except ValueError:
             return 0, 0, 0
 
-    def main(self):
+    def main(self, in_q):
         while True:
+            if in_q:
+                self.state = in_q.pop(0)
+        
             start_time = time.time()
             _, frame = self.cap.read()
             mask = self.apply_image_processing(frame)
@@ -117,6 +122,31 @@ class StateMachine(CameraImage):
         cv2.destroyAllWindows()
 
 
+class SocketServer:
+    def __init__(self):
+        pass
+
+    def main(self, out_q):
+        while True:
+            data = str(input(":::")) #TODO socket server data
+            out_q.append(data)
+
+
+def producer(out_q):
+    camera_image = SocketServer()
+    camera_image.main(out_q)
+
+
+def consumer(in_q):
+    state_machine = StateMachine()
+    state_machine.main(in_q)
+
+
 if __name__ == "__main__":
-    camera_image = StateMachine()
-    camera_image.main()
+    q = []
+    t1 = threading.Thread(target=producer, args=(q,))
+    t2 = threading.Thread(target=consumer, args=(q,))
+    t1.start()
+    t2.start()
+    # camera_image = StateMachine()
+    # camera_image.main()
