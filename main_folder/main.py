@@ -13,33 +13,9 @@ class StateMachine(CameraImage):
         super(StateMachine, self).__init__()
         cv2.namedWindow(self.original_window)
         cv2.namedWindow(self.mask_window)
-        self.center_range = range(228)
+        self.center_range = range(-1)
 
         self.state = "initial"
-
-    def apply_image_processing(self, frame):
-        hsv = cv2.cvtColor(frame, self.color_type)
-        hsv_blured = cv2.medianBlur(hsv, 5)
-        hl = self.default_values_ball[0]
-        sl = self.default_values_ball[1]
-        vl = self.default_values_ball[2]
-        hh = self.default_values_ball[3]
-        sh = self.default_values_ball[4]
-        vh = self.default_values_ball[5]
-        clos1 = self.default_values_ball[6]
-        clos2 = self.default_values_ball[7]
-        dil1 = self.default_values_ball[8]
-        dil2 = self.default_values_ball[9]
-        kernel1 = np.ones((clos1, clos2), np.uint8)
-        kernel2 = np.ones((dil1, dil2), np.uint8)
-        lowerLimits = np.array([hl, sl, vl])
-        upperLimits = np.array([hh, sh, vh])
-        mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel1)
-        mask = cv2.dilate(mask, kernel2, iterations=1)
-        mask = cv2.bitwise_not(mask)
-
-        return mask
 
     def run_current_state(self, frame, mask):
         if self.state == "initial":
@@ -73,10 +49,11 @@ class StateMachine(CameraImage):
 
         # detect all keypoints
         kp_sizes = []
+        minimal_size_to_detect = 30
         if len(keypoints) > 0:
             for keypoint in keypoints:
                 kp_sizes.append(keypoint.size)
-                if keypoint.size > 30:
+                if keypoint.size > minimal_size_to_detect:
                     text = str(round(keypoint.pt[0])) + " : " + str(round(keypoint.pt[1])) + ":::" + str(round(keypoint.size))
                     x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
                     cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -99,6 +76,7 @@ class StateMachine(CameraImage):
         
             start_time = time.time()
             _, frame = self.cap.read()
+            
             mask = self.apply_image_processing(frame)
 
             self.run_current_state(frame, mask)
@@ -106,7 +84,8 @@ class StateMachine(CameraImage):
             image_width = frame.shape[1]
             image_heigt = frame.shape[0]
             center = int(image_width / 2)
-            self.center_range = range(center - 70, center + 70, 1)
+            center_offset = 70
+            self.center_range = range(center - center_offset, center + center_offset, 1)
             cv2.line(frame, (self.center_range[0], 0), (self.center_range[0], image_heigt), (0, 0, 0), 3)
             cv2.line(frame, (self.center_range[-1], 0), (self.center_range[-1], image_heigt), (0, 0, 0), 3)
 
