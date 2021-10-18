@@ -9,7 +9,7 @@ class CameraImage:
     def __init__(self):
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
-        self.default_values_basket: list = ["TBA"]  # TODO
+        self.default_values_basket: list = ["TBA"]  # TODO 
 
         self.color_type = cv2.COLOR_BGR2HSV
         self.cap = cv2.VideoCapture(4)

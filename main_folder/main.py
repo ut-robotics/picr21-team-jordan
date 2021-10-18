@@ -1,6 +1,5 @@
 import threading
 import time
-from queue import Queue
 
 import cv2
 import numpy as np
@@ -68,7 +67,19 @@ class StateMachine(CameraImage):
             return x, y, size
         except ValueError:
             return 0, 0, 0
+    
+    def draw_info(self, frame):
+        image_width = frame.shape[1]
+        image_heigt = frame.shape[0]
+        center = int(image_width / 2)
+        center_offset = 70
+        self.center_range = range(center - center_offset, center + center_offset, 1)
+        cv2.line(frame, (self.center_range[0], 0), (self.center_range[0], image_heigt), (0, 0, 0), 3)
+        cv2.line(frame, (self.center_range[-1], 0), (self.center_range[-1], image_heigt), (0, 0, 0), 3)
 
+        cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, "State: " + self.state, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    
     def main(self, in_q):
         while True:
             if in_q:
@@ -76,21 +87,11 @@ class StateMachine(CameraImage):
         
             start_time = time.time()
             _, frame = self.cap.read()
-            
+        
             mask = self.apply_image_processing(frame)
-
             self.run_current_state(frame, mask)
 
-            image_width = frame.shape[1]
-            image_heigt = frame.shape[0]
-            center = int(image_width / 2)
-            center_offset = 70
-            self.center_range = range(center - center_offset, center + center_offset, 1)
-            cv2.line(frame, (self.center_range[0], 0), (self.center_range[0], image_heigt), (0, 0, 0), 3)
-            cv2.line(frame, (self.center_range[-1], 0), (self.center_range[-1], image_heigt), (0, 0, 0), 3)
-
-            cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.putText(frame, "State: " + self.state, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            self.draw_info(frame)
             cv2.imshow("Original", frame)
             cv2.imshow("Thresh", mask)
             if cv2.waitKey(1) & 0xFF == ord("q"):
