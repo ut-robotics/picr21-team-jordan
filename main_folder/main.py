@@ -80,10 +80,10 @@ class StateMachine(CameraImage):
         cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.putText(frame, "State: " + self.state, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     
-    def main(self, in_q):
+    def main(self, socket_data):
         while True:
-            if in_q:
-                self.state = in_q.pop(0)
+            if socket_data:
+                self.state = socket_data.pop(0)
         
             start_time = time.time()
             _, frame = self.cap.read()
