@@ -4,14 +4,14 @@ import time
 import cv2
 import numpy as np
 
-# from image_calibration_pyrealsense import ImageCalibraion
+# from _image_calibration_pyrealsense import ImageCalibraion
 from image_calibration import ImageCalibraion
 from socket_server import SocketServer
 
 
-class StateMachine(ImageCalibraion):
+class ImageGetter(ImageCalibraion):
     def __init__(self):
-        super(StateMachine, self).__init__()
+        super(ImageGetter, self).__init__()
         cv2.namedWindow(self.original_window)
         cv2.namedWindow(self.mask_window)
         self.center_range = range(-1)
@@ -39,12 +39,6 @@ class StateMachine(ImageCalibraion):
 
     def get_ball_coordinates(self, inspected_frame, target_frame):
         """initial state action"""
-        # for debbuging and finding blobs
-        # contours, _ = cv2.findContours(inspected_frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        # for cnt in contours:
-        #     approx = cv2.approxPolyDP(cnt, 0.001 * cv2.arcLength(cnt, True), True)
-        #     cv2.drawContours(target_frame, [approx], 0, (255, 0, 0), 2)
-
         keypoints: list = self.detector.detect(inspected_frame)
         cv2.drawKeypoints(inspected_frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
@@ -111,15 +105,14 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = StateMachine()
+    state_machine = ImageGetter()
     state_machine.main(in_q)
 
 
 if __name__ == "__main__":
     q = []
     t1 = threading.Thread(target=producer, args=(q,))
+    t1.daemon = True
     t2 = threading.Thread(target=consumer, args=(q,))
     t1.start()
     t2.start()
-    # camera_image = StateMachine()
-    # camera_image.main()
