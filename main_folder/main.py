@@ -10,8 +10,8 @@ from socket_server import SocketServer
 
 
 class ImageGetter(ImageCalibraion):
-    def __init__(self):
-        super(ImageGetter, self).__init__()
+    def __init__(self, enable_pyrealsense=False):
+        super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         cv2.namedWindow(self.original_window)
         cv2.namedWindow(self.mask_window)
         self.center_range = range(-1)
@@ -82,15 +82,18 @@ class ImageGetter(ImageCalibraion):
                 self.state = socket_data.pop(0)
         
             start_time = time.time()
-            _, color_image = self.cap.read()
+            if self.enable_pyrealsense:
+                color_image, depth_image = self.get_frame_using_pyrealsense()
+                mask_image = self.apply_image_processing(color_image) #TODO do something with depth
+            else:
+                _, color_image = self.cap.read()
+                mask_image = self.apply_image_processing(color_image, is_calibration=True)
             
-            # color_image, depth_image = self.get_frame_using_pyrealsense()
-            mask = self.apply_image_processing(color_image)
-            self.run_current_state(color_image, mask)
+            # self.run_current_state(color_image, mask)
 
             self.draw_info(color_image)
             cv2.imshow("Original", color_image)
-            cv2.imshow("Thresh", mask)
+            cv2.imshow("Thresh", mask_image)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
@@ -105,7 +108,7 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = ImageGetter()
+    state_machine = ImageGetter(enable_pyrealsense=True)
     state_machine.main(in_q)
 
 
