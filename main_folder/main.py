@@ -6,6 +6,7 @@ import numpy as np
 
 # from image_calibration_pyrealsense import ImageCalibraion
 from image_calibration import ImageCalibraion
+from socket_server import SocketServer
 
 
 class StateMachine(ImageCalibraion):
@@ -102,16 +103,6 @@ class StateMachine(ImageCalibraion):
 
         self.cap.release()
         cv2.destroyAllWindows()
-
-
-class SocketServer:
-    def __init__(self):
-        pass
-
-    def main(self, out_q):
-        while True:
-            data = str(input(":::")) #TODO socket server data
-            out_q.append(data)
 
 
 def producer(out_q):
