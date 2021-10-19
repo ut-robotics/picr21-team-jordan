@@ -4,10 +4,11 @@ import time
 import cv2
 import numpy as np
 
-from image_calibration import CameraImage
+# from image_calibration_pyrealsense import ImageCalibraion
+from image_calibration import ImageCalibraion
 
 
-class StateMachine(CameraImage):
+class StateMachine(ImageCalibraion):
     def __init__(self):
         super(StateMachine, self).__init__()
         cv2.namedWindow(self.original_window)
@@ -86,13 +87,14 @@ class StateMachine(CameraImage):
                 self.state = socket_data.pop(0)
         
             start_time = time.time()
-            _, frame = self.cap.read()
-        
-            mask = self.apply_image_processing(frame)
-            self.run_current_state(frame, mask)
+            _, color_image = self.cap.read()
+            
+            # color_image, depth_image = self.get_frame_using_pyrealsense()
+            mask = self.apply_image_processing(color_image)
+            self.run_current_state(color_image, mask)
 
-            self.draw_info(frame)
-            cv2.imshow("Original", frame)
+            self.draw_info(color_image)
+            cv2.imshow("Original", color_image)
             cv2.imshow("Thresh", mask)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break

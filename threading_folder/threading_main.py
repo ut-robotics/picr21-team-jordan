@@ -7,10 +7,10 @@ from queue import Queue
 import numpy as np
 
 import cv2
-from image_calibration import CameraImage
+from image_calibration import ImageCalibraion
 
 
-class ImageProducer(CameraImage):
+class ImageProducer(ImageCalibraion):
     def __init__(self):
         super().__init__()
 
