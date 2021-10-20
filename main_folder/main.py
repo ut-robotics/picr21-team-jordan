@@ -10,18 +10,22 @@ from socket_server import SocketServer
 
 
 class ImageGetter(ImageCalibraion):
-    def __init__(self, enable_pyrealsense=False):
+    def __init__(self, enable_pyrealsense=False, enable_gui=True): #TODO keep gui separrrate form other code
         super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         cv2.namedWindow(self.original_window)
         cv2.namedWindow(self.mask_window)
-        self.center_range = range(-1)
-
-        self.state = "initial"
+        
+        self.STATE = "initial"
+        self.CENTER_RANGE = range(-1)
+        self.CENTER_OFFSET = 70
+        self.X, self.Y = -1, -1
+        self.BALL_SIZE = -1
+        self.MINIMAL_BALL_SIZE_TO_DETECT = 30
 
     def run_current_state(self, frame, mask):
-        if self.state == "initial":
-            x, y, size = self.get_ball_coordinates(mask, frame)
-            is_ball_in_center = True if x in self.center_range else False
+        if self.STATE == "initial":
+            self.X, self.X, self.BALL_SIZE = self.get_ball_coordinates(mask, frame)
+            is_ball_in_center = True if self.X in self.CENTER_RANGE else False
             cv2.putText(frame, "Ball in centre: " + str(is_ball_in_center), (5, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
             ###___uncomment when movements is ready___###
@@ -44,51 +48,49 @@ class ImageGetter(ImageCalibraion):
 
         # detect all keypoints
         kp_sizes = []
-        minimal_size_to_detect = 30
         if len(keypoints) > 0:
             for keypoint in keypoints:
                 kp_sizes.append(keypoint.size)
-                if keypoint.size > minimal_size_to_detect:
-                    text = str(round(keypoint.pt[0])) + " : " + str(round(keypoint.pt[1])) + ":::" + str(round(keypoint.size))
+                if keypoint.size > self.MINIMAL_BALL_SIZE_TO_DETECT:
                     x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
+                    text = str(round(x)) + " : " + str(round(y)) + ":::" + str(round(keypoint.size))
                     cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # detects biggest keypoint, marks with different color
         try:
-            biggest_keypoint_index = kp_sizes.index(max(kp_sizes))
-            biggest_keypoint = keypoints[biggest_keypoint_index]
+            biggest_keypoint = keypoints[kp_sizes.index(max(kp_sizes))]
             x, y, size = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1]), biggest_keypoint.size
             text = str(round(biggest_keypoint.pt[0])) + " : " + str(round(biggest_keypoint.pt[1])) + ":::" + str(round(biggest_keypoint.size))
             cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             return x, y, size
         except ValueError:
             return 0, 0, 0
-    
+
     def draw_info(self, frame):
         image_width = frame.shape[1]
-        image_heigt = frame.shape[0]
-        center = int(image_width / 2)
-        center_offset = 70
-        self.center_range = range(center - center_offset, center + center_offset, 1)
-        cv2.line(frame, (self.center_range[0], 0), (self.center_range[0], image_heigt), (0, 0, 0), 3)
-        cv2.line(frame, (self.center_range[-1], 0), (self.center_range[-1], image_heigt), (0, 0, 0), 3)
+        image_height = frame.shape[0]
+        center_x = int(image_width / 2)
 
-        cv2.putText(frame, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "State: " + self.state, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    
+        self.CENTER_RANGE = range(center_x - self.CENTER_OFFSET, center_x + self.CENTER_OFFSET, 1)
+        cv2.line(frame, (self.CENTER_RANGE[0], 0), (self.CENTER_RANGE[0], image_height), (0, 0, 0), 3)
+        cv2.line(frame, (self.CENTER_RANGE[-1], 0), (self.CENTER_RANGE[-1], image_height), (0, 0, 0), 3)
+
+        cv2.putText(frame, str(self.FPS), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, "State: " + self.STATE, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
     def main(self, socket_data):
         while True:
             if socket_data:
-                self.state = socket_data.pop(0)
-        
+                self.STATE = socket_data.pop(0)
+
             start_time = time.time()
             if self.enable_pyrealsense:
                 color_image, depth_image = self.get_frame_using_pyrealsense()
-                mask_image = self.apply_image_processing(color_image) #TODO do something with depth
+                mask_image = self.apply_image_processing(color_image)  # TODO do something with depth
             else:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)
-            
+
             # self.run_current_state(color_image, mask)
 
             self.draw_info(color_image)
@@ -96,7 +98,7 @@ class ImageGetter(ImageCalibraion):
             cv2.imshow("Thresh", mask_image)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
-            self.fps = round(1.0 / (time.time() - start_time), 2)
+            self.FPS = round(1.0 / (time.time() - start_time), 2)
 
         self.cap.release()
         cv2.destroyAllWindows()

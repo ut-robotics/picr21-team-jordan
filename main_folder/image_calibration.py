@@ -19,7 +19,7 @@ class ImageCalibraion:
             config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
             config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
             self.pipeline.start(config)
-            self.alpha = 0.9
+            self.ALPHA_DEPTH = 0.9
         else:
             self.cap = cv2.VideoCapture(1)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
@@ -37,7 +37,7 @@ class ImageCalibraion:
         self.blobparams.filterByInertia = False
         self.blobparams.filterByConvexity = False
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
-        self.fps = 0
+        self.FPS = 0
 
     def update_value(self, new_value):
         self.trackbar_value = new_value
@@ -68,7 +68,7 @@ class ImageCalibraion:
             self.default_values_ball[7] = cv2.getTrackbarPos("clos2", self.trackbar_window)
             self.default_values_ball[8] = cv2.getTrackbarPos("dil1", self.trackbar_window)
             self.default_values_ball[9] = cv2.getTrackbarPos("dil2", self.trackbar_window)
-            self.alpha = (cv2.getTrackbarPos("alpha", self.trackbar_window))/100 if self.enable_pyrealsense else -1
+            self.ALPHA_DEPTH = (cv2.getTrackbarPos("alpha", self.trackbar_window))/100 if self.enable_pyrealsense else -1
 
         kernel1 = np.ones((self.default_values_ball[6], self.default_values_ball[7]), np.uint8)
         kernel2 = np.ones((self.default_values_ball[8], self.default_values_ball[9]), np.uint8)
@@ -88,7 +88,7 @@ class ImageCalibraion:
         color_frame = frames.get_color_frame()
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=self.alpha), cv2.COLORMAP_JET)
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=self.ALPHA_DEPTH), cv2.COLORMAP_JET)
 
         return color_image, depth_colormap
 
@@ -113,7 +113,7 @@ class ImageCalibraion:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)
 
-            cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(color_image, str(self.FPS), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow("Original", color_image)
             cv2.imshow("Thresh", mask_image)
 
@@ -121,7 +121,7 @@ class ImageCalibraion:
                 self.save_default_values(self.path, "trackbar_values_ball", [str(x) for x in self.default_values_ball])
                 break
 
-            self.fps = round(1.0 / (time.time() - start_time), 2)
+            self.FPS = round(1.0 / (time.time() - start_time), 2)
 
         self.cap.release()
         cv2.destroyAllWindows()
