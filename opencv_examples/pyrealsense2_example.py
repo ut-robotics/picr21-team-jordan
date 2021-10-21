@@ -9,8 +9,11 @@ pipeline = rs.pipeline()
 config = rs.config()
 config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
 config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-pipeline.start(config)
+prof = pipeline.start(config)
 alpha = 0.9
+
+s = prof.get_device().query_sensors()[1]
+s.set_option(rs.option.exposure, 1)
 try:
     while True:
         start_time = time.time()
