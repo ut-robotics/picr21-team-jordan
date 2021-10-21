@@ -4,7 +4,6 @@ import time
 import cv2
 import numpy as np
 
-# from _image_calibration_pyrealsense import ImageCalibraion
 from image_calibration import ImageCalibraion
 from socket_server import SocketServer
 
@@ -24,7 +23,7 @@ class ImageGetter(ImageCalibraion):
 
     def run_current_state(self, frame, mask):
         if self.STATE == "initial":
-            self.X, self.X, self.BALL_SIZE = self.get_ball_coordinates(mask, frame)
+            self.X, self.Y, self.BALL_SIZE = self.get_ball_coordinates(mask, frame)
             is_ball_in_center = True if self.X in self.CENTER_RANGE else False
             cv2.putText(frame, "Ball in centre: " + str(is_ball_in_center), (5, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
@@ -54,7 +53,7 @@ class ImageGetter(ImageCalibraion):
                 if keypoint.size > self.MINIMAL_BALL_SIZE_TO_DETECT:
                     x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
                     text = str(round(x)) + " : " + str(round(y)) + ":::" + str(round(keypoint.size))
-                    cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    # cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # detects biggest keypoint, marks with different color
         try:
@@ -62,7 +61,7 @@ class ImageGetter(ImageCalibraion):
             x, y, size = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1]), biggest_keypoint.size
             text = str(round(biggest_keypoint.pt[0])) + " : " + str(round(biggest_keypoint.pt[1])) + ":::" + str(round(biggest_keypoint.size))
             cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            return x, y, size
+            return int(round(x)), int(round(y)), int(round(size))
         except ValueError:
             return 0, 0, 0
 
@@ -70,7 +69,6 @@ class ImageGetter(ImageCalibraion):
         image_width = frame.shape[1]
         image_height = frame.shape[0]
         center_x = int(image_width / 2)
-
         self.CENTER_RANGE = range(center_x - self.CENTER_OFFSET, center_x + self.CENTER_OFFSET, 1)
         cv2.line(frame, (self.CENTER_RANGE[0], 0), (self.CENTER_RANGE[0], image_height), (0, 0, 0), 3)
         cv2.line(frame, (self.CENTER_RANGE[-1], 0), (self.CENTER_RANGE[-1], image_height), (0, 0, 0), 3)
@@ -85,13 +83,13 @@ class ImageGetter(ImageCalibraion):
 
             start_time = time.time()
             if self.enable_pyrealsense:
-                color_image, depth_image = self.get_frame_using_pyrealsense()
-                mask_image = self.apply_image_processing(color_image)  # TODO do something with depth
+                color_image, depth_image = self.get_frame_using_pyrealsense() # TODO do something with depth
+                mask_image = self.apply_image_processing(color_image)  
             else:
                 _, color_image = self.cap.read()
-                mask_image = self.apply_image_processing(color_image, is_calibration=True)
+                mask_image = self.apply_image_processing(color_image)
 
-            # self.run_current_state(color_image, mask)
+            self.run_current_state(color_image, mask_image) #TODO make state class in different file.
 
             self.draw_info(color_image)
             cv2.imshow("Original", color_image)
@@ -110,7 +108,7 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = ImageGetter(enable_pyrealsense=True)
+    state_machine = ImageGetter(enable_pyrealsense=False, enable_gui=True)
     state_machine.main(in_q)
 
 

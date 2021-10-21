@@ -12,6 +12,7 @@ class ImageCalibraion:
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]  # TODO 
+        CAM_ID = 0 #4 for the robot pc
 
         if enable_pyrealsense:
             self.pipeline = rs.pipeline()
@@ -21,8 +22,8 @@ class ImageCalibraion:
             self.pipeline.start(config)
             self.ALPHA_DEPTH = 0.9
         else:
-            self.cap = cv2.VideoCapture(1)
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+            self.cap = cv2.VideoCapture(CAM_ID)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280) #TODO rename variables with HEIGHT and WEIGHT
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         
         self.color_type = cv2.COLOR_BGR2HSV
@@ -70,10 +71,10 @@ class ImageCalibraion:
             self.default_values_ball[9] = cv2.getTrackbarPos("dil2", self.trackbar_window)
             self.ALPHA_DEPTH = (cv2.getTrackbarPos("alpha", self.trackbar_window))/100 if self.enable_pyrealsense else -1
 
-        kernel1 = np.ones((self.default_values_ball[6], self.default_values_ball[7]), np.uint8)
-        kernel2 = np.ones((self.default_values_ball[8], self.default_values_ball[9]), np.uint8)
         lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
         upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
+        kernel1 = np.ones((self.default_values_ball[6], self.default_values_ball[7]), np.uint8)
+        kernel2 = np.ones((self.default_values_ball[8], self.default_values_ball[9]), np.uint8)
 
         mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel1)
@@ -108,7 +109,7 @@ class ImageCalibraion:
 
             if self.enable_pyrealsense:
                 color_image, depth_image = self.get_frame_using_pyrealsense()
-                mask_image = self.apply_image_processing(color_image) #TODO do something with depth
+                mask_image = self.apply_image_processing(color_image, is_calibration=True) #TODO do something with depth
             else:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)
@@ -128,5 +129,5 @@ class ImageCalibraion:
 
 
 if __name__ == "__main__":
-    camera_image = ImageCalibraion(enable_pyrealsense=True)
+    camera_image = ImageCalibraion(enable_pyrealsense=False)
     camera_image.main()
