@@ -12,27 +12,28 @@ class ImageCalibraion:
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]  # TODO 
-        CAM_ID = 4 #4 for the robot pc
+        CAM_ID = 0 #4 for the robot pc
 
         if enable_pyrealsense:
+            self.WIDTH_DEPTH, self.HEIGHT_DEPTH = (848, 480)
+            self.WIDTH, self.HEIGHT = (960, 540)
             self.pipeline = rs.pipeline()
-            config = rs.config()
-            
-            # config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-            # config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-            config.enable_stream(rs.stream.depth, 848, 480, rs.format.z16, 60)
-            config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 60)
+            config = rs.config()       
+            config.enable_stream(rs.stream.depth, self.WIDTH_DEPTH, self.HEIGHT_DEPTH, rs.format.z16, 60)
+            config.enable_stream(rs.stream.color, self.WIDTH, self.HEIGHT, rs.format.bgr8, 60)
             
             self.pipeline.start(config)
             self.ALPHA_DEPTH = 0.9
         else:
+            self.WIDTH, self.HEIGHT = (1280, 720)
             self.cap = cv2.VideoCapture(CAM_ID)
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280) #TODO rename variables with HEIGHT and WEIGHT
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH) #TODO rename variables with HEIGHT and WEIGHT
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HEIGHT)
         
         self.color_type = cv2.COLOR_BGR2HSV
         self.original_window = "Original"
         self.mask_window = "Thresh"
+        self.depth_window = "Depth"
         self.trackbar_window = "Trackbar"
 
         self.blobparams = cv2.SimpleBlobDetector_Params()
@@ -43,6 +44,8 @@ class ImageCalibraion:
         self.blobparams.filterByConvexity = False
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
         self.FPS = 0
+
+        self.BLUR = 5
 
     def update_value(self, new_value):
         self.trackbar_value = new_value
@@ -60,7 +63,7 @@ class ImageCalibraion:
             
     def apply_image_processing(self, frame, is_calibration=False):
         hsv = cv2.cvtColor(frame, self.color_type)
-        hsv_blured = cv2.medianBlur(hsv, 5)
+        hsv_blured = cv2.medianBlur(hsv, self.BLUR)
         
         if is_calibration:
             self.default_values_ball[0] = cv2.getTrackbarPos("hl", self.trackbar_window)
@@ -119,10 +122,9 @@ class ImageCalibraion:
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)
 
             cv2.putText(color_image, str(self.FPS), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.imshow("Original", color_image)
-            cv2.imshow("Thresh", mask_image)
-            cv2.imshow("Depth", depth_image) if self.enable_pyrealsense else -1
-
+            cv2.imshow(self.original_window, color_image)
+            cv2.imshow(self.mask_window, mask_image)
+            cv2.imshow(self.depth_window, depth_image) if self.enable_pyrealsense else -1
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 self.save_default_values(self.path, "trackbar_values_ball", [str(x) for x in self.default_values_ball])
                 break
@@ -134,5 +136,5 @@ class ImageCalibraion:
 
 
 if __name__ == "__main__":
-    camera_image = ImageCalibraion(enable_pyrealsense=True)
+    camera_image = ImageCalibraion()
     camera_image.main()
