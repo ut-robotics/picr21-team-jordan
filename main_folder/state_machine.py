@@ -1,3 +1,3 @@
-class State_Machine:
+class StateMachine:
     def __init__(self):
         pass

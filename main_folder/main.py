@@ -6,6 +6,7 @@ import numpy as np
 
 from image_calibration import ImageCalibraion
 from socket_server import SocketServer
+from state_machine import StateMachine
 
 
 class ImageGetter(ImageCalibraion):
