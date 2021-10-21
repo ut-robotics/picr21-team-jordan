@@ -12,7 +12,7 @@ class ImageCalibraion:
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]  # TODO 
-        CAM_ID = 0 #4 for the robot pc
+        CAM_ID = 4 #4 for the robot pc
 
         if enable_pyrealsense:
             self.pipeline = rs.pipeline()
@@ -117,6 +117,7 @@ class ImageCalibraion:
             cv2.putText(color_image, str(self.FPS), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow("Original", color_image)
             cv2.imshow("Thresh", mask_image)
+            cv2.imshow("Depth", depth_image) if self.enable_pyrealsense else -1
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 self.save_default_values(self.path, "trackbar_values_ball", [str(x) for x in self.default_values_ball])
@@ -129,5 +130,5 @@ class ImageCalibraion:
 
 
 if __name__ == "__main__":
-    camera_image = ImageCalibraion(enable_pyrealsense=False)
+    camera_image = ImageCalibraion(enable_pyrealsense=True)
     camera_image.main()

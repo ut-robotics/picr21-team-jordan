@@ -83,6 +83,7 @@ class ImageGetter(ImageCalibraion):
 
             start_time = time.time()
             if self.enable_pyrealsense:
+
                 color_image, depth_image = self.get_frame_using_pyrealsense() # TODO do something with depth
                 mask_image = self.apply_image_processing(color_image)  
             else:
@@ -94,11 +95,12 @@ class ImageGetter(ImageCalibraion):
             self.draw_info(color_image)
             cv2.imshow("Original", color_image)
             cv2.imshow("Thresh", mask_image)
+            cv2.imshow("Depth", depth_image) if self.enable_pyrealsense else -1
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
             self.FPS = round(1.0 / (time.time() - start_time), 2)
 
-        self.cap.release()
+        self.cap.release() if not self.enable_pyrealse else self.pipeline.stop()
         cv2.destroyAllWindows()
 
 
