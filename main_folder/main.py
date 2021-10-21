@@ -116,6 +116,7 @@ def consumer(in_q):
 
 if __name__ == "__main__":
     q = []
+    
     t1 = threading.Thread(target=producer, args=(q,))
     t1.daemon = True
     t2 = threading.Thread(target=consumer, args=(q,))
