@@ -1,6 +1,7 @@
 ## Project in competitive robotics 2021
 **Compatibility:**</br>
-`Python 3.7.x` but any one can work as well, since we don't use `pyrealsense`</br>
+`Python 3.7.x``cv2 4.5.3`</br>
+`pyrealsense2`</br>
 `cv2 4.5.3`</br>
 `numpy 1.21.2`</br>
 `imutils 0.5.4`</br>
