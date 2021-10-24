@@ -11,4 +11,9 @@
     "python.analysis.extraPaths": [
       "./main_folder"
     ],
+    "python.analysis.diagnosticSeverityOverrides": {
+      "reportMissingImports": "none"
+    }
+  
   }
+  
