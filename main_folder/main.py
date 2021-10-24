@@ -10,40 +10,22 @@ from state_machine import StateMachine
 
 
 class ImageGetter(ImageCalibraion):
-    def __init__(self, enable_pyrealsense=False, enable_gui=True): #TODO keep gui separate form other code
+    def __init__(self, enable_pyrealsense=False, enable_gui=True):  # TODO keep gui separate form other code
         super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         self.enable_gui = enable_gui
         cv2.namedWindow(self.original_window)
         cv2.namedWindow(self.mask_window)
-        
-        self.STATE = "initial"
+
         self.CENTER_OFFSET = 70
         self.CENTER_RANGE = range(1)
-        self.X, self.Y = -1, -1
-        self.SIZE = -1
+        self.BALL_X, self.BALL_Y, self.BALL_SIZE = -1, -1, -1
         self.MINIMAL_BALL_SIZE_TO_DETECT = 30
+        self.BASKET_X, self.BASKET_Y, self.BASKET_SIZE = -1, -1, -1
 
-    def run_current_state(self, frame, mask):
-        if self.STATE == "initial":
-            self.X, self.Y, self.SIZE = self.get_ball_coordinates(mask, frame)
-            is_ball_in_center = True if self.X in self.CENTER_RANGE else False
-            cv2.putText(frame, "Ball in centre: " + str(is_ball_in_center), (5, 65), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-
-            ###___uncomment when movements is ready___###
-            # if not is_ball_in_center:
-            #     if x > self.center_range[-1]:
-            #         robot_movement.move_left()
-
-            #     if x < self.center_range[-1]:
-            #         robot_movement.move_right()
-
-            #     if x in self.center_range and size < 300:
-            #         robot_movement.move_forward()
-
-            #############################################
+        self.state_machine = StateMachine()
 
     def get_ball_coordinates(self, inspected_frame, target_frame):
-        """initial state action"""
+        """returns coordinates of the biggest ball"""
         keypoints: list = self.detector.detect(inspected_frame)
         cv2.drawKeypoints(inspected_frame, keypoints, np.array([]), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
@@ -55,7 +37,6 @@ class ImageGetter(ImageCalibraion):
                 if keypoint.size > self.MINIMAL_BALL_SIZE_TO_DETECT:
                     x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
                     text = str(round(x)) + " : " + str(round(y)) + ":::" + str(round(keypoint.size))
-                    # cv2.putText(target_frame, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # detects biggest keypoint, marks with different color
         try:
@@ -65,15 +46,20 @@ class ImageGetter(ImageCalibraion):
         except ValueError:
             return 0, 0, 0
 
+    def get_basket_coordinates(self, inspected_frame, target_frame):
+        """returns coordinates of the basket"""
+        # TODO implement basket finding
+        return -1, -1, -1
+
     def draw_info(self, frame):
-        
+        """draws information about game on original frame"""
         cv2.line(frame, (self.CENTER_RANGE[0], 0), (self.CENTER_RANGE[0], self.HEIGHT), (0, 0, 0), 3)
         cv2.line(frame, (self.CENTER_RANGE[-1], 0), (self.CENTER_RANGE[-1], self.HEIGHT), (0, 0, 0), 3)
         cv2.putText(frame, str(self.FPS), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.putText(frame, "State: " + self.STATE, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        text = str(self.X) + " : " + str(self.Y) + ":::" + str(round(self.SIZE))
-        cv2.putText(frame, text, (self.X, self.Y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        text = str(self.BALL_X) + " : " + str(self.BALL_Y) + ":::" + str(round(self.BALL_SIZE))
+        cv2.putText(frame, text, (self.BALL_X, self.BALL_Y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
     def main(self, socket_data):
         while True:
@@ -83,8 +69,8 @@ class ImageGetter(ImageCalibraion):
             start_time = time.time()
             if self.enable_pyrealsense:
 
-                color_image, depth_image = self.get_frame_using_pyrealsense() # TODO do something with depth
-                mask_image = self.apply_image_processing(color_image)  
+                color_image, depth_image = self.get_frame_using_pyrealsense()  # TODO do something with depth
+                mask_image = self.apply_image_processing(color_image)
             else:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image)
@@ -92,11 +78,10 @@ class ImageGetter(ImageCalibraion):
             self.WIDTH = mask_image.shape[1]
             self.HEIGHT = mask_image.shape[0]
             self.CENTER_RANGE = range(int(self.WIDTH / 2) - self.CENTER_OFFSET, int(self.WIDTH / 2) + self.CENTER_OFFSET, 1)
-            self.X, self.Y, self.SIZE = self.get_ball_coordinates(mask_image, color_image)
-
-            # self.run_current_state(color_image, mask_image) #TODO make state class in different file.
+            self.BALL_X, self.BALL_Y, self.BALL_SIZE = self.get_ball_coordinates(mask_image, color_image)
 
             self.draw_info(color_image)
+
             cv2.imshow(self.original_window, color_image)
             cv2.imshow(self.mask_window, mask_image)
             cv2.imshow(self.depth_window, depth_image) if self.enable_pyrealsense else -1
@@ -119,7 +104,7 @@ def consumer(in_q):
 
 
 if __name__ == "__main__":
-    q = []    
+    q = []
     t1 = threading.Thread(target=producer, args=(q,))
     t1.daemon = True
     t2 = threading.Thread(target=consumer, args=(q,))
