@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from image_calibration import ImageCalibraion
-from socket_server import SocketServer
+from socket_server import SocketDataGetter
 from state_machine import StateMachine
 
 
@@ -18,9 +18,9 @@ class ImageGetter(ImageCalibraion):
 
         self.CENTER_OFFSET = 70
         self.CENTER_RANGE = range(1)
-        self.BALL_X, self.BALL_Y, self.BALL_SIZE = -1, -1, -1
+        self.BALL_X, self.BALL_Y, self.BALL_SIZE = -1, -1, -1 # TODO ball_y is not required, but delete this later, im not sure
         self.MINIMAL_BALL_SIZE_TO_DETECT = 30
-        self.BASKET_X, self.BASKET_Y, self.BASKET_SIZE = -1, -1, -1
+        self.BASKET_X, self.BASKET_Y, self.BASKET_SIZE = -1, -1, -1 # TODO basket_y is not required, but delete this later, im not sure
 
         self.state_machine = StateMachine()
 
@@ -63,25 +63,31 @@ class ImageGetter(ImageCalibraion):
 
     def main(self, socket_data):
         while True:
+            start_time = time.time()
+
+            # check for referee coommands
             if socket_data:
                 self.STATE = socket_data.pop(0)
 
-            start_time = time.time()
+            # get camera images
             if self.enable_pyrealsense:
-
                 color_image, depth_image = self.get_frame_using_pyrealsense()  # TODO do something with depth
                 mask_image = self.apply_image_processing(color_image)
             else:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image)
 
+            # calculate range, that robot can consider as center X coord (X +/- offset)
             self.WIDTH = mask_image.shape[1]
             self.HEIGHT = mask_image.shape[0]
             self.CENTER_RANGE = range(int(self.WIDTH / 2) - self.CENTER_OFFSET, int(self.WIDTH / 2) + self.CENTER_OFFSET, 1)
+
+            # running robot depends of the ball and basket coords and sizes
             self.BALL_X, self.BALL_Y, self.BALL_SIZE = self.get_ball_coordinates(mask_image, color_image)
+            self.state_machine.run_current_state(BALL_X=self.BALL_X, BALL_SIZE=self.BALL_SIZE, BASKET_X=self.BASKET_X, BASKET_SIZE=self.BASKET_SIZE)
 
+            # show gui
             self.draw_info(color_image)
-
             cv2.imshow(self.original_window, color_image)
             cv2.imshow(self.mask_window, mask_image)
             cv2.imshow(self.depth_window, depth_image) if self.enable_pyrealsense else -1
@@ -94,7 +100,7 @@ class ImageGetter(ImageCalibraion):
 
 
 def producer(out_q):
-    camera_image = SocketServer()
+    camera_image = SocketDataGetter()
     camera_image.main(out_q)
 
 

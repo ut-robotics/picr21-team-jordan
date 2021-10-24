@@ -27,7 +27,7 @@ class ImageCalibraion:
         else:
             self.WIDTH, self.HEIGHT = (1280, 720)
             self.cap = cv2.VideoCapture(CAM_ID)
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH) #TODO rename variables with HEIGHT and WEIGHT
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.WIDTH)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HEIGHT)
         
         self.color_type = cv2.COLOR_BGR2HSV
