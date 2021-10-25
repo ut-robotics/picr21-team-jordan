@@ -4,8 +4,12 @@ class StateMachine():
     Manipulating is mechanical (turn left, right, etc.)
     """
     def __init__(self):
+        self.CENTER_RANGE = range(1)
         self.states = ["find_a_ball", "grab_a_ball", "find_a_basket", "throw"]
         self.current_state_index = 0
+        
+    def update_center_range(self, center_range):
+        self.CENTER_RANGE = center_range
 
     def next_state(self):
         self.current_state_index += 1
@@ -13,8 +17,11 @@ class StateMachine():
             self.current_state_index = 0
 
     def run_current_state(self, BALL_X, BALL_SIZE, BASKET_X, BASKET_SIZE):
-        # TODO actual movement, state updating
         print(f"State: {self.states[self.current_state_index]}, Ball=(x:{BALL_X}|size:{BALL_SIZE})")
+        print(str(BALL_X in self.CENTER_RANGE))
+        
+        #TODO add actual states
+        
 
 
 if __name__ == "__main__":

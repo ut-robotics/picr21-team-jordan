@@ -1,3 +1,6 @@
+# THIS CODE DOESENT WORK. I WILL DEBUG IT LATER (most likely by the thursday 28 oct.), 
+# BUT FOR NOW JUST RUN image_getter.py MANUALLY
+'''
 import threading
 import sys
 
@@ -24,7 +27,7 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = ImageGetter(enable_pyrealsense=False, enable_gui=True)
+    state_machine = ImageGetter(enable_pyrealsense=enable_pyrealsense, enable_gui=enable_gui)
     state_machine.main(in_q)
 
 
@@ -32,10 +35,11 @@ if __name__ == "__main__":
     if enable_calibration:
         camera_image = ImageCalibraion()
         camera_image.main()
-
+    
     q = []
     t1 = threading.Thread(target=producer, args=(q,))
     t1.daemon = True
     t2 = threading.Thread(target=consumer, args=(q,))
     t1.start()
     t2.start()
+'''

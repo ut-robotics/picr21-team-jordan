@@ -2,13 +2,15 @@ import time
 
 import cv2
 import numpy as np
+import threading
 
 from image_calibration import ImageCalibraion
 from state_machine import StateMachine
+from socket_server import SocketDataGetter
 
 
 class ImageGetter(ImageCalibraion):
-    def __init__(self, enable_pyrealsense=False, enable_gui=True):  # TODO keep gui separate form other code
+    def __init__(self, enable_pyrealsense, enable_gui):  # TODO keep gui separate form other code
         super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         self.enable_gui = enable_gui
 
@@ -57,8 +59,8 @@ class ImageGetter(ImageCalibraion):
         """draws information about game on original frame"""
         cv2.line(frame, (self.CENTER_RANGE[0], 0), (self.CENTER_RANGE[0], self.HEIGHT), (0, 0, 0), 3)
         cv2.line(frame, (self.CENTER_RANGE[-1], 0), (self.CENTER_RANGE[-1], self.HEIGHT), (0, 0, 0), 3)
-        cv2.putText(frame, str(self.FPS), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "State: " + self.REFEREE_COMMAND, (120, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, str(self.FPS), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, "State: " + self.REFEREE_COMMAND, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         text = str(self.BALL_X) + " : " + str(self.BALL_Y) + ":::" + str(round(self.BALL_SIZE))
         cv2.putText(frame, text, (self.BALL_X, self.BALL_Y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -86,6 +88,8 @@ class ImageGetter(ImageCalibraion):
 
             # running robot depends of the ball and basket coords and sizes
             self.BALL_X, self.BALL_Y, self.BALL_SIZE = self.get_ball_coordinates(mask_image, color_image)
+            
+            self.state_machine.update_center_range(self.CENTER_RANGE)
             self.state_machine.run_current_state(BALL_X=self.BALL_X, BALL_SIZE=self.BALL_SIZE, BASKET_X=self.BASKET_X, BASKET_SIZE=self.BASKET_SIZE)
 
             # show gui
@@ -103,3 +107,21 @@ class ImageGetter(ImageCalibraion):
         self.cap.release() if not self.enable_pyrealsense else self.pipeline.stop()
         if self.enable_gui:
             cv2.destroyAllWindows()
+
+
+def producer(out_q):
+    camera_image = SocketDataGetter()
+    camera_image.main(out_q)
+
+
+def consumer(in_q):
+    state_machine = ImageGetter(enable_pyrealsense=True, enable_gui=True)
+    state_machine.main(in_q)
+    
+if __name__ == "__main__":
+    q = []
+    t1 = threading.Thread(target=producer, args=(q,))
+    t1.daemon = True
+    t2 = threading.Thread(target=consumer, args=(q,))
+    t1.start()
+    t2.start()

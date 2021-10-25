@@ -13,7 +13,7 @@ class ImageCalibraion:
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]  # TODO
-        CAM_ID = 0  # 4 for the robot pc
+        CAM_ID = 4  # 4 for the robot pc
 
         if enable_pyrealsense:
             self.WIDTH_DEPTH, self.HEIGHT_DEPTH = (848, 480)
@@ -133,3 +133,7 @@ class ImageCalibraion:
 
         self.cap.release()
         cv2.destroyAllWindows()
+        
+if __name__ == "__main__":
+    camera_image = ImageCalibraion()
+    camera_image.main()

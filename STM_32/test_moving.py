@@ -11,11 +11,11 @@ if not ser.isOpen():
 
 print(ser.isOpen())
 
-goal_dir_angle = 10  # angel in deg
-speed_limit = 30
+goal_dir_angle = 0  # angel in deg
+speed_limit = 0
 disable_failsafe = 0
 
-thrower_speed = 0
+thrower_speed = 1200
 speed1 = int(math.sin((goal_dir_angle+120)*(2*math.pi/360))*(speed_limit))
 speed2 = int(math.sin((goal_dir_angle)*(2*math.pi/360))*(speed_limit))
 speed3 = int(math.sin((goal_dir_angle-120)*(2*math.pi/360))*(speed_limit))
