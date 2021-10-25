@@ -5,7 +5,7 @@ from image_getter import ImageGetter
 from socket_server import SocketDataGetter
 from image_calibration import ImageCalibraion
 
-print("python3 main.py [enable_pyrealse] [enable_calibration] [enable_gui]")
+print("python3 main.py [enable_pyrealsense] [enable_calibration] [enable_gui]")
 try:
     enable_pyrealsense = True if int(sys.argv[1]) == 1 else False
     enable_calibration = True if int(sys.argv[2]) == 1 else False
