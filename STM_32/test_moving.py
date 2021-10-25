@@ -12,7 +12,7 @@ if not ser.isOpen():
 print(ser.isOpen())
 
 goal_dir_angle = 0  # angel in deg
-speed_limit = 0
+speed_limit = 20
 disable_failsafe = 0
 
 thrower_speed = 1200
