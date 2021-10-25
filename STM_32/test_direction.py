@@ -26,4 +26,4 @@ print(speed3, "speed3")
 data_mp = (np.array([goal_dir_angle, speed1, speed2, speed3])).T
 
 data = pd.DataFrame(data_mp, columns=['angle', 'M1', 'M2', 'M3'])
-print(data)
+data
