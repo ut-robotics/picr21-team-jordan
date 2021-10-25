@@ -1,6 +1,6 @@
 ## Project in competitive robotics 2021
 **Compatibility:**</br>
-`Python 3.7.x``cv2 4.5.3`</br>
+`Python 3.7.x`
 `pyrealsense2`</br>
 `cv2 4.5.3`</br>
 `numpy 1.21.2`</br>
