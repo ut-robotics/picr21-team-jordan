@@ -14,7 +14,9 @@ Mostly contains garbage code and socket server example. sockets works, not imple
 **threading _folder** </br>
 This folder is meant  for future. It is works, but only thing is do: producer makes thresholded images, sends by queue to another thread. Consumer thread takes image and shows. That's it </br>
 **main_folder** </br>
-As said, main folder :). There's also readme in detail inside, but in two words: just run calibration, play with sliders and adjust the mask image. Then run the main code. Main code can currently understand, does ball in center or not, but movement is not implemented yet. This is our main task now -- implement movement (move forward, backward, left, right) </br>
+As said, main folder :). </br>
+Run `python3 main.py [enable_pyrealse] [enable_calibration] [enable_gui]` in terminal.</br>
+Parameters are true if input value is 1 and false, if any other integer (0 most likely).
 </br>
 **Alghoritm:** </br>
 <img src="/alghoritm.png" width=85% height="auto"/> </br>
