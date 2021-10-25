@@ -7,6 +7,7 @@ import pyrealsense2 as rs
 
 
 class ImageCalibraion:
+    """This class calibrates threshold values to properly see a ball"""
     def __init__(self, enable_pyrealsense=False):
         self.enable_pyrealsense = enable_pyrealsense
         self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"

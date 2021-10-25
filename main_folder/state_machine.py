@@ -1,4 +1,8 @@
-class StateMachine(object):
+class StateMachine():
+    """
+    This class manipulates robot depends of the ball and the basket coords.
+    Manipulating is mechanical (turn left, right, etc.)
+    """
     def __init__(self):
         self.states = ["find_a_ball", "grab_a_ball", "find_a_basket", "throw"]
         self.current_state_index = 0
