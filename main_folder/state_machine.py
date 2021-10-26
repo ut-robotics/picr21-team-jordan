@@ -4,7 +4,9 @@ class StateMachine():
     Manipulating is mechanical (turn left, right, etc.)
     """
     def __init__(self):
+        self.BALL_SIZE_TO_STOP = 90
         self.CENTER_RANGE = range(1)
+        self.CENTER_OFFSET = 0
         self.states = ["find_a_ball", "grab_a_ball", "find_a_basket", "throw"]
         self.current_state_index = 0
         
@@ -18,9 +20,22 @@ class StateMachine():
 
     def run_current_state(self, BALL_X, BALL_SIZE, BASKET_X, BASKET_SIZE):
         print(f"State: {self.states[self.current_state_index]}, Ball=(x:{BALL_X}|size:{BALL_SIZE})")
-        print(str(BALL_X in self.CENTER_RANGE))
-        
-        #TODO add actual states
+        if BALL_X < self.CENTER_RANGE[0]:
+            print("Turning left")
+            # robot_movement.turn_right()
+            action = "Turning left"
+        elif BALL_X > self.CENTER_RANGE[-1]:
+            print("Turning right")
+            action = "Turning right"
+        else:
+            if BALL_SIZE <= self.BALL_SIZE_TO_STOP:
+                print("moving forward")
+                action = "moving forward"
+            else:
+                print("stop")
+                action= "stop"
+        return action
+        #TODO add actual states and refactor this stairs mess 
         
 
 

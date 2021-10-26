@@ -135,5 +135,5 @@ class ImageCalibraion:
         cv2.destroyAllWindows()
         
 if __name__ == "__main__":
-    camera_image = ImageCalibraion()
+    camera_image = ImageCalibraion(enable_pyrealsense=True)
     camera_image.main()
