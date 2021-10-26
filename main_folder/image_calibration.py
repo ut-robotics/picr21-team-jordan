@@ -10,7 +10,7 @@ class ImageCalibraion:
     """This class calibrates threshold values to properly see a ball"""
     def __init__(self, enable_pyrealsense=False):
         self.enable_pyrealsense = enable_pyrealsense
-        self.path: str = os.path.abspath(os.getcwd()) + "/main_folder/"
+        self.path = "/home/jordan_team/picr21-team-jordan/config/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]  # TODO
         CAM_ID = 4  # 4 for the robot pc
@@ -130,8 +130,7 @@ class ImageCalibraion:
                 break
 
             self.FPS = round(1.0 / (time.time() - start_time), 2)
-
-        self.cap.release()
+        self.cap.release() if not self.enable_pyrealsense else self.pipeline.stop()
         cv2.destroyAllWindows()
         
 if __name__ == "__main__":

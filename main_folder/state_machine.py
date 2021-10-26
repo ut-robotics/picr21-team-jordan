@@ -19,20 +19,16 @@ class StateMachine():
             self.current_state_index = 0
 
     def run_current_state(self, BALL_X, BALL_SIZE, BASKET_X, BASKET_SIZE):
-        print(f"State: {self.states[self.current_state_index]}, Ball=(x:{BALL_X}|size:{BALL_SIZE})")
+        # print(f"State: {self.states[self.current_state_index]}, Ball=(x:{BALL_X}|size:{BALL_SIZE})")
         if BALL_X < self.CENTER_RANGE[0]:
-            print("Turning left")
             # robot_movement.turn_right()
             action = "Turning left"
         elif BALL_X > self.CENTER_RANGE[-1]:
-            print("Turning right")
             action = "Turning right"
         else:
             if BALL_SIZE <= self.BALL_SIZE_TO_STOP:
-                print("moving forward")
                 action = "moving forward"
             else:
-                print("stop")
                 action= "stop"
         return action
         #TODO add actual states and refactor this stairs mess 
