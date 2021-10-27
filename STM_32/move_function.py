@@ -4,7 +4,7 @@ import time
 import math
 
 
-def(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, failsafe=0):
+def move(serial_port="ttyACM0", moving_direction=0, speed_limit=10, thrower_speed=0, failsafe=0):
 
     dir_serial = "/dev/"+serial_port
 
@@ -22,7 +22,7 @@ def(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, f
     speed1 = int(math.sin((moving_direction+120)
                  * (2*math.pi/360))*(speed_limit))
     speed2 = int(math.sin((moving_direction)*(2*math.pi/360))*(speed_limit))
-    speed3 = int(math.sin((goal_dir_angle-120)*(2*math.pi/360))*(speed_limit))
+    speed3 = int(math.sin((moving_direction-120)*(2*math.pi/360))*(speed_limit))
 
     try:
         while True:
