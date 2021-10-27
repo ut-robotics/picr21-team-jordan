@@ -1,3 +1,5 @@
+import move_function
+
 class StateMachine():
     """
     This class manipulates robot depends of the ball and the basket coords.

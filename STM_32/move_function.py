@@ -4,7 +4,7 @@ import time
 import math
 
 
-def move_robot(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, failsafe=0):
+def move_robot(serial_port="ttyACM0", moving_direction=0, speed_limit=10, thrower_speed=0, failsafe=0):
     """Function for moving the robot and controling of the thrower.
         The function will use serial communication to communicate with with STM32.
 
@@ -15,24 +15,24 @@ def move_robot(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower
         thrower_speed (int, optional): PWM value for controlling the thrower (from 0 to ca. 2036). Defaults to 0.
         failsafe (int, optional): booline value to indicate in the robot should repeat the last command. Defaults to 0.
     """
- dir_serial = "/dev/"+serial_port
 
-  ser = serial.Serial(dir_serial, 115200)
-   if not ser.isOpen():
+    dir_serial = "/dev/" + serial_port
+    ser = serial.Serial(dir_serial, 115200)
+    if not ser.isOpen():
         ser.open()
 
     print(ser.isOpen())
-
-    speed1 = int(math.sin((moving_direction+120)
-                 * (2*math.pi/360))*(speed_limit))
-    speed2 = int(math.sin((moving_direction)*(2*math.pi/360))*(speed_limit))
-    speed3 = int(math.sin((moving_direction-120)
-                 * (2*math.pi/360))*(speed_limit))
+    speed1 = int(math.sin((moving_direction + 120) *
+                 (2 * math.pi / 360)) * (speed_limit))
+    speed2 = int(math.sin((moving_direction) *
+                 (2 * math.pi / 360)) * (speed_limit))
+    speed3 = int(math.sin((moving_direction - 120) *
+                 (2 * math.pi / 360)) * (speed_limit))
 
     try:
         while True:
-            send_data = struct.pack("<hhhHBH", speed1, speed2,
-                                    speed3, thrower_speed, failsafe, 0xAAAA)
+            send_data = struct.pack(
+                "<hhhHBH", speed1, speed2, speed3, thrower_speed, failsafe, 0xAAAA)
             ser.write(send_data)
             received_data = ser.read(8)
             actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(

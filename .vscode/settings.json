@@ -9,7 +9,8 @@
     ],
     "python.formatting.provider": "black",
     "python.analysis.extraPaths": [
-      "./main_folder"
+      "./main_folder",
+      "./STM_32"
     ],
     "python.analysis.diagnosticSeverityOverrides": {
       "reportMissingImports": "none"
