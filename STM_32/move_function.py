@@ -4,7 +4,17 @@ import time
 import math
 
 
-def(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, failsafe=0):
+def move_robot(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, failsafe=0):
+    """Function for moving the robot and controling of the thrower. 
+        The function will use serial communication to communicate with with STM32.
+
+    Args:
+        serial_port (str, optional): used serial port. Defaults to "ttyACM0".
+        moving_direction (int, optional): direction of movement (form 0 to 360). Defaults to 0.
+        speed_lime (int, optional): number limits the power of the motors. Defaults to 10.
+        thrower_speed (int, optional): PWM value for controlling the thrower (from 0 to ca. 2036). Defaults to 0.
+        failsafe (int, optional): booline value to indicate in the robot should repeat the last command. Defaults to 0.
+    """
 
     dir_serial = "/dev/"+serial_port
 
@@ -13,11 +23,6 @@ def(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, f
         ser.open()
 
     print(ser.isOpen())
-
-    # moving_direction = 220  # angel in deg
-    # speed_limit = 20
-    # thrower_speed = 1200
-    # failsafe = 0
 
     speed1 = int(math.sin((moving_direction+120)
                  * (2*math.pi/360))*(speed_limit))
@@ -32,6 +37,7 @@ def(serial_port="ttyACM0", moving_direction=0, speed_lime=10, thrower_speed=0, f
             received_data = ser.read(8)
             actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
                 "<hhhH", received_data)
+            # for debugging
             # print(actual_speed1, "actual_speed1")
             # print(actual_speed2, "actual_speed2")
             # print(actual_speed3, "actual_speed3")
