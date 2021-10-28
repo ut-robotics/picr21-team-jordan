@@ -17,6 +17,7 @@ CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 class ImageCalibraion:
     """
     This class calibrates threshold values to properly see a ball and a basket and saves this value to /config file
+    Only one main prupose -- generate config files
     """
 
     def __init__(self, enable_pyrealsense=False):
@@ -51,6 +52,7 @@ class ImageCalibraion:
         self.trackbar_value = new_value
 
     def get_default_values(self, path, file_name):
+        """Looks for default threshold values for image processing in config file path"""
         try:
             with open(path + file_name, "r") as file:
                 return [int(x) for x in file.read().split()]
@@ -62,9 +64,11 @@ class ImageCalibraion:
             file.write(" ".join(array))
 
     def apply_image_processing(self, frame, is_calibration=False):
+        # change color space
         hsv = cv2.cvtColor(frame, self.color_type)
         hsv_blured = cv2.medianBlur(hsv, BLUR)
 
+        # update trackbar values
         if is_calibration:
             self.default_values_ball[0] = cv2.getTrackbarPos("hl", const.TRACKBAR_WINDOW)
             self.default_values_ball[1] = cv2.getTrackbarPos("sl", const.TRACKBAR_WINDOW)
@@ -74,15 +78,16 @@ class ImageCalibraion:
             self.default_values_ball[5] = cv2.getTrackbarPos("vh", const.TRACKBAR_WINDOW)
             self.alpha_depth = (cv2.getTrackbarPos("alpha", const.TRACKBAR_WINDOW)) / 100 if self.enable_pyrealsense else -1
 
+        # update image itself 
         lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
         upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
-
         mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
         mask = cv2.bitwise_not(mask)
 
         return mask
 
     def get_frame_using_pyrealsense(self):
+        """Returns numpy array that represents the image"""
         frames = self.pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
@@ -93,6 +98,7 @@ class ImageCalibraion:
         return color_image, depth_colormap
 
     def main(self):
+        # create gui
         cv2.namedWindow(const.ORIGINAL_WINDOW)
         cv2.namedWindow(const.MASKED_WINDOW)
         cv2.namedWindow(const.TRACKBAR_WINDOW, cv2.WINDOW_NORMAL)
@@ -104,6 +110,7 @@ class ImageCalibraion:
         while True:
             start_time = time.time()
 
+            # get frame
             if self.enable_pyrealsense:
                 color_image, depth_image = self.get_frame_using_pyrealsense()
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)  # TODO do something with depth
@@ -111,6 +118,7 @@ class ImageCalibraion:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)
 
+            # show frame
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow(const.ORIGINAL_WINDOW, color_image)
             cv2.imshow(const.MASKED_WINDOW, mask_image)
