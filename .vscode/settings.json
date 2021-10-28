@@ -14,7 +14,10 @@
     ],
     "python.analysis.diagnosticSeverityOverrides": {
       "reportMissingImports": "none"
-    }
-  
+    },
+    "files.exclude": {
+      "**/*.pyc": {"when": "$(basename).py"},
+      "**/__pycache__": false,
+      }
   }
   

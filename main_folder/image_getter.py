@@ -10,6 +10,11 @@ from socket_server import SocketDataGetter
 
 
 class ImageGetter(ImageCalibraion):
+    """
+    Main class. Gets frames, apllyes image processing to get:
+    Ball coord, ball size, basket coord, basket size.
+    Sends balues to the StateMahchine class
+    """
     def __init__(self, enable_pyrealsense, enable_gui):  # TODO keep gui separate form other code
         super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         self.enable_gui = enable_gui
@@ -56,7 +61,7 @@ class ImageGetter(ImageCalibraion):
         return -1, -1, -1
 
     def draw_info(self, frame):
-        """draws information about game on original frame"""
+        """draws information about the game on original frame"""
         cv2.line(frame, (self.CENTER_RANGE[0], 0), (self.CENTER_RANGE[0], self.HEIGHT), (0, 0, 0), 3)
         cv2.line(frame, (self.CENTER_RANGE[-1], 0), (self.CENTER_RANGE[-1], self.HEIGHT), (0, 0, 0), 3)
         cv2.putText(frame, str(self.FPS), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

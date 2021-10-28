@@ -7,10 +7,12 @@ import pyrealsense2 as rs
 
 
 class ImageCalibraion:
-    """This class calibrates threshold values to properly see a ball"""
+    """
+    This class calibrates threshold values to properly see a ball and a basket and saves this value to /config file
+    """
     def __init__(self, enable_pyrealsense=False):
         self.enable_pyrealsense = enable_pyrealsense
-        self.path = "/home/jordan_team/picr21-team-jordan/config/"
+        self.path = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
         self.default_values_ball: list = self.get_default_values(self.path, "trackbar_values_ball")
         self.default_values_basket: list = ["TBA"]  # TODO
         CAM_ID = 4  # 4 for the robot pc
