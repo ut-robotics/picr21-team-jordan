@@ -3,7 +3,7 @@ import sys
 import time
 
 from image_getter import ImageGetter
-from socket_server import SocketDataGetter
+from socket_data_getter import SocketDataGetter
 from image_calibration import ImageCalibraion
 
 print("python3 main.py [enable_pyrealsense] [enable_calibration] [enable_gui]")
