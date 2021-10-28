@@ -6,13 +6,12 @@ from image_getter import ImageGetter
 from socket_data_getter import SocketDataGetter
 from image_calibration import ImageCalibraion
 
-print("python3 main.py [enable_pyrealsense] [enable_calibration] [enable_gui]")
+print("python3 main.py [enable_pyrealsense][enable_gui]")
 try:
     enable_pyrealsense = True if int(sys.argv[1]) == 1 else False
-    enable_calibration = True if int(sys.argv[2]) == 1 else False
-    enable_gui = True if int(sys.argv[3]) == 1 else False
+    enable_gui = True if int(sys.argv[2]) == 1 else False
 except IndexError:
-    print("3 terminal parameters is required.")
+    print("2 terminal parameters is required.")
     sys.exit()
 except ValueError:
     print("Terminal parameter should be int() type")
@@ -30,10 +29,6 @@ def consumer(in_q):
 
 
 if __name__ == "__main__":
-    if enable_calibration:
-        camera_image = ImageCalibraion(enable_pyrealsense=enable_pyrealsense)
-        camera_image.main()
-    time.sleep(5)
     q = []
     t1 = threading.Thread(target=producer, args=(q,))
     t1.daemon = True

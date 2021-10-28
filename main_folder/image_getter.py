@@ -52,7 +52,7 @@ class ImageGetter(ImageCalibraion):
             x, y, size = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1]), biggest_keypoint.size
             return int(round(x)), int(round(y)), int(round(size))
         except ValueError:
-            return 0, 0, 0
+            return -1, -1, -1
 
     def get_basket_coordinates(self, inspected_frame, target_frame):
         """returns coordinates of the basket"""
