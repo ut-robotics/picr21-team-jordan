@@ -4,9 +4,10 @@ import cv2
 import numpy as np
 import threading
 
+from constants import *
 from image_calibration import ImageCalibraion
 from state_machine import StateMachine
-from socket_server import SocketDataGetter
+from socket_data_getter import SocketDataGetter
 
 
 class ImageGetter(ImageCalibraion):
@@ -20,8 +21,8 @@ class ImageGetter(ImageCalibraion):
         self.enable_gui = enable_gui
 
         if self.enable_gui:
-            cv2.namedWindow(self.original_window)
-            cv2.namedWindow(self.mask_window)
+            cv2.namedWindow(self.ORIGINAL_WINDOW)
+            cv2.namedWindow(self.MASKED_WINDOW)
 
         self.CENTER_OFFSET = 70
         self.CENTER_RANGE = range(1)
@@ -90,6 +91,7 @@ class ImageGetter(ImageCalibraion):
             self.WIDTH = mask_image.shape[1]
             self.HEIGHT = mask_image.shape[0]
             self.CENTER_RANGE = range(int(self.WIDTH / 2) - self.CENTER_OFFSET, int(self.WIDTH / 2) + self.CENTER_OFFSET, 1)
+            print(self.WIDTH, self.HEIGHT)
 
             # running robot depends of the ball and basket coords and sizes
             self.BALL_X, self.BALL_Y, self.BALL_SIZE = self.get_ball_coordinates(mask_image, color_image)
@@ -100,9 +102,9 @@ class ImageGetter(ImageCalibraion):
             # show gui
             if self.enable_gui:
                 self.draw_info(color_image)
-                cv2.imshow(self.original_window, color_image)
-                cv2.imshow(self.mask_window, mask_image)
-                cv2.imshow(self.depth_window, depth_image) if self.enable_pyrealsense else -1
+                cv2.imshow(self.ORIGINAL_WINDOW, color_image)
+                cv2.imshow(self.MASKED_WINDOW, mask_image)
+                cv2.imshow(self.DEPTH_WINDOW, depth_image) if self.enable_pyrealsense else -1
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
@@ -120,7 +122,7 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = ImageGetter(enable_pyrealsense=True, enable_gui=True)
+    state_machine = ImageGetter(enable_pyrealsense=False, enable_gui=True)
     state_machine.main(in_q)
     
 if __name__ == "__main__":
