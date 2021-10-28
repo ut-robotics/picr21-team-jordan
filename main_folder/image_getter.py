@@ -1,13 +1,13 @@
+import threading
 import time
 
 import cv2
 import numpy as np
-import threading
 
-from constants import *
+import constants as const
 from image_calibration import ImageCalibraion
-from state_machine import StateMachine
 from socket_data_getter import SocketDataGetter
+from state_machine import StateMachine
 
 
 class ImageGetter(ImageCalibraion):
@@ -16,24 +16,22 @@ class ImageGetter(ImageCalibraion):
     Ball coord, ball size, basket coord, basket size.
     Sends balues to the StateMahchine class
     """
+
     def __init__(self, enable_pyrealsense, enable_gui):  # TODO keep gui separate form other code
         super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         self.enable_gui = enable_gui
 
         if self.enable_gui:
-            cv2.namedWindow(self.ORIGINAL_WINDOW)
-            cv2.namedWindow(self.MASKED_WINDOW)
+            cv2.namedWindow(const.ORIGINAL_WINDOW)
+            cv2.namedWindow(const.MASKED_WINDOW)
 
-        self.CENTER_OFFSET = 70
-        self.CENTER_RANGE = range(1)
-        self.BALL_X, self.BALL_Y, self.BALL_SIZE = -1, -1, -1  # TODO ball_y is not required, but delete this later, im not sure
-        self.MINIMAL_BALL_SIZE_TO_DETECT = 30
-        self.BASKET_X, self.BASKET_Y, self.BASKET_SIZE = -1, -1, -1  # TODO basket_y is not required, but delete this later, im not sure
-        self.CURRENT_ACTION = "No command received"
+        self.ball_x, self.ball_y, self.ball_size = -1, -1, -1  # TODO ball_y is not required, but delete this later, im not sure
+        self.basket_x, self.basket_y, self.basket_size = -1, -1, -1  # TODO basket_y is not required, but delete this later, im not sure
+        self.current_action = "No command received"
 
         self.state_machine = StateMachine()
 
-    def get_ball_coordinates(self, inspected_frame, target_frame):
+    def get_ball_coordinates(self, inspected_frame):
         """returns coordinates of the biggest ball"""
         keypoints: list = self.detector.detect(inspected_frame)
         if self.enable_gui:
@@ -44,7 +42,7 @@ class ImageGetter(ImageCalibraion):
         if len(keypoints) > 0:
             for keypoint in keypoints:
                 kp_sizes.append(keypoint.size)
-                if keypoint.size > self.MINIMAL_BALL_SIZE_TO_DETECT:
+                if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
                     x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
                     text = str(round(x)) + " : " + str(round(y)) + ":::" + str(round(keypoint.size))
 
@@ -63,13 +61,13 @@ class ImageGetter(ImageCalibraion):
 
     def draw_info(self, frame):
         """draws information about the game on original frame"""
-        cv2.line(frame, (self.CENTER_RANGE[0], 0), (self.CENTER_RANGE[0], self.HEIGHT), (0, 0, 0), 3)
-        cv2.line(frame, (self.CENTER_RANGE[-1], 0), (self.CENTER_RANGE[-1], self.HEIGHT), (0, 0, 0), 3)
-        cv2.putText(frame, str(self.FPS), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "Action: " + self.CURRENT_ACTION, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.line(frame, (const.CENTER_RANGE[0], 0), (const.CENTER_RANGE[0], const.HEIGHT), (0, 0, 0), 3)
+        cv2.line(frame, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
+        cv2.putText(frame, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, "Action: " + self.current_action, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-        text = str(self.BALL_X) + " : " + str(self.BALL_Y) + ":::" + str(round(self.BALL_SIZE))
-        cv2.putText(frame, text, (self.BALL_X, self.BALL_Y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        text = str(self.ball_x) + " : " + str(self.ball_y) + ":::" + str(round(self.ball_size))
+        cv2.putText(frame, text, (self.ball_x, self.ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
     def main(self, socket_data):
         while True:
@@ -77,7 +75,7 @@ class ImageGetter(ImageCalibraion):
 
             # check for referee coommands
             if socket_data:
-                self.CURRENT_ACTION = socket_data.pop(0)  # TODO implement referee command interrurpt of the curent state
+                self.current_action = socket_data.pop(0)  # TODO implement referee command interrurpt of the curent state
 
             # get camera images
             if self.enable_pyrealsense:
@@ -87,29 +85,21 @@ class ImageGetter(ImageCalibraion):
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image)
 
-            # calculate range, that robot can consider as center X coord (X +/- offset)
-            self.WIDTH = mask_image.shape[1]
-            self.HEIGHT = mask_image.shape[0]
-            self.CENTER_RANGE = range(int(self.WIDTH / 2) - self.CENTER_OFFSET, int(self.WIDTH / 2) + self.CENTER_OFFSET, 1)
-            print(self.WIDTH, self.HEIGHT)
-
             # running robot depends of the ball and basket coords and sizes
-            self.BALL_X, self.BALL_Y, self.BALL_SIZE = self.get_ball_coordinates(mask_image, color_image)
-            
-            self.state_machine.update_center_range(self.CENTER_RANGE)
-            self.CURRENT_ACTION = self.state_machine.run_current_state(BALL_X=self.BALL_X, BALL_SIZE=self.BALL_SIZE, BASKET_X=self.BASKET_X, BASKET_SIZE=self.BASKET_SIZE)
+            self.ball_x, self.ball_y, self.ball_size = self.get_ball_coordinates(mask_image)
+            self.current_action = self.state_machine.run_current_state(self.ball_x, self.ball_size, self.basket_x, self.basket_size)
 
             # show gui
             if self.enable_gui:
                 self.draw_info(color_image)
-                cv2.imshow(self.ORIGINAL_WINDOW, color_image)
-                cv2.imshow(self.MASKED_WINDOW, mask_image)
-                cv2.imshow(self.DEPTH_WINDOW, depth_image) if self.enable_pyrealsense else -1
+                cv2.imshow(const.ORIGINAL_WINDOW, color_image)
+                cv2.imshow(const.MASKED_WINDOW, mask_image)
+                cv2.imshow(const.DEPTH_WINDOW, depth_image) if self.enable_pyrealsense else -1
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
-            self.FPS = round(1.0 / (time.time() - start_time), 2)
-            self.CURRENT_ACTION = "No command received"  # we dont need it anymore, we use it one time to interrupt the current action
+            self.fps = round(1.0 / (time.time() - start_time), 2)
+            self.current_action = "No command received"  # we dont need it anymore, we use it one time to interrupt the current action
 
         self.cap.release() if not self.enable_pyrealsense else self.pipeline.stop()
         if self.enable_gui:
@@ -124,7 +114,8 @@ def producer(out_q):
 def consumer(in_q):
     state_machine = ImageGetter(enable_pyrealsense=False, enable_gui=True)
     state_machine.main(in_q)
-    
+
+
 if __name__ == "__main__":
     q = []
     t1 = threading.Thread(target=producer, args=(q,))
