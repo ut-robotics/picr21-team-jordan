@@ -36,6 +36,6 @@ try:
         print(actual_speed2, "actual_speed2")
         print(actual_speed3, "actual_speed3")
         print(feedback_delimiter, "feedback_delimiter")
-        # print("hello")
+        print("feedback_delimiter")
 except KeyboardInterrupt:
     ser.close()
