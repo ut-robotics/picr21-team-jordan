@@ -37,9 +37,7 @@ def move_robot(serial_port="ttyACM0", moving_direction=0, speed_limit=10, throwe
         actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
             "<hhhH", received_data)
         # for debugging
-        print(actual_speed1, "actual_speed1")
-        print(actual_speed2, "actual_speed2")
-        print(actual_speed3, "actual_speed3")
+        print(f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
         # print(feedback_delimiter, "feedback_delimiter")
     except KeyboardInterrupt:
         pass
