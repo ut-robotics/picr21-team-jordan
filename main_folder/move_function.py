@@ -4,7 +4,7 @@ import time
 import math
 
 
-def move_robot(serial_port="ttyACM0", moving_direction=0, speed_limit=10, thrower_speed=0, failsafe=0):
+def move_robot(serial_port="ttyACM0", state="trans",moving_direction=0, speed_limit=10, thrower_speed=0, failsafe=0):
     """Function for moving the robot and controling of the thrower.
         The function will use serial communication to communicate with with STM32.
 
@@ -21,13 +21,20 @@ def move_robot(serial_port="ttyACM0", moving_direction=0, speed_limit=10, throwe
     if not ser.isOpen():
         ser.open()
 
-    # print(ser.isOpen())
-    speed1 = int(math.sin((moving_direction + 120) *
+    if state == "trans":
+        # print(ser.isOpen())
+        speed1 = int(math.sin((moving_direction + 120) *
                  (2 * math.pi / 360)) * (speed_limit))
-    speed2 = int(math.sin((moving_direction) *
+        speed2 = int(math.sin((moving_direction) *
                  (2 * math.pi / 360)) * (speed_limit))
-    speed3 = int(math.sin((moving_direction - 120) *
+        speed3 = int(math.sin((moving_direction - 120) *
                  (2 * math.pi / 360)) * (speed_limit))
+         
+    if state == "rot":
+        speed1 = speed_limit
+        speed2 = speed_limit
+        speed3 = speed_limit
+
 
     try:
         send_data = struct.pack(
