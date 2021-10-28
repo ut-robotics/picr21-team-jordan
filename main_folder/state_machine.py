@@ -25,7 +25,6 @@ class StateMachine:
             action = "Can't see a ball"
             hw.move_robot(moving_direction=0, speed_limit=0)
         elif ball_x < const.CENTER_RANGE[0]:
-            # robot_movement.turn_right()
             action = "Turning left"
             hw.move_robot(moving_direction=-90, speed_limit=ROBOT_SPEED)
         elif ball_x > const.CENTER_RANGE[-1]:

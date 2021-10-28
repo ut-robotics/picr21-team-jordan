@@ -114,12 +114,3 @@ def producer(out_q):
 def consumer(in_q):
     state_machine = ImageGetter(enable_pyrealsense=False, enable_gui=True)
     state_machine.main(in_q)
-
-
-if __name__ == "__main__":
-    q = []
-    t1 = threading.Thread(target=producer, args=(q,))
-    t1.daemon = True
-    t2 = threading.Thread(target=consumer, args=(q,))
-    t1.start()
-    t2.start()

@@ -6,19 +6,12 @@
 `pyhton3.7 -m pip install -U Pillow`</br>
 `pyhton3.7 -m pip install pyrealsense2`</br>
 </br>
-Important folders:</br>
-**STM_32** </br>
-Sends bytes to motors. works in primitive way (send byte = some of motors move with some speed) </br>
-**opencv_examples** </br>
-Mostly contains garbage code and socket server example. sockets works, not implemented into main </br>
-**threading _folder** </br>
-This folder is meant  for future. It is works, but only thing is do: producer makes thresholded images, sends by queue to another thread. Consumer thread takes image and shows. That's it </br>
-**main_folder** </br>
-As said, main folder :). </br>
-Run `python3 main.py [enable_pyrealse] [enable_calibration] [enable_gui]` in terminal.</br>
-Parameters are true if input value is 1 and false, if any other integer (0 most likely).
-Movement are not implemented yet
-</br>
+Important files in main folder:</br>
+`image_calibration.py`: only adjust threshold values and save them into `/config`</br>
+`image_getter.py`: gets coordinates of the ball and of the basket. Sends them to the `state_machine.py`</br>
+`state_machine.py`: mechanical level robot controling. Actual movement code.</br>
+`socket_data_getter.py`: gets the coommands from referees.</br>
+**`main.py`**: creates 2 parralel threads. `image_getter.py` and `socket_data_getter.py`. The communicate using the same list.</br>
 **Alghoritm:** </br>
 <img src="/alghoritm.png" width=85% height="auto"/> </br>
 </br>
