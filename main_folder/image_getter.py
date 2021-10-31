@@ -27,7 +27,7 @@ class ImageGetter(ImageCalibraion):
 
         self.ball_x, self.ball_y, self.ball_size = -1, -1, -1  # TODO ball_y is not required, but delete this later, im not sure
         self.basket_x, self.basket_y, self.basket_size = -1, -1, -1  # TODO basket_y is not required, but delete this later, im not sure
-        self.current_action = "No command received"
+        self.current_state = "Initial"
 
         self.state_machine = StateMachine()
 
@@ -64,7 +64,7 @@ class ImageGetter(ImageCalibraion):
         cv2.line(frame, (const.CENTER_RANGE[0], 0), (const.CENTER_RANGE[0], const.HEIGHT), (0, 0, 0), 3)
         cv2.line(frame, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
         cv2.putText(frame, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "Action: " + self.current_action, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, "Action: " + self.current_state, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         text = str(self.ball_x) + " : " + str(self.ball_y) + ":::" + str(round(self.ball_size))
         cv2.putText(frame, text, (self.ball_x, self.ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -75,7 +75,9 @@ class ImageGetter(ImageCalibraion):
 
             # check for referee coommands
             if socket_data:
-                self.current_action = socket_data.pop(0)  # TODO implement referee command interrurpt of the curent state
+                referee_command = socket_data.pop(0)  # TODO implement referee command interrurpt of the curent state
+            else: 
+                referee_command = None
 
             # get camera images
             if self.enable_pyrealsense:
@@ -87,7 +89,7 @@ class ImageGetter(ImageCalibraion):
 
             # running robot depends of the ball and basket coords and sizes
             self.ball_x, self.ball_y, self.ball_size = self.get_ball_coordinates(mask_image)
-            self.current_action = self.state_machine.run_current_state(self.ball_x, self.ball_size, self.basket_x, self.basket_size)
+            self.current_state = self.state_machine.run_current_state(referee_command, self.ball_x, self.ball_size, self.basket_x, self.basket_size)
 
             # show gui
             if self.enable_gui:
@@ -99,7 +101,6 @@ class ImageGetter(ImageCalibraion):
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
-            self.current_action = "No command received"  # we dont need it anymore, we use it one time to interrupt the current action
 
         self.cap.release() if not self.enable_pyrealsense else self.pipeline.stop()
         if self.enable_gui:
