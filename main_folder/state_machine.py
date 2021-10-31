@@ -12,7 +12,7 @@ class StateMachine:
     """
 
     def __init__(self):
-        self.states = ["find_a_ball", "grab_a_ball", "find_a_basket", "throw"]
+        self.states = ["find_a_ball", "get closer to a ball"] #TODO implement actual states
         self.current_state_index = 0
 
     def next_state(self):
@@ -21,6 +21,8 @@ class StateMachine:
             self.current_state_index = 0
 
     def run_current_state(self, ball_x, ball_size, basket_x, basket_size):
+        # working code
+        """
         if ball_x == -1:
             action = "Can't see a ball"
             hw.move_robot(moving_direction=0, speed_limit=0)
@@ -37,6 +39,21 @@ class StateMachine:
             else:
                 action = "stop"
                 hw.move_robot(moving_direction=0, speed_limit=0)
+        """
+
+        if self.state[self.current_state_index] == "find_a ball":
+            action = "looking for a ball"
+            self.find_a_ball()
+
+        elif self.state[self.current_state_index] == "follow_a_ball":
+            action = ""
+            self.find_a_ball()
+
+        elif self.state[self.current_state_index] == "grab_a_ball ball":
+            self.find_a_ball()
+
+        elif self.state[self.current_state_index] == "grab_a_ball ball":
+            self.find_a_ball()
 
         print(f"State: {self.states[self.current_state_index]}, Ball=(x:{ball_x}|size:{ball_size}, Action = {action})")
         return action

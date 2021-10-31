@@ -17,7 +17,7 @@ class ImageGetter(ImageCalibraion):
     Sends balues to the StateMahchine class
     """
 
-    def __init__(self, enable_pyrealsense, enable_gui):  # TODO keep gui separate form other code
+    def __init__(self, enable_pyrealsense, enable_gui):  # TODO implement interfaces to separate the code
         super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
         self.enable_gui = enable_gui
 
