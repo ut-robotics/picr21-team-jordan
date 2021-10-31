@@ -13,5 +13,5 @@ Important files in main folder:</br>
 `socket_data_getter.py`: gets the commands from referees.</br>
 **`main.py`**: creates 2 parralel threads. `image_getter.py` and `socket_data_getter.py`. Communication using same list.</br>
 **Alghoritm:** </br>
-<img src="/alghoritm.png" width=85% height="auto"/> </br>
+TBA
 </br>

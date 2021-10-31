@@ -70,6 +70,10 @@ class ImageCalibraion:
 
         # update trackbar values
         if is_calibration:
+            for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
+                self.default_values_ball[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
+            """
+            !TODO i will delete this after test on robot
             self.default_values_ball[0] = cv2.getTrackbarPos("hl", const.TRACKBAR_WINDOW)
             self.default_values_ball[1] = cv2.getTrackbarPos("sl", const.TRACKBAR_WINDOW)
             self.default_values_ball[2] = cv2.getTrackbarPos("vl", const.TRACKBAR_WINDOW)
@@ -77,6 +81,7 @@ class ImageCalibraion:
             self.default_values_ball[4] = cv2.getTrackbarPos("sh", const.TRACKBAR_WINDOW)
             self.default_values_ball[5] = cv2.getTrackbarPos("vh", const.TRACKBAR_WINDOW)
             self.alpha_depth = (cv2.getTrackbarPos("alpha", const.TRACKBAR_WINDOW)) / 100 if self.enable_pyrealsense else -1
+            """ 
 
         # update image itself 
         lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])

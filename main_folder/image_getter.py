@@ -14,7 +14,7 @@ class ImageGetter(ImageCalibraion):
     """
     Main class. Gets frames, apllyes image processing to get:
     Ball coord, ball size, basket coord, basket size.
-    Sends balues to the StateMahchine class
+    Sends values to the StateMahchine class
     """
 
     def __init__(self, enable_pyrealsense, enable_gui):  # TODO implement interfaces to separate the code
