@@ -32,7 +32,7 @@ def move_robot(state="transition", moving_direction=0, speed_limit=10, thrower_s
         """
         !TODO delete this after tested on robot
         speed1 = int(math.sin((moving_direction + 120) * (2 * math.pi / 360)) * (speed_limit))
-        speed2 = int(math.sin((moving_direction + 0) * (2 * math.pi / 360)) * (speed_limit))
+        speed2 = int(math.sin((moving_direction 0+ 0) * (2 * math.pi / 360)) * (speed_limit))
         speed3 = int(math.sin((moving_direction - 120) * (2 * math.pi / 360)) * (speed_limit))
         """
     elif state == "rotation":
@@ -48,11 +48,11 @@ def move_robot(state="transition", moving_direction=0, speed_limit=10, thrower_s
         received_data = ser.read(8)
         actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack("<hhhH", received_data)
         # for debugging
-        print(f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
+        # print(f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
         # print(feedback_delimiter, "feedback_delimiter")
     except KeyboardInterrupt:
         pass
 
 
 if __name__ == "__main__":
-    move_robot("ttyACM0", moving_direction=0, speed_limit=0)
+    move_robot("rotation", moving_direction=0, speed_limit=10)
