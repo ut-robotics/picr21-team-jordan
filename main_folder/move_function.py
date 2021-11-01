@@ -55,4 +55,5 @@ def move_robot(state="transition", moving_direction=0, speed_limit=10, thrower_s
 
 
 if __name__ == "__main__":
-    move_robot("rotation", moving_direction=0, speed_limit=10)
+    for i in range(99):
+        move_robot("rotation", moving_direction=0, speed_limit=-10)

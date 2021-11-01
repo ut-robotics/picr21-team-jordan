@@ -62,9 +62,9 @@ class ImageGetter(ImageCalibraion):
         """draws information about the game on original frame"""
         cv2.line(frame, (const.CENTER_RANGE[0], 0), (const.CENTER_RANGE[0], const.HEIGHT), (0, 0, 0), 3)
         cv2.line(frame, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
-        cv2.putText(frame, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "State: " + self.current_state, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        cv2.putText(frame, "Action: " + self.current_action, (120, 75), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.putText(frame, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.putText(frame, "State: " + self.current_state, (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.putText(frame, "Action: " + self.current_action, (120, 75), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         text = str(self.ball_x) + " : " + str(self.ball_y) + ":::" + str(round(self.ball_size))
         cv2.putText(frame, text, (self.ball_x, self.ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
