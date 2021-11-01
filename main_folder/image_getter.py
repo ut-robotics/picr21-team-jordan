@@ -24,9 +24,6 @@ class ImageGetter(ImageCalibraion):
         self.enable_gui = enable_gui
         self.Gui = RobotGui() if enable_gui else None
 
-        self.ball_x, self.ball_y, self.ball_size = -1, -1, -1
-        self.basket_x, self.basket_y, self.basket_size = -1, -1, -1
-
         self.state_machine = StateMachine()
 
     def get_ball_coordinates(self, inspected_frame):
@@ -51,7 +48,7 @@ class ImageGetter(ImageCalibraion):
         except ValueError:
             return -1, -1, -1
 
-    def get_basket_coordinates(self, inspected_frame, target_frame):
+    def get_basket_coordinates(self, inspected_frame):
         """returns coordinates of the basket"""
         # TODO implement basket finding
         return -1, -1, -1
@@ -75,11 +72,13 @@ class ImageGetter(ImageCalibraion):
                 mask_image = self.apply_image_processing(color_image)
 
             # running robot depends of the ball and basket coords and sizes
-            self.ball_x, self.ball_y, self.ball_size = self.get_ball_coordinates(mask_image)
-            self.current_state = self.state_machine.run_current_state(referee_command, self.ball_x, self.ball_size, self.basket_x, self.basket_size)
+            ball_x, ball_y, ball_size = self.get_ball_coordinates(mask_image)
+            basket_x, basket_y, basket_size = self.get_basket_coordinates(mask_image)
+            self.current_state = self.state_machine.run_current_state(referee_command, ball_x, ball_size, basket_x, basket_size)
 
             # show gui
             if self.enable_gui:
+                game_info = [self.fps] #TODO send info to gui
                 self.Gui.update_image(color_image, mask_image)
                 self.Gui.show_gui()
 
