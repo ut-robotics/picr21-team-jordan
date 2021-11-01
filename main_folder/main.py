@@ -1,6 +1,5 @@
 import threading
 import sys
-import time
 
 from image_getter import ImageGetter
 from socket_data_getter import SocketDataGetter
