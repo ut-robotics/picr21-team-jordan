@@ -1,8 +1,6 @@
 import move_function as hw
 import constants as const
 
-BALL_SIZE_TO_STOP = 65
-ROBOT_SPEED = 25
 
 
 class StateMachine:
@@ -46,24 +44,24 @@ class StateMachine:
     def find_a_ball(self, ball_x, ball_size):
         """state action"""
         if ball_x == -1:
-            hw.move_robot(state="rotation", moving_direction=0, speed_limit=ROBOT_SPEED)
+            hw.move_robot(state="rotation", speed_limit=const.ROBOT_SPEED)
             action = "Cant' see a ball"
 
         elif ball_x < const.CENTER_RANGE[0]:
-            hw.move_robot(state="rotation", moving_direction=-90, speed_limit=ROBOT_SPEED)
+            hw.move_robot(state="rotation", speed_limit=const.ROBOT_SPEED)
             action = "Moving left"
 
         elif ball_x > const.CENTER_RANGE[-1]:
-            hw.move_robot(state="rotation", moving_direction=90, speed_limit=ROBOT_SPEED)
+            hw.move_robot(state="rotation", speed_limit=(-const.ROBOT_SPEED))
             action = "Moving right"
 
         elif ball_x in const.CENTER_RANGE:
-            if ball_size <= BALL_SIZE_TO_STOP:
-                hw.move_robot(state="transition", moving_direction=90, speed_limit=ROBOT_SPEED)
+            if ball_size <= const.BALL_SIZE_TO_STOP:
+                hw.move_robot(state="transition", moving_direction=0, speed_limit=const.ROBOT_SPEED)
                 action = "Moving closer"
             else:
                 hw.move_robot(moving_direction=0, speed_limit=0)
                 # self.current_state = "ball_found"
                 action = "Ball is close"
-                
+
         return action
