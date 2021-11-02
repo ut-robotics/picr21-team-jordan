@@ -102,11 +102,6 @@ def image_getter(in_q):
     state_machine.main(in_q)
 
 
-def robot_gui(in_q):
-    robot_gui = RobotGui()
-    robot_gui.main(in_q)
-
-
 if __name__ == "__main__":
     socket_q = []
     image_q = []
