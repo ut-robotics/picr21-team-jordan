@@ -5,7 +5,7 @@ import serial
 import serial.tools.list_ports
 
 
-STM_32_HWID = "USB VID:PID=0483:5740 SER=207738905056 LOCATION=1-3:1.0"
+STM_32_HWID = "USB VID:PID=0483:5740"
 WHEEL_ANGLES = [120, 0, -120]
 
 
@@ -16,7 +16,11 @@ class RobotMovement:
         for port, _, hwid in sorted(ports):
             devices[hwid] = port
 
-        serial_port: str = devices[STM_32_HWID]
+        for hwid in devices.keys():
+            if STM_32_HWID in hwid:
+                serial_port: str = devices[hwid]
+                break
+    
         self.ser = serial.Serial(serial_port, 115200)
 
     def calculate_speed(self, degrees, moving_direction, speed_limit, state):
