@@ -1,8 +1,14 @@
 import math
 import struct
+from typing import Optional
 
 import serial
 import serial.tools.list_ports
+
+
+class SerialPortNotFound(Exception):
+    def __init__(self):
+        super().__init__("Serial port not found")
 
 
 STM_32_HWID = "USB VID:PID=0483:5740"
@@ -11,8 +17,10 @@ WHEEL_ANGLES = [120, 0, -120]
 
 class RobotMovement:
     def __init__(self):
+        serial_port: Optional[str] = None
         ports = serial.tools.list_ports.comports()
         devices = {}
+
         for port, _, hwid in sorted(ports):
             devices[hwid] = port
 
@@ -20,7 +28,9 @@ class RobotMovement:
             if STM_32_HWID in hwid:
                 serial_port: str = devices[hwid]
                 break
-    
+        
+        if serial_port is None:
+            raise SerialPortNotFound 
         self.ser = serial.Serial(serial_port, 115200)
 
     def calculate_speed(self, degrees, moving_direction, speed_limit, state):
