@@ -26,7 +26,7 @@ class RobotMovement:
 
         for hwid in devices.keys():
             if STM_32_HWID in hwid:
-                serial_port: str = devices[hwid]
+                serial_port = devices[hwid]
                 break
         
         if serial_port is None:
