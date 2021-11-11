@@ -114,4 +114,4 @@ def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, fails
 
 
 if __name__ == "__main__":
-    move_robot(robotSpeedX=1, robotSpeedY=1)
+    move_robot(robotSpeedX=1, robotSpeedY=0,state="rotation")
