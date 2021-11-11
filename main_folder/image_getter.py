@@ -78,9 +78,11 @@ class ImageGetter(ImageCalibraion):
 
             # show gui
             if self.enable_gui:
-                game_info = [self.fps] #TODO send info to gui
+                ball_info = [self.fps, ball_x, ball_y, ball_size] #TODO send info to gui
+                self.Gui.update_info(self.fps, self.current_state, ball_info)
                 self.Gui.update_image(color_image, mask_image)
                 self.Gui.show_gui()
+                
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break

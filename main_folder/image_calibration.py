@@ -8,7 +8,7 @@ import pyrealsense2 as rs
 import constants as const
 
 CAM_ID = 4
-BLOB_MIN_AREA = 300
+BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
 BLUR = 5
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
