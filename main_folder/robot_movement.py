@@ -48,13 +48,17 @@ class RobotMovement:
 
         pure_deg = degrees(-math.atan2(speed_y, speed_x))
         moving_direction = 0
-        if speed_x > 0 and speed_y > 0:
+        if speed_y == 0:
+            moving_direction = 90 if speed_x > 0 else 270
+        elif speed_x == 0:
+            moving_direction = 180 if speed_x > 0 else 0
+        elif speed_x > 0 and speed_y > 0:
             moving_direction = 90 + pure_deg 
-        if speed_x > 0 and speed_y < 0: 
+        elif speed_x > 0 and speed_y < 0: 
             moving_direction = 90 - pure_deg
-        if speed_x < 0 and speed_y < 0:
+        elif speed_x < 0 and speed_y < 0:
             moving_direction = 270 + pure_deg
-        if speed_x < 0 and speed_y > 0:
+        elif speed_x < 0 and speed_y > 0:
             moving_direction = 180 + pure_deg
             
         speed = math.hypot(speed_x, speed_y)  # vector length
