@@ -97,7 +97,7 @@ def move_robot(robotSpeedX, robotSpeedY, robotAngularVelocity=0, speed_limit=0.5
     try:
         send_data = struct.pack("<hhhHBH", int(speed1), int(speed2),
                                 int(speed3), thrower_speed, failsafe, 0xAAAA)
-        ser.write(send_data)
+        #ser.write(send_data)
         received_data = ser.read(8)
         actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
             "<hhhH", received_data)
@@ -112,6 +112,6 @@ def move_robot(robotSpeedX, robotSpeedY, robotAngularVelocity=0, speed_limit=0.5
 
 if __name__ == "__main__":
 
-    for i in range(999):
-        move_robot(robotSpeedX=0, robotSpeedY=0,
+    for i in range(9):
+        move_robot(robotSpeedX=10, robotSpeedY=0,
                    robotAngularVelocity=0,  state="translation")
