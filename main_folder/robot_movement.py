@@ -55,4 +55,4 @@ class RobotMovement:
 if __name__ == "__main__":
     robot = RobotMovement()
     for i in range(25000):
-        robot.move_robot_XY(20, 0, 0)
+        robot.move_robot_XY(0, 0, 0)
