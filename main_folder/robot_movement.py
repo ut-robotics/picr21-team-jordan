@@ -46,7 +46,7 @@ class RobotMovement:
         def degrees(rad):
             return(rad * 180 / math.pi )
 
-        pure_deg = degrees(-math.atan2(speed_y, speed_x))
+        pure_deg = degrees(math.atan2(speed_y, speed_x))
         moving_direction = 0
         if speed_y == 0:
             moving_direction = 90 if speed_x > 0 else 270
@@ -62,10 +62,9 @@ class RobotMovement:
             moving_direction = 180 + pure_deg
             
         speed = math.hypot(speed_x, speed_y)  # vector length
-        print(speed)
         self.move_robot(moving_direction, speed, rotation_speed, thrower_speed)
 
 if __name__ == "__main__":
     robot = RobotMovement()
     for i in range(50000):
-        robot.move_robot_XY(0, 0, -10)
+        robot.move_robot_XY(10, 20, 0)
