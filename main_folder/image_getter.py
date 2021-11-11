@@ -74,7 +74,7 @@ class ImageGetter(ImageCalibraion):
             # running robot depends of the ball and basket coords and sizes
             ball_x, ball_y, ball_size = self.get_ball_coordinates(mask_image)
             basket_x, basket_y, basket_size = self.get_basket_coordinates(mask_image)
-            self.current_state = self.state_machine.run_current_state(referee_command, ball_x, ball_size, basket_x, basket_size)
+            self.current_state = self.state_machine.run_current_state(ball_x, ball_y, ball_size)
 
             # show gui
             if self.enable_gui:
