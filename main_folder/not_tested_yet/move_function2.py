@@ -54,9 +54,9 @@ def cal_seed_to_board(wheelLinearVelocity, wheelSpeedToMainboardUnits):
 
 def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, failsafe=0, state="translation"):
 
-    ser = serial.Serial(DEFAULT_SERIAL_PORT, 115200)
-    if not ser.isOpen():
-        ser.open()
+    # ser = serial.Serial(DEFAULT_SERIAL_PORT, 115200)
+    # if not ser.isOpen():
+    #     ser.open()
 
     if state == "translation":
         print(robotSpeedX)
@@ -68,18 +68,18 @@ def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, fails
         print(robotSpeed)
         print(robotDirectionAngle)
 
-        wheelLinearVelocity_1 = cal_speed(
-            robotDirectionAngle, wheelAngle_1, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
+        wheelLinearVelocity_1 = cal_speed(robotSpeed,
+                                          robotDirectionAngle, wheelAngle_1, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
         speed1 = cal_seed_to_board(
             wheelLinearVelocity_1, wheelSpeedToMainboardUnits)
 
-        wheelLinearVelocity_2 = cal_speed(
-            robotDirectionAngle, wheelAngle_2, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
+        wheelLinearVelocity_2 = cal_speed(robotSpeed,
+                                          robotDirectionAngle, wheelAngle_2, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
         speed2 = cal_seed_to_board(
             wheelLinearVelocity_2, wheelSpeedToMainboardUnits)
 
-        wheelLinearVelocity_3 = cal_speed(
-            robotDirectionAngle, wheelAngle_3, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
+        wheelLinearVelocity_3 = cal_speed(robotSpeed,
+                                          robotDirectionAngle, wheelAngle_3, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
         speed3 = cal_seed_to_board(
             wheelLinearVelocity_3, wheelSpeedToMainboardUnits)
 
@@ -95,23 +95,23 @@ def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, fails
         speed2 = speed_limit * 120
         speed3 = speed_limit * 120
     else:
-        raise Exception("Invalid state arrgument.")
+        raise Exception("Invalid state argument.")
 
     try:
-        send_data = struct.pack("<hhhHBH", speed1, speed2,
-                                speed3, thrower_speed, failsafe, 0xAAAA)
-        ser.write(send_data)
-        received_data = ser.read(8)
-        actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
-            "<hhhH", received_data)
-        # for debugging
-        print(
-            f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
+        # send_data = struct.pack("<hhhHBH", speed1, speed2,
+        #                         speed3, thrower_speed, failsafe, 0xAAAA)
+        # ser.write(send_data)
+        # received_data = ser.read(8)
+        # actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
+        #     "<hhhH", received_data)
+        # # for debugging
+        # print(
+        #     f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
         # print(feedback_delimiter, "feedback_delimiter")
+        pass
     except KeyboardInterrupt:
         pass
 
 
 if __name__ == "__main__":
-    move_robot(robotSpeedX=0.0, robotSpeedY=0.0,
-               speed_limit=0, state="translation")
+    move_robot(robotSpeedX=1, robotSpeedY=1)
