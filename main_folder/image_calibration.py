@@ -10,6 +10,7 @@ import constants as const
 CAM_ID = 4
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
+MIN_CIRCULARITY = 0.7
 BLUR = 5
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 
@@ -45,7 +46,7 @@ class ImageCalibraion:
         self.blobparams.filterByInertia = False
         self.blobparams.filterByConvexity = False
         self.blobparams.filterByCircularity = True
-        self.blobparams.minCircularity = 0.90
+        self.blobparams.minCircularity = MIN_CIRCULARITY
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
 
         self.fps = 0
