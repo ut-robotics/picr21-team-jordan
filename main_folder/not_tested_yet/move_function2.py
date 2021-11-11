@@ -98,8 +98,8 @@ def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, fails
         raise Exception("Invalid state argument.")
 
     try:
-        send_data = struct.pack("<hhhHBH", speed1, speed2,
-                                speed3, thrower_speed, failsafe, 0xAAAA)
+        send_data = struct.pack("<hhhHBH", int(speed1), int(speed2),
+                                int(speed3), thrower_speed, failsafe, 0xAAAA)
         ser.write(send_data)
         received_data = ser.read(8)
         actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(

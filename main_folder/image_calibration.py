@@ -44,6 +44,8 @@ class ImageCalibraion:
         self.blobparams.maxArea = BLOB_MAX_AREA
         self.blobparams.filterByInertia = False
         self.blobparams.filterByConvexity = False
+        self.blobparams.filterByCircularity = True
+        self.blobparams.minCircularity = 0.90
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
 
         self.fps = 0
@@ -112,7 +114,16 @@ class ImageCalibraion:
             else:
                 _, color_image = self.cap.read()
                 mask_image = self.apply_image_processing(color_image, is_calibration=True)
-
+            ###### TODO delete
+            keypoints: list = self.detector.detect(mask_image)
+            if len(keypoints) > 0:
+                for keypoint in keypoints:
+                    if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
+                        x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
+                        cv2.circle(color_image, (x, y), int(keypoint.size), (0, 255, 0))
+                        cv2.putText(color_image, str(int(keypoint.size)), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    
+            
             # show frames
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow(const.ORIGINAL_WINDOW, color_image)
