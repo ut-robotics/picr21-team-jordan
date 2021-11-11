@@ -43,7 +43,7 @@ class RobotMovement:
 
         received_data = self.ser.read(8)
         actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack("<hhhH", received_data)
-        print(f"calucalted/actual | {speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}/{actual_speed3}")
+        # print(f"calucalted/actual | {speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}/{actual_speed3}")
 
 
     def move_robot_XY(self, speed_x=0, speed_y=0, rotation_speed=0, thrower_speed=0):
