@@ -31,7 +31,13 @@ class ImageCalibraion:
             config = rs.config()
             config.enable_stream(rs.stream.depth, const.WIDTH_DEPTH, const.HEIGHT_DEPTH, rs.format.z16, 60)
             config.enable_stream(rs.stream.color, const.WIDTH, const.HEIGHT, rs.format.bgr8, 60)
-            self.pipeline.start(config)
+            # self.pipeline.start(config)
+            self.profile = self.pipeline.start(self.config)
+            self.color_sensor = self.profile.get_device().query_sensors()[1]
+            self.color_sensor.set_option(rs.option.enable_auto_exposure, False)
+            self.color_sensor.set_option(rs.option.enable_auto_white_balance, False)
+            self.color_sensor.set_option(rs.option.white_balance, 3500)
+            self.color_sensor.set_option(rs.option.exposure, 50)
             self.alpha_depth = 0.9
         else:
             self.cap = cv2.VideoCapture(CAM_ID)
