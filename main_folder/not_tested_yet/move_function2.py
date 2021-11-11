@@ -54,9 +54,9 @@ def cal_seed_to_board(wheelLinearVelocity, wheelSpeedToMainboardUnits):
 
 def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, failsafe=0, state="translation"):
 
-    # ser = serial.Serial(DEFAULT_SERIAL_PORT, 115200)
-    # if not ser.isOpen():
-    #     ser.open()
+    ser = serial.Serial(DEFAULT_SERIAL_PORT, 115200)
+    if not ser.isOpen():
+        ser.open()
 
     if state == "translation":
         print(robotSpeedX)
@@ -98,16 +98,16 @@ def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, fails
         raise Exception("Invalid state argument.")
 
     try:
-        # send_data = struct.pack("<hhhHBH", speed1, speed2,
-        #                         speed3, thrower_speed, failsafe, 0xAAAA)
-        # ser.write(send_data)
-        # received_data = ser.read(8)
-        # actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
-        #     "<hhhH", received_data)
-        # # for debugging
-        # print(
-        #     f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
-        # print(feedback_delimiter, "feedback_delimiter")
+        send_data = struct.pack("<hhhHBH", speed1, speed2,
+                                speed3, thrower_speed, failsafe, 0xAAAA)
+        ser.write(send_data)
+        received_data = ser.read(8)
+        actual_speed1, actual_speed2, actual_speed3, feedback_delimiter = struct.unpack(
+            "<hhhH", received_data)
+        # for debugging
+        print(
+            f"{speed1}/{actual_speed1} | {speed2}/{actual_speed2} | {speed3}{actual_speed3}")
+        print(feedback_delimiter, "feedback_delimiter")
         pass
     except KeyboardInterrupt:
         pass
