@@ -9,8 +9,8 @@ DEFAULT_SERIAL_PORT = "/dev/ttyACM0"
 robotSpeedX = 0  # - m/s
 robotSpeedY = 0  # - m/s
 
-robotAngularVelocity = 0.01
-wheelLinearVelocity = 0.01  # [m/s]
+# robotAngularVelocity = 0.01
+# wheelLinearVelocity = 0.01  # [m/s]
 
 # motor variables
 gearboxReductionRatio = 18.75
@@ -40,7 +40,7 @@ def cal_robotDirectionAngle(robotSpeedX, robotSpeedY):
     return robotDirectionAngle
 
 
-def cal_speed(robotSpeed, robotDirectionAngle, wheelAngle, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity):
+def cal_speed(robotSpeed, robotDirectionAngle, wheelAngle, wheelDistanceFromCenter, robotAngularVelocity):
     wheelLinearVelocity = robotSpeed * \
         math.cos(robotDirectionAngle - wheelAngle) + \
         wheelDistanceFromCenter * robotAngularVelocity
@@ -52,34 +52,31 @@ def cal_seed_to_board(wheelLinearVelocity, wheelSpeedToMainboardUnits):
     return wheelAngularSpeedMainboardUnits
 
 
-def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, failsafe=0, state="translation"):
+def move_robot(robotSpeedX, robotSpeedY, robotAngularVelocity=0, speed_limit=0.5, thrower_speed=0, failsafe=0, state="translation"):
 
     ser = serial.Serial(DEFAULT_SERIAL_PORT, 115200)
     if not ser.isOpen():
         ser.open()
 
     if state == "translation":
-        print(robotSpeedX)
-        print(robotSpeedY)
-        print(speed_limit)
-        robotSpeed = cal_robotSpeed(robotSpeedX, robotSpeedY) * speed_limit
-        robotDirectionAngle = cal_robotDirectionAngle(robotSpeedX, robotSpeedY)
 
-        print(robotSpeed)
-        print(robotDirectionAngle)
+        robotSpeed = cal_robotSpeed(robotSpeedX, robotSpeedY) * speed_limit
+        moving_dir = cal_robotDirectionAngle(robotSpeedX, robotSpeedY)
+
+        print(moving_dir)
 
         wheelLinearVelocity_1 = cal_speed(robotSpeed,
-                                          robotDirectionAngle, wheelAngle_1, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
+                                          moving_dir, wheelAngle_1, wheelDistanceFromCenter, robotAngularVelocity)
         speed1 = cal_seed_to_board(
             wheelLinearVelocity_1, wheelSpeedToMainboardUnits)
 
         wheelLinearVelocity_2 = cal_speed(robotSpeed,
-                                          robotDirectionAngle, wheelAngle_2, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
+                                          moving_dir, wheelAngle_2, wheelDistanceFromCenter, robotAngularVelocity)
         speed2 = cal_seed_to_board(
             wheelLinearVelocity_2, wheelSpeedToMainboardUnits)
 
         wheelLinearVelocity_3 = cal_speed(robotSpeed,
-                                          robotDirectionAngle, wheelAngle_3, wheelDistanceFromCenter, robotAngularVelocity, wheelLinearVelocity)
+                                          moving_dir, wheelAngle_3, wheelDistanceFromCenter, robotAngularVelocity)
         speed3 = cal_seed_to_board(
             wheelLinearVelocity_3, wheelSpeedToMainboardUnits)
 
@@ -114,4 +111,7 @@ def move_robot(robotSpeedX, robotSpeedY, speed_limit=0.5, thrower_speed=0, fails
 
 
 if __name__ == "__main__":
-    move_robot(robotSpeedX=1, robotSpeedY=0,state="rotation")
+
+    for i in range(999):
+        move_robot(robotSpeedX=0, robotSpeedY=0,
+                   robotAngularVelocity=0,  state="translation")
