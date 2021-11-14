@@ -22,28 +22,23 @@ class ImageCalibraion:
     Only one main prupose -- generate config files
     """
 
-    def __init__(self, enable_pyrealsense=False):
-        self.enable_pyrealsense = enable_pyrealsense
+    def __init__(self):
         self.default_values_ball: list = self.get_default_values(CONFIG_PATH, "trackbar_values_ball")
-        self.default_values_basket: list = ["TBA"]  # TODO
+        self.default_values_basket: list = self.get_default_values(CONFIG_PATH, "trackbar_values_basket")
 
-        if enable_pyrealsense:
-            self.pipeline = rs.pipeline()
-            config = rs.config()
-            config.enable_stream(rs.stream.depth, const.WIDTH_DEPTH, const.HEIGHT_DEPTH, rs.format.z16, 60)
-            config.enable_stream(rs.stream.color, const.WIDTH, const.HEIGHT, rs.format.bgr8, 60)
-            # self.pipeline.start(config)
-            self.profile = self.pipeline.start(self.config)
-            self.color_sensor = self.profile.get_device().query_sensors()[1]
-            self.color_sensor.set_option(rs.option.enable_auto_exposure, False)
-            self.color_sensor.set_option(rs.option.enable_auto_white_balance, False)
-            self.color_sensor.set_option(rs.option.white_balance, 3500)
-            self.color_sensor.set_option(rs.option.exposure, 50)
-            self.alpha_depth = 0.9
-        else:
-            self.cap = cv2.VideoCapture(CAM_ID)
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, const.WIDTH)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, const.HEIGHT)
+        self.pipeline = rs.pipeline()
+        config = rs.config()
+        config.enable_stream(rs.stream.depth, const.WIDTH_DEPTH, const.HEIGHT_DEPTH, rs.format.z16, 60)
+        config.enable_stream(rs.stream.color, const.WIDTH, const.HEIGHT, rs.format.bgr8, 60)
+        # self.pipeline.start(config)
+        self.profile = self.pipeline.start(self.config)
+        self.color_sensor = self.profile.get_device().query_sensors()[1]
+        self.color_sensor.set_option(rs.option.enable_auto_exposure, False)
+        self.color_sensor.set_option(rs.option.enable_auto_white_balance, False)
+        self.color_sensor.set_option(rs.option.white_balance, 3500)
+        self.color_sensor.set_option(rs.option.exposure, 50)
+        self.alpha_depth = 0.9
+
         self.color_type = cv2.COLOR_BGR2HSV
 
         self.blobparams = cv2.SimpleBlobDetector_Params()
@@ -74,24 +69,6 @@ class ImageCalibraion:
         with open(path + file_name, "w") as file:
             file.write(" ".join(array))
 
-    def apply_image_processing(self, frame, is_calibration=False):
-        # change color space (RBG -> HSV)
-        hsv = cv2.cvtColor(frame, self.color_type)
-        hsv_blured = cv2.medianBlur(hsv, BLUR)
-
-        # update trackbar values
-        if is_calibration:
-            for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
-                self.default_values_ball[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
-
-        # update masked image
-        lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
-        upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
-        mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
-        mask = cv2.bitwise_not(mask)
-
-        return mask
-
     def get_frame_using_pyrealsense(self):
         """Returns numpy array that represents the image"""
         frames = self.pipeline.wait_for_frames()
@@ -103,50 +80,82 @@ class ImageCalibraion:
 
         return color_image, depth_colormap
 
-    def main(self):
+    def apply_image_processing(self, frame, type, is_calibration=False):
+        # change color space (RBG -> HSV)
+        hsv = cv2.cvtColor(frame, self.color_type)
+        hsv_blured = cv2.medianBlur(hsv, BLUR)
+
+        # update trackbar values
+        if is_calibration:
+            for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
+                if type == const.BALL:
+                    self.default_values_ball[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
+                elif type == const.BASKET:
+                    self.default_values_basket[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
+
+        # update masked image
+        if type == const.BALL:
+            lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
+            upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
+        elif type == const.BASKET:
+            lowerLimits = np.array([self.default_values_basket[0], self.default_values_basket[1], self.default_values_basket[2]])
+            upperLimits = np.array([self.default_values_basket[3], self.default_values_basket[4], self.default_values_basket[5]])
+
+        mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
+        mask = cv2.bitwise_not(mask)
+
+        return mask
+
+    def draw_keypoints(self, color_image, mask_image):
+        keypoints: list = self.detector.detect(mask_image)
+        if len(keypoints) > 0:
+            for keypoint in keypoints:
+                if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
+                    x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
+                    cv2.circle(color_image, (x, y), int(keypoint.size), (0, 255, 0))
+                    cv2.putText(color_image, str(int(keypoint.size)), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+    def mainloop(self, type):
+        if type == const.BALL:
+            default_values = self.default_values_ball
+        elif type == const.BASKET:
+            default_values = self.default_values_basket
+
         # create gui
         cv2.namedWindow(const.ORIGINAL_WINDOW)
         cv2.namedWindow(const.MASKED_WINDOW)
         cv2.namedWindow(const.TRACKBAR_WINDOW, cv2.WINDOW_NORMAL)
-        cv2.namedWindow(const.DEPTH_WINDOW) if self.enable_pyrealsense else -1
+        cv2.namedWindow(const.DEPTH_WINDOW)
         for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
-            cv2.createTrackbar(value, const.TRACKBAR_WINDOW, self.default_values_ball[index], 255, self.update_value)
-        cv2.createTrackbar("alpha", const.TRACKBAR_WINDOW, 30, 100, self.update_value) if self.enable_pyrealsense else None
+            cv2.createTrackbar(value, const.TRACKBAR_WINDOW, default_values[index], 255, self.update_value)
+        cv2.createTrackbar("alpha", const.TRACKBAR_WINDOW, 30, 100, self.update_value)
 
+        # calibrartion for a ball
         while True:
             start_time = time.time()
 
-            # get frames
-            if self.enable_pyrealsense:
-                color_image, depth_image = self.get_frame_using_pyrealsense()
-                mask_image = self.apply_image_processing(color_image, is_calibration=True)  # TODO do something with depth
-            else:
-                _, color_image = self.cap.read()
-                mask_image = self.apply_image_processing(color_image, is_calibration=True)
-            ###### TODO delete
-            keypoints: list = self.detector.detect(mask_image)
-            if len(keypoints) > 0:
-                for keypoint in keypoints:
-                    if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
-                        x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
-                        cv2.circle(color_image, (x, y), int(keypoint.size), (0, 255, 0))
-                        cv2.putText(color_image, str(int(keypoint.size)), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                    
-            
+            color_image, depth_image = self.get_frame_using_pyrealsense()
+            mask_image = self.apply_image_processing(color_image, const.BALL, is_calibration=True)  # TODO do something with depth \
+            self.draw_keypoints(color_image, mask_image)
+
             # show frames
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow(const.ORIGINAL_WINDOW, color_image)
             cv2.imshow(const.MASKED_WINDOW, mask_image)
-            cv2.imshow(const.DEPTH_WINDOW, depth_image) if self.enable_pyrealsense else -1
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                self.save_default_values(CONFIG_PATH, "trackbar_values_ball", [str(x) for x in self.default_values_ball])
-                break
+            # cv2.imshow(const.DEPTH_WINDOW, depth_image)
 
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                self.save_default_values(CONFIG_PATH, "trackbar_values_ball", [str(x) for x in default_values])
+                break
             self.fps = round(1.0 / (time.time() - start_time), 2)
-        self.cap.release() if not self.enable_pyrealsense else self.pipeline.stop()
+
+    def main(self):
+        self.mainloop(const.BALL)
+        self.mainloop(const.BASKET)
+        self.pipeline.stop()
         cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
-    camera_image = ImageCalibraion(enable_pyrealsense=True)
+    camera_image = ImageCalibraion()
     camera_image.main()

@@ -3,8 +3,11 @@ HEIGHT = 540
 WIDTH_DEPTH = 848
 HEIGHT_DEPTH = 480
 
+BASKET = "basket"
+BALL = "ball"
 ORIGINAL_WINDOW = "Original"
 MASKED_WINDOW = "Thresh"
+MASKED_WINDOW_BASKET = "Basket"
 DEPTH_WINDOW = "Depth"
 TRACKBAR_WINDOW = "Trackbar"
 

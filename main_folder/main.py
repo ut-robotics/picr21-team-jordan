@@ -7,10 +7,9 @@ from image_calibration import ImageCalibraion
 
 print("python3 main.py [enable_pyrealsense][enable_gui]")
 try:
-    enable_pyrealsense = True if int(sys.argv[1]) == 1 else False
-    enable_gui = True if int(sys.argv[2]) == 1 else False
+    enable_gui = True if int(sys.argv[1]) == 1 else False
 except IndexError:
-    print("2 terminal parameters is required.")
+    print("1 terminal parameters is required.")
     sys.exit()
 except ValueError:
     print("Terminal parameter should be int() type")
@@ -23,7 +22,7 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = ImageGetter(enable_pyrealsense, enable_gui)
+    state_machine = ImageGetter(enable_gui)
     state_machine.main(in_q)
 
 
