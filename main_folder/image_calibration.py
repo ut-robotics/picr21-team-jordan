@@ -11,6 +11,7 @@ CAM_ID = 4
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
 MIN_CIRCULARITY = 0.7
+MIN_DISTANCE_BETWEEN_BLOBS = 50
 BLUR = 5
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 
@@ -46,6 +47,7 @@ class ImageCalibraion:
         self.color_type = cv2.COLOR_BGR2HSV
 
         self.blobparams = cv2.SimpleBlobDetector_Params()
+        self.blobparams.minDistBetweenBlobs = MIN_DISTANCE_BETWEEN_BLOBS
         self.blobparams.filterByArea = True
         self.blobparams.minArea = BLOB_MIN_AREA
         self.blobparams.maxArea = BLOB_MAX_AREA
