@@ -9,6 +9,8 @@ import pyrealsense2 as rs
 
 import constants as const
 
+CROP_Y1 = 170
+CROP_Y2 = 350
 CAM_ID = 4
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
@@ -82,6 +84,8 @@ class ImageCalibraion:
         color_image = np.asanyarray(color_frame.get_data())
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=self.alpha_depth), cv2.COLORMAP_JET)
 
+        color_image = color_image[CROP_Y1 : CROP_Y1 + CROP_Y2, 0 : 0 + const.WIDTH]
+        depth_colormap = depth_colormap[CROP_Y1 : CROP_Y1 + CROP_Y2, 0 : 0 + const.WIDTH]
         return color_image, depth_colormap
 
     def apply_image_processing(self, frame, type, is_calibration=False):
@@ -124,8 +128,9 @@ class ImageCalibraion:
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
             except ZeroDivisionError:
                 pass
-
-        return int(round(x)), int(round(y)), int(round(radius)), center
+            return int(round(x)), int(round(y)), int(round(radius)), center
+        else:
+            return -1, -1, -1, -1
 
     def mainloop(self, type):
         if type == const.BALL:
@@ -150,6 +155,7 @@ class ImageCalibraion:
             mask_image = self.apply_image_processing(color_image, const.BALL, is_calibration=True)  # TODO do something with depth \
             # self.draw_keypoints(color_image, mask_image)
             x, y, radius, center = self.track_ball_using_imutils(mask_image)
+            print(x, y, radius, center)
             # To see the centroid clearly
             if radius > const.MIN_BALL_RADIUS:
                 cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
