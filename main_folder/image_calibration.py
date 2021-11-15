@@ -128,7 +128,10 @@ class ImageCalibraion:
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
             except ZeroDivisionError:
                 pass
-            return int(round(x)), int(round(y)), int(round(radius)), center
+            if radius <= const.MIN_BALL_RADIUS:
+                return -1, -1, -1, -1
+            else:
+                return int(round(x)), int(round(y)), int(round(radius)), center
         else:
             return -1, -1, -1, -1
 

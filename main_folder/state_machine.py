@@ -33,6 +33,7 @@ class StateMachine:
         return self.state
 
     def find_a_ball(self, ball_x, ball_y, ball_size):
+        print(ball_x, ball_y, ball_size)
         """State.FIND_BALL action"""
         if ball_x == -1:
             self.Robot.move_robot(0, 0, 10)
