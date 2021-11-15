@@ -9,8 +9,6 @@ import pyrealsense2 as rs
 
 import constants as const
 
-CROP_Y1 = 170
-CROP_Y2 = 350
 CAM_ID = 4
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
@@ -84,8 +82,8 @@ class ImageCalibraion:
         color_image = np.asanyarray(color_frame.get_data())
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=self.alpha_depth), cv2.COLORMAP_JET)
 
-        color_image = color_image[CROP_Y1 : CROP_Y1 + CROP_Y2, 0 : 0 + const.WIDTH]
-        depth_colormap = depth_colormap[CROP_Y1 : CROP_Y1 + CROP_Y2, 0 : 0 + const.WIDTH]
+        color_image = color_image[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 0 : 0 + const.WIDTH]
+        depth_colormap = depth_colormap[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 0 : 0 + const.WIDTH]
         return color_image, depth_colormap
 
     def apply_image_processing(self, frame, type, is_calibration=False):
