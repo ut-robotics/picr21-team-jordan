@@ -31,7 +31,7 @@ class ImageCalibraion:
         config.enable_stream(rs.stream.depth, const.WIDTH_DEPTH, const.HEIGHT_DEPTH, rs.format.z16, 60)
         config.enable_stream(rs.stream.color, const.WIDTH, const.HEIGHT, rs.format.bgr8, 60)
         # self.pipeline.start(config)
-        self.profile = self.pipeline.start(self.config)
+        self.profile = self.pipeline.start(config)
         self.color_sensor = self.profile.get_device().query_sensors()[1]
         self.color_sensor.set_option(rs.option.enable_auto_exposure, False)
         self.color_sensor.set_option(rs.option.enable_auto_white_balance, False)
@@ -140,12 +140,17 @@ class ImageCalibraion:
 
             # show frames
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            cv2.putText(color_image, type, (5, 55), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.imshow(const.ORIGINAL_WINDOW, color_image)
             cv2.imshow(const.MASKED_WINDOW, mask_image)
             # cv2.imshow(const.DEPTH_WINDOW, depth_image)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                self.save_default_values(CONFIG_PATH, "trackbar_values_ball", [str(x) for x in default_values])
+                if type == const.BALL:
+                    name = "trackbar_values_ball"
+                elif type == const.BASKET:
+                    name = "trackbar_values_basket"
+                self.save_default_values(CONFIG_PATH, name, [str(x) for x in default_values])
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
 

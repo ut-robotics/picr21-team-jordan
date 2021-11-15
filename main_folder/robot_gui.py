@@ -23,9 +23,10 @@ class RobotGui:
         self.ball_info = ball_info
         self.basket_info = basket_info
 
-    def update_image(self, color_image, masked_image):
+    def update_image(self, color_image, masked_image_ball, masked_image_basket):
         self.color_image = color_image
-        self.masked_image_ball = masked_image
+        self.masked_image_ball = masked_image_ball
+        self.masked_image_ball = masked_image_basket
 
     def show_gui(self):
         ball_x = int(self.ball_info[0])
