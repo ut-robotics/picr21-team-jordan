@@ -46,7 +46,7 @@ class RobotGui:
         # show image
         cv2.imshow(const.ORIGINAL_WINDOW, self.color_image)
         cv2.imshow(const.MASKED_WINDOW, self.masked_image_ball)
-        cv2.imshow(const.MASKED_WINDOW, self.masked_image_basket)
+        cv2.imshow(const.MASKED_WINDOW_BASKET, self.masked_image_basket)
 
     def kill_gui(self):
         cv2.destroyAllWindows()
