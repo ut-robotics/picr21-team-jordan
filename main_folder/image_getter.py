@@ -18,15 +18,14 @@ class ImageGetter(ImageCalibraion):
     Sends values to the StateMahchine class
     """
 
-    def __init__(self, enable_pyrealsense, enable_gui):
-        super(ImageGetter, self).__init__(enable_pyrealsense=enable_pyrealsense)
-
+    def __init__(self, enable_gui):
+        super(ImageGetter, self).__init__()
         self.enable_gui = enable_gui
+
         self.Gui = RobotGui() if enable_gui else None
+        self.State_machine = StateMachine()
 
-        self.state_machine = StateMachine()
-
-    def get_ball_coordinates(self, inspected_frame):
+    def get_biggest_blob_coord(self, inspected_frame):
         """returns coordinates of the biggest ball"""
         keypoints: list = self.detector.detect(inspected_frame)
         if self.enable_gui:
@@ -48,11 +47,6 @@ class ImageGetter(ImageCalibraion):
         except ValueError:
             return -1, -1, -1
 
-    def get_basket_coordinates(self, inspected_frame):
-        """returns coordinates of the basket"""
-        # TODO implement basket finding
-        return -1, -1, -1
-
     def main(self, socket_data):
         while True:
             start_time = time.time()
@@ -64,31 +58,29 @@ class ImageGetter(ImageCalibraion):
                 referee_command = None
 
             # get camera images
-            if self.enable_pyrealsense:
-                color_image, depth_image = self.get_frame_using_pyrealsense()  # TODO do something with depth
-                mask_image = self.apply_image_processing(color_image)
-            else:
-                _, color_image = self.cap.read()
-                mask_image = self.apply_image_processing(color_image)
+            color_image, depth_image = self.get_frame_using_pyrealsense()  # TODO do something with depth
+            mask_image_ball = self.apply_image_processing(color_image, const.BALL)
+            mask_image_basket = self.apply_image_processing(color_image, const.BASKET)
 
             # running robot depends of the ball and basket coords and sizes
-            ball_x, ball_y, ball_size = self.get_ball_coordinates(mask_image)
-            basket_x, basket_y, basket_size = self.get_basket_coordinates(mask_image)
-            self.current_state = self.state_machine.run_current_state(ball_x, ball_y, ball_size)
+            ball_x, ball_y, ball_size, center = self.track_ball_using_imutils(mask_image_ball) #TODO size = radius
+            basket_x, basket_y, basket_size = self.get_biggest_blob_coord(mask_image_basket)
+            self.current_state = self.State_machine.run_current_state(ball_x, ball_y, ball_size)
 
             # show gui
             if self.enable_gui:
-                ball_info = [self.fps, ball_x, ball_y, ball_size] #TODO send info to gui
-                self.Gui.update_info(self.fps, self.current_state, ball_info)
-                self.Gui.update_image(color_image, mask_image)
+                ball_info = [ball_x, ball_y, ball_size, center] 
+                basket_info = [basket_x, basket_y, basket_size]
+
+                self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
+                self.Gui.update_image(color_image)
                 self.Gui.show_gui()
                 
-
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
-        self.cap.release() if not self.enable_pyrealsense else self.pipeline.stop()
+        self.pipeline.stop()
 
         if self.enable_gui:
             self.Gui.kill_gui()
@@ -100,7 +92,7 @@ def socket_data_getter(out_q):
 
 
 def image_getter(in_q):
-    state_machine = ImageGetter(enable_pyrealsense=True, enable_gui=True)
+    state_machine = ImageGetter(enable_gui=True)
     state_machine.main(in_q)
 
 
