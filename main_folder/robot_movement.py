@@ -34,7 +34,7 @@ class RobotMovement:
         self.ser = serial.Serial(serial_port, 115200)
 
     def calculate_speed(self, wheel_angle, moving_direction, speed, rotation_speed):
-        return int(round(math.cos((moving_direction + wheel_angle) * (2 * math.pi / 360)) * speed + rotation_speed))
+        return int(round(math.cos(moving_direction + wheel_angle) * speed + rotation_speed))
 
     def move_robot(self, moving_direction=0, speed=0, rotation_speed=0, thrower_speed=0, failsafe=0):
         speed1, speed2, speed3 = [self.calculate_speed(angle, moving_direction, speed, rotation_speed) for angle in WHEEL_ANGLES]
@@ -50,4 +50,4 @@ class RobotMovement:
 if __name__ == "__main__":
     robot = RobotMovement()
     for i in range(25000):
-        robot.move_robot_XY(10, 0, 0)
+        robot.move_robot_XY(0, 25, 0)

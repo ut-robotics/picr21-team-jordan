@@ -27,25 +27,36 @@ class StateMachine:
         #     self.state = int(referee_command)
 
         if self.state == State.FIND_BALL:
-            self.find_a_ball(ball_x, ball_y, ball_size)
+            self.find_a_ball(ball_x)
+            
+        if self.state == State.GET_TO_BALL:
+            self.get_to_ball(ball_x, ball_y, ball_size)
 
         # print(f"State: {self.current_state}, Ball=(x:{ball_x}|size:{ball_size}, Action: {action}")
         return self.state
 
-    def find_a_ball(self, ball_x, ball_y, ball_size):
+    def find_a_ball(self, ball_x):
+        robot_speed_rot = int((const.CENTER_X - ball_x)/20)
         """State.FIND_BALL action"""
         if ball_x == -1:
-            self.Robot.move_robot(0, 0, 10)
+            self.Robot.move_robot_XY(0, 0, 15)
+            
+        elif ball_x in const.CENTER_RANGE:
+            self.Robot.move_robot_XY(0, 0, 0)
+            self.state = State.GET_TO_BALL
+        
+        else:
+            self.Robot.move_robot_XY(0, 0, robot_speed_rot)
+        
 
-        elif ball_x < const.CENTER_RANGE[0]:
-            self.Robot.move_robot(0, 0, 5)
-
-        elif ball_x > const.CENTER_RANGE[-1]:
-            self.Robot.move_robot(0, 0, -5)
-
-        # elif ball_x in const.CENTER_RANGE:
-        #     if ball_size <= const.BALL_SIZE_TO_STOP:
-        #         self.Robot.move_robot(state="transition", moving_direction=0, speed_limit=const.ROBOT_SPEED)
-        #     else:
-        #         self.Robot.move_robot(moving_direction=0, speed_limit=0)
-        #         # self.current_state = "ball_found"
+    def get_to_ball(self, ball_x, ball_y, ball_size):
+        # ball size 24 is close enough
+        robot_speed_y = int((const.CENTER_Y - ball_y)/5)
+        robot_speed_rot = int((const.CENTER_X - ball_x)/10)
+        if ball_y == -1:
+            self.state = State.FIND_BALL
+        elif ball_y in const.CENTER_RANGE_Y:
+            self.Robot.move_robot_XY(0, 0, 0)
+        else:
+            self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot)
+            
