@@ -7,15 +7,11 @@ import constants as const
 class RobotGui:
     def __init__(self):
         self.color_image: np.ndarray = None
-        self.masked_image_ball: np.ndarray = None
-        self.masked_image_basket: np.ndarray = None
         self.fps = -1
         self.ball_info = [-1, -1, -1]
         self.current_state = "Initial"
 
         cv2.namedWindow(const.ORIGINAL_WINDOW)
-        cv2.namedWindow(const.MASKED_WINDOW)
-        cv2.namedWindow(const.MASKED_WINDOW_BASKET)
 
     def update_info(self, fps, current_state, ball_info, basket_info):
         self.fps = fps
@@ -23,10 +19,8 @@ class RobotGui:
         self.ball_info = ball_info
         self.basket_info = basket_info
 
-    def update_image(self, color_image, masked_image_ball, masked_image_basket):
+    def update_image(self, color_image):
         self.color_image = color_image
-        self.masked_image_ball = masked_image_ball
-        self.masked_image_ball = masked_image_basket
 
     def show_gui(self):
         ball_x = int(self.ball_info[0])
@@ -43,14 +37,16 @@ class RobotGui:
         cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(self.color_image, "State: " + str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         if ball_size > const.MIN_BALL_RADIUS:
-                cv2.circle(self.color_image, (ball_x, ball_x), ball_size, (0, 255, 255), 5)
-                cv2.circle(self.color_image, center, 5, (0, 0, 255), -1)
-                cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_size - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.circle(self.color_image, (ball_x, ball_x), ball_size, (0, 255, 255), 5)
+            cv2.circle(self.color_image, center, 5, (0, 0, 255), -1)
+            cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_size - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         # show image
-        cv2.imshow(const.ORIGINAL_WINDOW, self.color_image)
-        cv2.imshow(const.MASKED_WINDOW, self.masked_image_ball)
-        cv2.imshow(const.MASKED_WINDOW_BASKET, self.masked_image_basket)
+        try:
+            cv2.imshow(const.ORIGINAL_WINDOW, self.color_image)
+        except Exception:  # cv2.error: (-215:Assertion failed) size.width>0 && size.height>0 in function 'imshow'
+            pass
+        # cv2.imshow(const.MASKED_WINDOW_BASKET, self.masked_image_basket)
 
     def kill_gui(self):
         cv2.destroyAllWindows()

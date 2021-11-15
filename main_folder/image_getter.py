@@ -22,7 +22,7 @@ class ImageGetter(ImageCalibraion):
         super(ImageGetter, self).__init__()
         self.enable_gui = enable_gui
 
-        # self.Gui = RobotGui() if enable_gui else None
+        self.Gui = RobotGui() if enable_gui else None
         self.State_machine = StateMachine()
 
     def get_biggest_blob_coord(self, inspected_frame):
@@ -48,11 +48,6 @@ class ImageGetter(ImageCalibraion):
             return -1, -1, -1
 
     def main(self, socket_data):
-        #TODO Delete
-        cv2.namedWindow(const.ORIGINAL_WINDOW)
-        cv2.namedWindow(const.MASKED_WINDOW)
-        cv2.namedWindow(const.MASKED_WINDOW_BASKET)
-        #TODO Delete
         while True:
             start_time = time.time()
 
@@ -74,37 +69,21 @@ class ImageGetter(ImageCalibraion):
 
             # show gui
             if self.enable_gui:
-                ball_info = [ball_x, ball_y, ball_size]  # TODO send info to gui
-                basket_info = [basket_x, basket_y, basket_size, center]
+                ball_info = [ball_x, ball_y, ball_size, center] 
+                basket_info = [basket_x, basket_y, basket_size]
 
-                # self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
-                # self.Gui.update_image(color_image, mask_image_ball, mask_image_basket)
-                # self.Gui.show_gui()
-                #TODO delete
-                cv2.line(color_image, (const.CENTER_RANGE[0], 0), (const.CENTER_RANGE[0], const.HEIGHT), (0, 0, 0), 3)
-                cv2.line(color_image, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
-                cv2.putText(color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                cv2.putText(color_image, "State: " + str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
+                self.Gui.update_image(color_image)
+                self.Gui.show_gui()
                 
-                if ball_size > const.MIN_BALL_RADIUS:
-                    cv2.circle(color_image, (ball_x, ball_x), ball_size, (0, 255, 255), 5)
-                    cv2.circle(color_image, center, 5, (0, 0, 255), -1)
-                    cv2.putText(color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_size - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
-                cv2.imshow(const.ORIGINAL_WINDOW, color_image)
-                cv2.imshow(const.MASKED_WINDOW, mask_image_ball)
-                cv2.imshow(const.MASKED_WINDOW_BASKET, mask_image_basket)
-                #TODO delete
-
-
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
         self.pipeline.stop()
 
-        # if self.enable_gui:
-        #     self.Gui.kill_gui()
+        if self.enable_gui:
+            self.Gui.kill_gui()
 
 
 def socket_data_getter(out_q):
