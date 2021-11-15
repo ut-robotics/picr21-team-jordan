@@ -32,6 +32,7 @@ class RobotGui:
         ball_x = int(self.ball_info[0])
         ball_y = int(self.ball_info[1])
         ball_size = int(self.ball_info[2])
+        center = self.ball_info[3]
 
         basket_x = int(self.ball_info[0])
         basket_y = int(self.ball_info[1])
@@ -41,8 +42,11 @@ class RobotGui:
         cv2.line(self.color_image, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
         cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(self.color_image, "State: " + str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        text = str(ball_x) + " : " + str(ball_y) + ":::" + str(round(ball_size))
-        cv2.putText(self.color_image, text, (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        if ball_size > const.MIN_BALL_RADIUS:
+                cv2.circle(self.color_image, (ball_x, ball_x), ball_size, (0, 255, 255), 5)
+                cv2.circle(self.color_image, center, 5, (0, 0, 255), -1)
+                cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_size - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
         # show image
         cv2.imshow(const.ORIGINAL_WINDOW, self.color_image)
         cv2.imshow(const.MASKED_WINDOW, self.masked_image_ball)

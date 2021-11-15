@@ -20,7 +20,7 @@ class StateMachine:
 
     def __init__(self):
         self.Robot = RobotMovement()
-        self.state: int = State.INITIAL
+        self.state: int = State.FIND_BALL
 
     def run_current_state(self, ball_x, ball_y, ball_size):
         # if referee_command: TODO referee commands
@@ -38,10 +38,10 @@ class StateMachine:
             self.Robot.move_robot(0, 0, 10)
 
         elif ball_x < const.CENTER_RANGE[0]:
-            self.Robot.move_robot(0, 0, 10)
+            self.Robot.move_robot(0, 0, 5)
 
         elif ball_x > const.CENTER_RANGE[-1]:
-            self.Robot.move_robot(0, 0, -10)
+            self.Robot.move_robot(0, 0, -5)
 
         # elif ball_x in const.CENTER_RANGE:
         #     if ball_size <= const.BALL_SIZE_TO_STOP:

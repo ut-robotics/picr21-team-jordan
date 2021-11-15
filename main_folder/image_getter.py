@@ -68,14 +68,14 @@ class ImageGetter(ImageCalibraion):
             mask_image_basket = self.apply_image_processing(color_image, const.BASKET)
 
             # running robot depends of the ball and basket coords and sizes
-            ball_x, ball_y, ball_size = self.get_biggest_blob_coord(mask_image_ball)
+            ball_x, ball_y, ball_size, center = self.track_ball_using_imutils(mask_image_ball) #TODO size = radius
             basket_x, basket_y, basket_size = self.get_biggest_blob_coord(mask_image_basket)
             self.current_state = self.State_machine.run_current_state(ball_x, ball_y, ball_size)
 
             # show gui
             if self.enable_gui:
                 ball_info = [ball_x, ball_y, ball_size]  # TODO send info to gui
-                basket_info = [basket_x, basket_y, basket_size]
+                basket_info = [basket_x, basket_y, basket_size, center]
 
                 # self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
                 # self.Gui.update_image(color_image, mask_image_ball, mask_image_basket)
@@ -85,9 +85,12 @@ class ImageGetter(ImageCalibraion):
                 cv2.line(color_image, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
                 cv2.putText(color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.putText(color_image, "State: " + str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                text = str(ball_x) + " : " + str(ball_y) + ":::" + str(round(ball_size))
-                cv2.putText(color_image, text, (ball_x, ball_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                # show image
+                
+                if ball_size > const.MIN_BALL_RADIUS:
+                    cv2.circle(color_image, (ball_x, ball_x), ball_size, (0, 255, 255), 5)
+                    cv2.circle(color_image, center, 5, (0, 0, 255), -1)
+                    cv2.putText(color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_size - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
                 cv2.imshow(const.ORIGINAL_WINDOW, color_image)
                 cv2.imshow(const.MASKED_WINDOW, mask_image_ball)
                 cv2.imshow(const.MASKED_WINDOW_BASKET, mask_image_basket)
@@ -100,8 +103,8 @@ class ImageGetter(ImageCalibraion):
 
         self.pipeline.stop()
 
-        if self.enable_gui:
-            self.Gui.kill_gui()
+        # if self.enable_gui:
+        #     self.Gui.kill_gui()
 
 
 def socket_data_getter(out_q):

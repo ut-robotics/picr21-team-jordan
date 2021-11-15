@@ -1,7 +1,9 @@
 import os
 import time
+from collections import deque
 
 import cv2
+import imutils
 import numpy as np
 import pyrealsense2 as rs
 
@@ -10,8 +12,8 @@ import constants as const
 CAM_ID = 4
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
-MIN_CIRCULARITY = 0.7
-MIN_DISTANCE_BETWEEN_BLOBS = 50
+MIN_DISTANCE_BETWEEN_BLOBS = 40
+MIN_BALL_RADIUS = 1
 BLUR = 5
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 
@@ -48,11 +50,13 @@ class ImageCalibraion:
         self.blobparams.maxArea = BLOB_MAX_AREA
         self.blobparams.filterByInertia = False
         self.blobparams.filterByConvexity = False
-        self.blobparams.filterByCircularity = True
-        self.blobparams.minCircularity = MIN_CIRCULARITY
+        self.blobparams.filterByCircularity = False
+        # self.blobparams.minCircularity = MIN_CIRCULARITY
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
 
         self.fps = 0
+
+        self.pts = deque(maxlen=64)
 
     def update_value(self, new_value):
         self.trackbar_value = new_value
@@ -84,6 +88,7 @@ class ImageCalibraion:
         # change color space (RBG -> HSV)
         hsv = cv2.cvtColor(frame, self.color_type)
         hsv_blured = cv2.medianBlur(hsv, BLUR)
+        # hsv_blured = hsv
 
         # update trackbar values
         if is_calibration:
@@ -106,14 +111,21 @@ class ImageCalibraion:
 
         return mask
 
-    def draw_keypoints(self, color_image, mask_image):
-        keypoints: list = self.detector.detect(mask_image)
-        if len(keypoints) > 0:
-            for keypoint in keypoints:
-                if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
-                    x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
-                    cv2.circle(color_image, (x, y), int(keypoint.size), (0, 255, 0))
-                    cv2.putText(color_image, str(int(keypoint.size)), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    def track_ball_using_imutils(self, inspected_frame):
+        inspected_frame = cv2.bitwise_not(inspected_frame)
+        cnts = cv2.findContours(inspected_frame.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        cnts = imutils.grab_contours(cnts)
+        center = None
+        if len(cnts) > 0:
+            c = max(cnts, key=cv2.contourArea)
+            ((x, y), radius) = cv2.minEnclosingCircle(c)
+            M = cv2.moments(c)
+            try:
+                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+            except ZeroDivisionError:
+                pass
+
+        return int(round(x)), int(round(y)), int(round(radius)), center
 
     def mainloop(self, type):
         if type == const.BALL:
@@ -136,7 +148,14 @@ class ImageCalibraion:
 
             color_image, depth_image = self.get_frame_using_pyrealsense()
             mask_image = self.apply_image_processing(color_image, const.BALL, is_calibration=True)  # TODO do something with depth \
-            self.draw_keypoints(color_image, mask_image)
+            # self.draw_keypoints(color_image, mask_image)
+            x, y, radius, center = self.track_ball_using_imutils(mask_image)
+            # To see the centroid clearly
+            if radius > const.MIN_BALL_RADIUS:
+                cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
+                cv2.circle(color_image, center, 5, (0, 0, 255), -1)
+                cv2.putText(color_image, str(round(x)) + " : " + str(round(y)), (int(x), int(y - radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
 
             # show frames
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
