@@ -22,41 +22,53 @@ class StateMachine:
         self.Robot = RobotMovement()
         self.state: int = State.FIND_BALL
 
-    def run_current_state(self, ball_x, ball_y, ball_size):
+    def run_current_state(self, ball_x, ball_y, ball_radius):
         # if referee_command: TODO referee commands
         #     self.state = int(referee_command)
 
         if self.state == State.FIND_BALL:
             self.find_a_ball(ball_x)
-            
-        if self.state == State.GET_TO_BALL:
-            self.get_to_ball(ball_x, ball_y, ball_size)
 
-        # print(f"State: {self.current_state}, Ball=(x:{ball_x}|size:{ball_size}, Action: {action}")
+        if self.state == State.GET_TO_BALL:
+            self.get_to_ball(ball_x, ball_y, ball_radius)
+
         return self.state
 
     def find_a_ball(self, ball_x):
-        robot_speed_rot = int((const.CENTER_X - ball_x)/20)
         """State.FIND_BALL action"""
+        robot_speed_rot = self.calculate_rotation_speed(ball_x)
+
         if ball_x == -1:
             self.Robot.move_robot_XY(0, 0, 15)
-            
+
         elif ball_x in const.CENTER_RANGE_X:
             self.Robot.move_robot_XY(0, 0, 0)
             self.state = State.GET_TO_BALL
-        
+
         else:
             self.Robot.move_robot_XY(0, 0, robot_speed_rot)
-        
 
-    def get_to_ball(self, ball_x, ball_y, ball_size):
-        # ball size 24 is close enough
-        robot_speed_y = int((const.CENTER_Y - ball_y)/5)
-        robot_speed_rot = int((const.CENTER_X - ball_x)/10)
+    def get_to_ball(self, ball_x, ball_y, ball_radius):
+        """State.GET_TO_BALL action"""
+        robot_speed_rot = self.calculate_rotation_speed(ball_x)
+        robot_speed_y = self.calculate_y_speed(ball_y)
+
         if ball_y == -1:
             self.state = State.FIND_BALL
-        elif ball_y in const.CENTER_RANGE_Y:
+        elif ball_y in const.CENTER_RANGE_Y and ball_radius > const.MIN_BALL_RADIUS:
             self.Robot.move_robot_XY(0, 0, 0)
         else:
             self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot)
-            
+
+    def calculate_rotation_speed(self, ball_x):
+        """Rot speed is linear dependence"""
+        speed_rot = (const.CENTER_X - ball_x) / const.ROT_MULTIPLIER
+        return int(speed_rot)
+
+    def calculate_y_speed(self, ball_y):
+        """Y speed is cubic dependence"""
+        speed_y = ((const.CENTER_Y - ball_y) / const.Y_MULTIPLIER) ** 3
+        return int(speed_y)
+
+    def calculate_x_speed(self, tba):
+        pass
