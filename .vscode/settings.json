@@ -17,7 +17,7 @@
     },
     "files.exclude": {
       "**/*.pyc": {"when": "$(basename).py"},
-      "**/__pycache__": false,
+      "**/__pycache__": true,
       }
   }
   
