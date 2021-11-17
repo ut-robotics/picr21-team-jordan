@@ -32,8 +32,8 @@ class RobotGui:
         basket_y = int(self.ball_info[1])
         basket_size = int(self.basket_info[2])
 
-        cv2.line(self.color_image, (const.CENTER_RANGE[0], 0), (const.CENTER_RANGE[0], const.HEIGHT), (0, 0, 0), 3)
-        cv2.line(self.color_image, (const.CENTER_RANGE[-1], 0), (const.CENTER_RANGE[-1], const.HEIGHT), (0, 0, 0), 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_X[0], 0), (const.CENTER_RANGE_X[0], const.HEIGHT), (0, 0, 0), 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_X[-1], 0), (const.CENTER_RANGE_X[-1], const.HEIGHT), (0, 0, 0), 3)
         cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[0]), (const.WIDTH, const.CENTER_RANGE_Y[0]), (0, 0, 0), 3)
         cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[-1]), (const.WIDTH, const.CENTER_RANGE_Y[-1]), (0, 0, 0), 3)
         cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)

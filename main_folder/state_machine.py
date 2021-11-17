@@ -41,7 +41,7 @@ class StateMachine:
         if ball_x == -1:
             self.Robot.move_robot_XY(0, 0, 15)
             
-        elif ball_x in const.CENTER_RANGE:
+        elif ball_x in const.CENTER_RANGE_X:
             self.Robot.move_robot_XY(0, 0, 0)
             self.state = State.GET_TO_BALL
         
