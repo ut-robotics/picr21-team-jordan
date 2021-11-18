@@ -9,3 +9,4 @@ pyhton3.7 -m pip install pyrealsense2
 sudo apt-get install ssh
 sudo service ssh start
 sudo service ssh status
+sudo service ssh enable
