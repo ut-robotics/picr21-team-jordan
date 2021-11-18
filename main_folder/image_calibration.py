@@ -90,29 +90,20 @@ class ImageCalibraion:
         # change color space (RBG -> HSV)
         hsv = cv2.cvtColor(frame, self.color_type)
         hsv_blured = cv2.medianBlur(hsv, BLUR)
-        #TODO Refactor this part of code
         default_values = self.default_values_ball if type == const.BALL else self.default_values_basket
 
         # update trackbar values
         if is_calibration:
             for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh", "dil1", "dil2", "clos1", "clos2"]):
-                if type == const.BALL:
-                    self.default_values_ball[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
-                elif type == const.BASKET:
-                    self.default_values_basket[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
+                default_values[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
 
         # update masked image
         #TODO Refactor
-        if type == const.BALL:
-            lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
-            upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
-            kernel1 = np.ones((self.default_values_ball[6], self.default_values_ball[7]), np.uint8)
-            kernel2 = np.ones((self.default_values_ball[8], self.default_values_ball[9]), np.uint8)
-        elif type == const.BASKET:
-            lowerLimits = np.array([self.default_values_basket[0], self.default_values_basket[1], self.default_values_basket[2]])
-            upperLimits = np.array([self.default_values_basket[3], self.default_values_basket[4], self.default_values_basket[5]])
-            kernel1 = np.ones((self.default_values_basket[6], self.default_values_basket[7]), np.uint8)
-            kernel2 = np.ones((self.default_values_basket[8], self.default_values_basket[9]), np.uint8)
+    
+        lowerLimits = np.array([default_values[0], default_values[1], default_values[2]])
+        upperLimits = np.array([default_values[3], default_values[4], default_values[5]])
+        kernel1 = np.ones((default_values[6], default_values[7]), np.uint8)
+        kernel2 = np.ones((default_values[8], default_values[9]), np.uint8)
         
         mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel1)
@@ -140,10 +131,7 @@ class ImageCalibraion:
             return -1, -1, -1, -1
 
     def mainloop(self, type):
-        if type == const.BALL:
-            default_values = self.default_values_ball
-        elif type == const.BASKET:
-            default_values = self.default_values_basket
+        default_values = self.default_values_ball if type == const.BALL else self.default_values_basket
 
         # create gui
         cv2.namedWindow(const.ORIGINAL_WINDOW)
