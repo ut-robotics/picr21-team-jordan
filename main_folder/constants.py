@@ -10,9 +10,10 @@ RESIZE_Y = 2
 WIDTH_RESIZED = int(WIDTH * RESIZE_X)
 HEIGHT_RESIZED = int(CROP_Y2 * RESIZE_Y)
 
-# constants for names of windows
-BASKET = "basket"
-BALL = "ball"
+# constants for names of windows and string type variables 
+BALL = "trackbar_values_ball"
+BASKET_BLUE = "trackbar_values_basket_blue"
+BASKET_ROSE = "trackbar_values_basket_rose"
 ORIGINAL_WINDOW = "Original"
 MASKED_WINDOW = "Thresh"
 MASKED_WINDOW_BASKET = "Basket"
@@ -22,10 +23,10 @@ TRACKBAR_WINDOW = "Trackbar"
 # ball detection constants
 MINIMAL_BALL_SIZE_TO_DETECT = 7  # TODO delete mb
 MIN_BALL_RADIUS_TO_DETECT = 0
-MIN_BALL_RADIUS_TO_GET = 25
+MIN_BALL_RADIUS_TO_STOP = 25
 
 # center coordinates and range (that robot claims as center) constants
-CENTER_OFFSET_X = 30
+CENTER_OFFSET_X = 20
 CENTER_OFFSET_Y = 20
 CENTER_X = int(WIDTH_RESIZED / 2)
 #TODO REFACTOR

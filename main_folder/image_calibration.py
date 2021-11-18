@@ -13,7 +13,7 @@ CAM_ID = 4
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
 MIN_DISTANCE_BETWEEN_BLOBS = 40
-MIN_BALL_RADIUS = 1
+# MIN_BALL_RADIUS = 1
 BLUR = 5
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 
@@ -25,8 +25,9 @@ class ImageCalibraion:
     """
 
     def __init__(self):
-        self.default_values_ball: list = self.get_default_values(CONFIG_PATH, "trackbar_values_ball")
-        self.default_values_basket: list = self.get_default_values(CONFIG_PATH, "trackbar_values_basket")
+        self.default_values_ball: list = self.get_default_values(CONFIG_PATH, const.BALL)
+        self.default_values_basket_blue: list = self.get_default_values(CONFIG_PATH, const.BASKET_BLUE)
+        self.default_values_basket_rose: list = self.get_default_values(CONFIG_PATH, const.BASKET_ROSE)
 
         self.pipeline = rs.pipeline()
         config = rs.config()
@@ -90,29 +91,25 @@ class ImageCalibraion:
         # change color space (RBG -> HSV)
         hsv = cv2.cvtColor(frame, self.color_type)
         hsv_blured = cv2.medianBlur(hsv, BLUR)
-        #TODO Refactor this part of code
-        default_values = self.default_values_ball if type == const.BALL else self.default_values_basket
+        if type == const.BALL:
+            default_values = self.default_values_ball
+        elif type == const.BASKET_BLUE:
+            default_values = self.default_values_basket_blue
+        elif type == const.BASKET_ROSE:
+            default_values = self.default_values_basket_rose
 
         # update trackbar values
         if is_calibration:
             for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh", "dil1", "dil2", "clos1", "clos2"]):
-                if type == const.BALL:
-                    self.default_values_ball[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
-                elif type == const.BASKET:
-                    self.default_values_basket[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
+                default_values[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
 
         # update masked image
         #TODO Refactor
-        if type == const.BALL:
-            lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
-            upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
-            kernel1 = np.ones((self.default_values_ball[6], self.default_values_ball[7]), np.uint8)
-            kernel2 = np.ones((self.default_values_ball[8], self.default_values_ball[9]), np.uint8)
-        elif type == const.BASKET:
-            lowerLimits = np.array([self.default_values_basket[0], self.default_values_basket[1], self.default_values_basket[2]])
-            upperLimits = np.array([self.default_values_basket[3], self.default_values_basket[4], self.default_values_basket[5]])
-            kernel1 = np.ones((self.default_values_basket[6], self.default_values_basket[7]), np.uint8)
-            kernel2 = np.ones((self.default_values_basket[8], self.default_values_basket[9]), np.uint8)
+    
+        lowerLimits = np.array([default_values[0], default_values[1], default_values[2]])
+        upperLimits = np.array([default_values[3], default_values[4], default_values[5]])
+        kernel1 = np.ones((default_values[6], default_values[7]), np.uint8)
+        kernel2 = np.ones((default_values[8], default_values[9]), np.uint8)
         
         mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
         mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel1)
@@ -142,8 +139,10 @@ class ImageCalibraion:
     def mainloop(self, type):
         if type == const.BALL:
             default_values = self.default_values_ball
-        elif type == const.BASKET:
-            default_values = self.default_values_basket
+        elif type == const.BASKET_BLUE:
+            default_values = self.default_values_basket_blue
+        elif type == const.BASKET_ROSE:
+            default_values = self.default_values_basket_rose
 
         # create gui
         cv2.namedWindow(const.ORIGINAL_WINDOW)
@@ -163,10 +162,9 @@ class ImageCalibraion:
 
             color_image, depth_image = self.get_frame_using_pyrealsense()
             
-            mask_image = self.apply_image_processing(color_image, const.BALL, is_calibration=True)  # TODO do something with depth \
+            mask_image = self.apply_image_processing(color_image, type, is_calibration=True)  # TODO do something with depth \
             # self.draw_keypoints(color_image, mask_image)
             x, y, radius, center = self.track_ball_using_imutils(mask_image)
-            # To see the centroid clearly
             if radius > const.MIN_BALL_RADIUS_TO_DETECT:
                 cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
                 cv2.circle(color_image, center, 5, (0, 0, 255), -1)
@@ -180,17 +178,14 @@ class ImageCalibraion:
             # cv2.imshow(const.DEPTH_WINDOW, depth_image)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                if type == const.BALL:
-                    name = "trackbar_values_ball"
-                elif type == const.BASKET:
-                    name = "trackbar_values_basket"
-                self.save_default_values(CONFIG_PATH, name, [str(x) for x in default_values])
+                self.save_default_values(CONFIG_PATH, type, [str(x) for x in default_values])
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
     def main(self):
         self.mainloop(const.BALL)
-        # self.mainloop(const.BASKET)
+        # self.mainloop(const.BASKET_BLUE)
+        # self.mainloop(const.BASKET_ROSE)
         self.pipeline.stop()
         cv2.destroyAllWindows()
 
