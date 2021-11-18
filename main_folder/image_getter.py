@@ -63,13 +63,13 @@ class ImageGetter(ImageCalibraion):
             mask_image_basket = self.apply_image_processing(color_image, const.BASKET)
 
             # running robot depends of the ball and basket coords and sizes
-            ball_x, ball_y, ball_size, center = self.track_ball_using_imutils(mask_image_ball) #TODO size = radius
+            ball_x, ball_y, ball_radius, center = self.track_ball_using_imutils(mask_image_ball) #TODO size = radius
             basket_x, basket_y, basket_size = self.get_biggest_blob_coord(mask_image_basket)
-            self.current_state = self.State_machine.run_current_state(ball_x, ball_y, ball_size)
+            self.current_state = self.State_machine.run_current_state(ball_x, ball_y, ball_radius)
 
             # show gui
             if self.enable_gui:
-                ball_info = [ball_x, ball_y, ball_size, center] 
+                ball_info = [ball_x, ball_y, ball_radius, center] 
                 basket_info = [basket_x, basket_y, basket_size]
 
                 self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)

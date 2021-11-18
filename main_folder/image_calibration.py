@@ -51,11 +51,9 @@ class ImageCalibraion:
         self.blobparams.filterByInertia = False
         self.blobparams.filterByConvexity = False
         self.blobparams.filterByCircularity = False
-        # self.blobparams.minCircularity = MIN_CIRCULARITY
         self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
 
         self.fps = 0
-
         self.pts = deque(maxlen=64)
 
     def update_value(self, new_value):
@@ -67,7 +65,7 @@ class ImageCalibraion:
             with open(path + file_name, "r") as file:
                 return [int(x) for x in file.read().split()]
         except FileNotFoundError:
-            return [127, 127, 127, 255, 255, 255]
+            return [127, 127, 127, 255, 255, 255, 1, 1, 1, 1]
 
     def save_default_values(self, path, file_name, array):
         with open(path + file_name, "w") as file:
@@ -82,39 +80,47 @@ class ImageCalibraion:
         color_image = np.asanyarray(color_frame.get_data())
         depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=self.alpha_depth), cv2.COLORMAP_JET)
 
-        color_image = color_image[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 0 : 0 + const.WIDTH]
-        depth_colormap = depth_colormap[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 0 : 0 + const.WIDTH]
+        color_image = color_image[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 1 : 0 + const.WIDTH -1]
+        color_image = cv2.resize(color_image, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))
+        depth_colormap = depth_colormap[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 1 : 0 + const.WIDTH -1]
+        
         return color_image, depth_colormap
 
     def apply_image_processing(self, frame, type, is_calibration=False):
         # change color space (RBG -> HSV)
         hsv = cv2.cvtColor(frame, self.color_type)
         hsv_blured = cv2.medianBlur(hsv, BLUR)
-        # hsv_blured = hsv
+        #TODO Refactor this part of code
+        default_values = self.default_values_ball if type == const.BALL else self.default_values_basket
 
         # update trackbar values
         if is_calibration:
-            for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
+            for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh", "dil1", "dil2", "clos1", "clos2"]):
                 if type == const.BALL:
                     self.default_values_ball[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
                 elif type == const.BASKET:
                     self.default_values_basket[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
 
         # update masked image
+        #TODO Refactor
         if type == const.BALL:
             lowerLimits = np.array([self.default_values_ball[0], self.default_values_ball[1], self.default_values_ball[2]])
             upperLimits = np.array([self.default_values_ball[3], self.default_values_ball[4], self.default_values_ball[5]])
+            kernel1 = np.ones((self.default_values_ball[6], self.default_values_ball[7]), np.uint8)
+            kernel2 = np.ones((self.default_values_ball[8], self.default_values_ball[9]), np.uint8)
         elif type == const.BASKET:
             lowerLimits = np.array([self.default_values_basket[0], self.default_values_basket[1], self.default_values_basket[2]])
             upperLimits = np.array([self.default_values_basket[3], self.default_values_basket[4], self.default_values_basket[5]])
-
+            kernel1 = np.ones((self.default_values_basket[6], self.default_values_basket[7]), np.uint8)
+            kernel2 = np.ones((self.default_values_basket[8], self.default_values_basket[9]), np.uint8)
+        
         mask = cv2.inRange(hsv_blured, lowerLimits, upperLimits)
-        mask = cv2.bitwise_not(mask)
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel1)
+        mask = cv2.dilate(mask, kernel2, iterations=1)
 
         return mask
 
     def track_ball_using_imutils(self, inspected_frame):
-        inspected_frame = cv2.bitwise_not(inspected_frame)
         cnts = cv2.findContours(inspected_frame.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
         center = None
@@ -126,7 +132,7 @@ class ImageCalibraion:
                 center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
             except ZeroDivisionError:
                 pass
-            if radius <= const.MIN_BALL_RADIUS:
+            if radius <= const.MIN_BALL_RADIUS_TO_DETECT:
                 return -1, -1, -1, -1
             else:
                 return int(round(x)), int(round(y)), int(round(radius)), center
@@ -146,6 +152,9 @@ class ImageCalibraion:
         cv2.namedWindow(const.DEPTH_WINDOW)
         for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
             cv2.createTrackbar(value, const.TRACKBAR_WINDOW, default_values[index], 255, self.update_value)
+        for index, value in enumerate(["dil1", "dil2", "clos1", "clos2"]):
+            cv2.createTrackbar(value, const.TRACKBAR_WINDOW, default_values[index + 6], 50, self.update_value)
+        
         cv2.createTrackbar("alpha", const.TRACKBAR_WINDOW, 30, 100, self.update_value)
 
         # calibrartion for a ball
@@ -153,15 +162,15 @@ class ImageCalibraion:
             start_time = time.time()
 
             color_image, depth_image = self.get_frame_using_pyrealsense()
+            
             mask_image = self.apply_image_processing(color_image, const.BALL, is_calibration=True)  # TODO do something with depth \
             # self.draw_keypoints(color_image, mask_image)
             x, y, radius, center = self.track_ball_using_imutils(mask_image)
-            print(x, y, radius, center)
             # To see the centroid clearly
-            if radius > const.MIN_BALL_RADIUS:
+            if radius > const.MIN_BALL_RADIUS_TO_DETECT:
                 cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
                 cv2.circle(color_image, center, 5, (0, 0, 255), -1)
-                cv2.putText(color_image, str(round(x)) + " : " + str(round(y)), (int(x), int(y - radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.putText(color_image, str(round(x)) + " : " + str(round(y)) + "\n" + str(round(radius)), (int(x), int(y - radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
             # show frames
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
@@ -181,7 +190,7 @@ class ImageCalibraion:
 
     def main(self):
         self.mainloop(const.BALL)
-        self.mainloop(const.BASKET)
+        # self.mainloop(const.BASKET)
         self.pipeline.stop()
         cv2.destroyAllWindows()
 
