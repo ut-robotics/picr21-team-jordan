@@ -23,7 +23,7 @@ TRACKBAR_WINDOW = "Trackbar"
 # ball detection constants
 MINIMAL_BALL_SIZE_TO_DETECT = 7  # TODO delete mb
 MIN_BALL_RADIUS_TO_DETECT = 0
-MIN_BALL_RADIUS_TO_GET = 25
+MIN_BALL_RADIUS_TO_STOP = 25
 
 # center coordinates and range (that robot claims as center) constants
 CENTER_OFFSET_X = 20
