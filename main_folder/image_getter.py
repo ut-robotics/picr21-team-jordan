@@ -60,7 +60,7 @@ class ImageGetter(ImageCalibraion):
             # get camera images
             color_image, depth_image = self.get_frame_using_pyrealsense()  # TODO do something with depth
             mask_image_ball = self.apply_image_processing(color_image, const.BALL)
-            mask_image_basket = self.apply_image_processing(color_image, const.BASKET)
+            mask_image_basket = self.apply_image_processing(color_image, const.BASKET_BLUE)
 
             # running robot depends of the ball and basket coords and sizes
             ball_x, ball_y, ball_radius, center = self.track_ball_using_imutils(mask_image_ball) #TODO size = radius
