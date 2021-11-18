@@ -56,7 +56,7 @@ class StateMachine:
 
         if ball_y == -1:
             self.state = State.FIND_BALL
-        elif ball_y in const.CENTER_RANGE_Y and ball_radius > const.MIN_BALL_RADIUS_TO_GET:
+        elif ball_y in const.CENTER_RANGE_Y and ball_radius > const.MIN_BALL_RADIUS_TO_STOP:
             self.Robot.move_robot_XY(0, 0, 0)
         else:
             self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot)
