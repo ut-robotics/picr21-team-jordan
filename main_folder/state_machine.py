@@ -36,7 +36,7 @@ class StateMachine:
 
     def find_a_ball(self, ball_x):
         """State.FIND_BALL action"""
-        robot_speed_rot = self.calculate_rotation_speed(ball_x)
+        # robot_speed_rot = self.calculate_rotation_speed(ball_x)
 
         if ball_x == -1:
             self.Robot.move_robot_XY(0, 0, 15)
@@ -69,7 +69,7 @@ class StateMachine:
         return int(speed_rot) if speed_rot <= const.MAXIMUM_SPEED else const.MAXIMUM_SPEED
 
     def calculate_y_speed(self, ball_y):
-        """Y speed is cubic dependence"""
+        """Y speed speed is linear dependence"""
         speed_y = int(((const.CENTER_Y - ball_y) / const.Y_MULTIPLIER) ** 3)
         if speed_y > const.MAXIMUM_SPEED:
             speed_y = const.MAXIMUM_SPEED

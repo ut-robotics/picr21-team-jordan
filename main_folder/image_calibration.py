@@ -162,7 +162,7 @@ class ImageCalibraion:
 
             color_image, depth_image = self.get_frame_using_pyrealsense()
             
-            mask_image = self.apply_image_processing(color_image, const.BALL, is_calibration=True)  # TODO do something with depth \
+            mask_image = self.apply_image_processing(color_image, type, is_calibration=True)  # TODO do something with depth \
             # self.draw_keypoints(color_image, mask_image)
             x, y, radius, center = self.track_ball_using_imutils(mask_image)
             if radius > const.MIN_BALL_RADIUS_TO_DETECT:
@@ -183,8 +183,9 @@ class ImageCalibraion:
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
     def main(self):
-        # self.mainloop(const.BALL)
-        self.mainloop(const.BASKET_BLUE)
+        self.mainloop(const.BALL)
+        # self.mainloop(const.BASKET_BLUE)
+        # self.mainloop(const.BASKET_ROSE)
         self.pipeline.stop()
         cv2.destroyAllWindows()
 
