@@ -10,10 +10,10 @@ RESIZE_Y = 2
 WIDTH_RESIZED = int(WIDTH * RESIZE_X)
 HEIGHT_RESIZED = int(CROP_Y2 * RESIZE_Y)
 
-# constants for names of windows
+# constants for names of windows and string type variables 
+BALL = "trackbar_values_ball"
 BASKET_BLUE = "trackbar_values_basket_blue"
 BASKET_ROSE = "trackbar_values_basket_rose"
-BALL = "trackbar_values_ball"
 ORIGINAL_WINDOW = "Original"
 MASKED_WINDOW = "Thresh"
 MASKED_WINDOW_BASKET = "Basket"

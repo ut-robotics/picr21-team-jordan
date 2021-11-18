@@ -91,7 +91,12 @@ class ImageCalibraion:
         # change color space (RBG -> HSV)
         hsv = cv2.cvtColor(frame, self.color_type)
         hsv_blured = cv2.medianBlur(hsv, BLUR)
-        default_values = self.default_values_ball if type == const.BALL else self.default_values_basket_blue
+        if type == const.BALL:
+            default_values = self.default_values_ball
+        elif type == const.BASKET_BLUE:
+            default_values = self.default_values_basket_blue
+        elif type == const.BASKET_ROSE:
+            default_values = self.default_values_basket_rose
 
         # update trackbar values
         if is_calibration:
