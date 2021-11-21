@@ -61,15 +61,22 @@ class StateMachine:
         else:
             self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot)
 
+    def limit_speed(self, speed):
+        if speed < -(const.MAXIMUM_SPEED):
+            speed = -(const.MAXIMUM_SPEED)
+        elif speed > const.MAXIMUM_SPEED:
+            speed = const.MAXIMUM_SPEED
+        return speed
+
     def calculate_rotation_speed(self, ball_x):
         """Rot speed is linear dependence"""
-        speed_rot = (const.CENTER_X - ball_x) / const.ROT_MULTIPLIER
-        return int(speed_rot) if speed_rot <= const.MAXIMUM_SPEED else const.MAXIMUM_SPEED
+        speed_rot = int((const.CENTER_X - ball_x) / const.ROT_MULTIPLIER)
+        return self.limit_speed(speed_rot)
 
     def calculate_y_speed(self, ball_y):
         """Y speed speed is linear dependence"""
         speed_y = int(((const.CENTER_Y - ball_y) / const.Y_MULTIPLIER) ** 3)
-        return int(speed_y)
+        return self.limit_speed(speed_y)
 
     def calculate_x_speed(self, tba):
         pass
