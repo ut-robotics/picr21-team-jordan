@@ -1,10 +1,9 @@
 import cv2
-import file_manager
-import constants as const
-import numpy as np
 import imutils
+import numpy as np
 
-from camera import Camera
+import constants as const
+import file_manager
 
 
 class ImageProcessing:
@@ -12,7 +11,7 @@ class ImageProcessing:
         self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, const.BALL)
         self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, const.BASKET_BLUE)
         self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, const.BASKET_ROSE)
-        
+
         self.blobparams = cv2.SimpleBlobDetector_Params()
         self.blobparams.minDistBetweenBlobs = const.MIN_DISTANCE_BETWEEN_BLOBS
         self.blobparams.filterByArea = True
@@ -38,7 +37,7 @@ class ImageProcessing:
         kernel1 = np.ones((default_values[6], default_values[7]), np.uint8)
         kernel2 = np.ones((default_values[8], default_values[9]), np.uint8)
 
-        frame = cv2.resize(frame, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED)) #TODO maybe resize is not needed
+        frame = cv2.resize(frame, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))  # TODO maybe resize is not needed
         frame = cv2.cvtColor(frame, self.color_type)
         frame = cv2.medianBlur(frame, const.BLUR)
         mask = cv2.inRange(frame, lowerLimits, upperLimits)

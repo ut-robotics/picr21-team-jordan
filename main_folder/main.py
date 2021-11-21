@@ -5,14 +5,13 @@ import cv2
 
 import constants as const
 from camera import Camera
-from image_calibration import ImageCalibraion
 from image_processing import ImageProcessing
 from robot_gui import RobotGui
 from socket_data_getter import SocketDataGetter
 from state_machine import StateMachine
 
 
-class Main():
+class Main:
     """
     Main class. Gets frames, applyes image processing to get:
     Ball coord, ball size, basket coord, basket size.

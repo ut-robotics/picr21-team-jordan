@@ -1,7 +1,8 @@
-import pyrealsense2 as rs
-import constants as const
 import cv2
 import numpy as np
+import pyrealsense2 as rs
+
+import constants as const
 
 
 class Camera:

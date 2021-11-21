@@ -1,13 +1,10 @@
-import os
 import time
-from collections import deque
 
 import cv2
-from camera import Camera
 
 import constants as const
-
 import file_manager
+from camera import Camera
 from image_processing import ImageProcessing
 
 
