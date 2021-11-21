@@ -64,15 +64,11 @@ class StateMachine:
     def calculate_rotation_speed(self, ball_x):
         """Rot speed is linear dependence"""
         speed_rot = (const.CENTER_X - ball_x) / const.ROT_MULTIPLIER
-        if speed_rot > const.MAXIMUM_SPEED:
-            speed_rot = const.MAXIMUM_SPEED
         return int(speed_rot) if speed_rot <= const.MAXIMUM_SPEED else const.MAXIMUM_SPEED
 
     def calculate_y_speed(self, ball_y):
         """Y speed speed is linear dependence"""
         speed_y = int(((const.CENTER_Y - ball_y) / const.Y_MULTIPLIER) ** 3)
-        if speed_y > const.MAXIMUM_SPEED:
-            speed_y = const.MAXIMUM_SPEED
         return int(speed_y)
 
     def calculate_x_speed(self, tba):

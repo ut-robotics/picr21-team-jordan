@@ -21,7 +21,7 @@ CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 class ImageCalibraion:
     """
     This class calibrates threshold values to properly see a ball and a basket and saves this value to /config file
-    Only one main prupose -- generate config files
+    Only one main purpose -- generate config files
     """
 
     def __init__(self):
@@ -33,7 +33,6 @@ class ImageCalibraion:
         config = rs.config()
         config.enable_stream(rs.stream.depth, const.WIDTH_DEPTH, const.HEIGHT_DEPTH, rs.format.z16, 60)
         config.enable_stream(rs.stream.color, const.WIDTH, const.HEIGHT, rs.format.bgr8, 60)
-        # self.pipeline.start(config)
         self.profile = self.pipeline.start(config)
         self.color_sensor = self.profile.get_device().query_sensors()[1]
         self.color_sensor.set_option(rs.option.enable_auto_exposure, False)
@@ -156,7 +155,7 @@ class ImageCalibraion:
         
         cv2.createTrackbar("alpha", const.TRACKBAR_WINDOW, 30, 100, self.update_value)
 
-        # calibrartion for a ball
+        # calibration for a ball
         while True:
             start_time = time.time()
 

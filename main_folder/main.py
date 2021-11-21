@@ -1,19 +1,19 @@
 import threading
 import sys
 
-from image_getter import ImageGetter
-from socket_data_getter import SocketDataGetter
-from image_calibration import ImageCalibraion
+from image_getter import *
+from socket_data_getter import *
+from state_machine import *
 
-print("python3 main.py [enable_pyrealsense][enable_gui]")
-try:
-    enable_gui = True if int(sys.argv[1]) == 1 else False
-except IndexError:
-    print("1 terminal parameters is required.")
-    sys.exit()
-except ValueError:
-    print("Terminal parameter should be int() type")
-    sys.exit()
+# print("python3 main.py [enable_pyrealsense][enable_gui]")
+# try:
+#     enable_gui = True if int(sys.argv[1]) == 1 else False
+# except IndexError:
+#     print("1 terminal parameters is required.")
+#     sys.exit()
+# except ValueError:
+#     print("Terminal parameter should be int() type")
+#     sys.exit()
 
 
 def producer(out_q):
@@ -22,7 +22,7 @@ def producer(out_q):
 
 
 def consumer(in_q):
-    state_machine = ImageGetter(enable_gui)
+    state_machine = ImageGetter(enable_gui=True)
     state_machine.main(in_q)
 
 

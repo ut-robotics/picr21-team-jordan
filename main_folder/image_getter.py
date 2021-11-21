@@ -13,9 +13,9 @@ from state_machine import StateMachine
 
 class ImageGetter(ImageCalibraion):
     """
-    Main class. Gets frames, apllyes image processing to get:
+    Main class. Gets frames, applyes image processing to get:
     Ball coord, ball size, basket coord, basket size.
-    Sends values to the StateMahchine class
+    Sends values to the StateMachine class
     """
 
     def __init__(self, enable_gui):
@@ -54,9 +54,9 @@ class ImageGetter(ImageCalibraion):
         while True:
             start_time = time.time()
 
-            # check for referee coommands
+            # check for referee commands
             if socket_data:
-                referee_command = socket_data.pop(0)  # TODO implement referee command interrurpt of the curent state
+                referee_command = socket_data.pop(0)  # TODO implement referee command interrupt of the current state
             else:
                 referee_command = None
 
