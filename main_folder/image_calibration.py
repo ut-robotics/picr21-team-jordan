@@ -10,8 +10,7 @@ from image_processing import ImageProcessing
 
 class ImageCalibraion:
     """
-    This class calibrates threshold values to properly see a ball and a basket and saves this value to /config file
-    Only one main purpose -- generate config files
+    This class calibrates threshold values to properly see all objects. Saves values to /config file
     """
 
     def __init__(self):
