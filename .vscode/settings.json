@@ -18,6 +18,20 @@
     "files.exclude": {
       "**/*.pyc": {"when": "$(basename).py"},
       "**/__pycache__": true,
-      }
+      },
+      "cSpell.words": [
+        "asanyarray",
+        "blobparams",
+        "cnts",
+        "deque",
+        "HWID",
+        "imshow",
+        "imutils",
+        "ndarray",
+        "picr",
+        "pyrealsense",
+        "RETR",
+        "struct"
+      ]
   }
   
