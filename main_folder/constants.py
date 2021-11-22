@@ -15,7 +15,7 @@ HEIGHT_RESIZED = int(CROP_Y2 * RESIZE_Y)
 WHITE_BALANCE = 3500
 EXPOSURE = 50
 BLUR = 5
-ALPHA_DEPTH = 0.4
+ALPHA_DEPTH = 0.08
 
 # constants for names of windows and string type variables
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"

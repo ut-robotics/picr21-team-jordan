@@ -24,20 +24,20 @@ class ImageProcessing:
 
         self.color_type = cv2.COLOR_BGR2HSV
 
-    def get_masked_image(self, frame, type):
-        if type == const.BALL:
-            default_values = self.default_values_ball
-        elif type == const.BASKET_BLUE:
-            default_values = self.default_values_basket_blue
-        elif type == const.BASKET_ROSE:
-            default_values = self.default_values_basket_rose
+    def get_masked_image(self, frame, type, default_values=[]):
+        if not default_values:
+            if type == const.BALL:
+                default_values = self.default_values_ball
+            elif type == const.BASKET_BLUE:
+                default_values = self.default_values_basket_blue
+            elif type == const.BASKET_ROSE:
+                default_values = self.default_values_basket_rose
 
         lowerLimits = np.array([default_values[0], default_values[1], default_values[2]])
         upperLimits = np.array([default_values[3], default_values[4], default_values[5]])
         kernel1 = np.ones((default_values[6], default_values[7]), np.uint8)
         kernel2 = np.ones((default_values[8], default_values[9]), np.uint8)
 
-        frame = cv2.resize(frame, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))  # TODO maybe resize is not needed
         frame = cv2.cvtColor(frame, self.color_type)
         frame = cv2.medianBlur(frame, const.BLUR)
         mask = cv2.inRange(frame, lowerLimits, upperLimits)

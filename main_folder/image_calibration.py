@@ -49,14 +49,15 @@ class ImageCalibraion:
                 default_values[index] = cv2.getTrackbarPos(value, const.TRACKBAR_WINDOW)
 
             color_image = self.Cam.get_rgb_frame()
+            color_image = cv2.resize(color_image, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))
             depth_image = self.Cam.get_depth_frame()
-            mask_image = self.ImageProcess.get_masked_image()
+            mask_image = self.ImageProcess.get_masked_image(color_image, type, default_values=default_values)
 
             x, y, radius, center = self.ImageProcess.get_ball_coords(mask_image)
             if radius > const.MIN_BALL_RADIUS_TO_DETECT:
                 cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
                 cv2.circle(color_image, center, 5, (0, 0, 255), -1)
-                cv2.putText(color_image, str(round(x)) + " : " + str(round(y)) + "\n" + str(round(radius)), (int(x), int(y - radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                cv2.putText(color_image, str(round(x)) + " : " + str(round(y)) + "\n" + str(round(radius)), (5, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
             cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv2.putText(color_image, type, (5, 55), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

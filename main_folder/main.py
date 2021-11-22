@@ -43,6 +43,7 @@ class Main:
 
             # get camera images
             color_image = self.Cam.get_rgb_frame()
+            color_image = cv2.resize(color_image, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))
             depth_image = self.Cam.get_depth_frame()
             mask_image_ball = self.ImageProcess.get_masked_image(color_image, const.BALL)
             mask_image_basket = self.ImageProcess.get_masked_image(color_image, self.target_basket)
