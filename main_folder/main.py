@@ -49,14 +49,14 @@ class Main:
             mask_image_basket = self.ImageProcess.get_masked_image(color_image, self.target_basket)
 
             # running robot depends of the ball and basket coords and sizes
-            ball_x, ball_y, ball_radius, center = self.ImageProcess.get_ball_coords(mask_image_ball)
-            basket_x, basket_y, basket_size = self.ImageProcess.get_biggest_blob_coords(mask_image_basket)
+            ball_x, ball_y, ball_radius, ball_center = self.ImageProcess.get_obj_coords(mask_image_ball)
+            basket_x, basket_y, basket_radius, basket_center = self.ImageProcess.get_obj_coords(mask_image_basket)
             self.current_state = self.StateMachine.run_current_state(ball_x, ball_y, ball_radius)
-
+            print(basket_radius)
             # show gui
             if self.enable_gui:
-                ball_info = [ball_x, ball_y, ball_radius, center]
-                basket_info = [basket_x, basket_y, basket_size]
+                ball_info = [ball_x, ball_y, ball_radius, ball_center]
+                basket_info = [basket_x, basket_y, basket_radius, basket_center]
 
                 self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
                 self.Gui.update_image(color_image)

@@ -53,7 +53,7 @@ class ImageCalibraion:
             depth_image = self.Cam.get_depth_frame()
             mask_image = self.ImageProcess.get_masked_image(color_image, type, default_values=default_values)
 
-            x, y, radius, center = self.ImageProcess.get_ball_coords(mask_image)
+            x, y, radius, center = self.ImageProcess.get_obj_coords(mask_image)
             if radius > const.MIN_BALL_RADIUS_TO_DETECT:
                 cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
                 cv2.circle(color_image, center, 5, (0, 0, 255), -1)

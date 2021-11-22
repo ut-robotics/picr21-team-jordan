@@ -28,13 +28,14 @@ MASKED_WINDOW_BASKET = "Basket"
 DEPTH_WINDOW = "Depth"
 TRACKBAR_WINDOW = "Trackbar"
 
-# ball detection constants
+# detection constants
 BLOB_MIN_AREA = 0
 BLOB_MAX_AREA = 999_999
 MIN_DISTANCE_BETWEEN_BLOBS = 40
 MINIMAL_BALL_SIZE_TO_DETECT = 7  # TODO delete mb, this is blob size
 MIN_BALL_RADIUS_TO_DETECT = 2
 MIN_BALL_RADIUS_TO_STOP = 25
+MINIMAL_BASKET_RADIUS_TO_DETECT = 16
 
 # center coordinates and range (that robot claims as center) constants
 CENTER_OFFSET_X = 20
