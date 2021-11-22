@@ -27,11 +27,12 @@ class RobotGui:
         ball_x = int(self.ball_info[0])
         ball_y = int(self.ball_info[1])
         ball_radius = int(self.ball_info[2])
-        center = self.ball_info[3]
+        ball_center = self.ball_info[3]
 
         basket_x = int(self.basket_info[0])
         basket_y = int(self.basket_info[1])
-        basket_size = int(self.basket_info[2])
+        basket_radius = int(self.basket_info[2])
+        basket_center = self.basket_info[3]
 
         # draw all game info
         cv2.line(self.color_image, (const.CENTER_RANGE_X[0], 0), (const.CENTER_RANGE_X[0], const.HEIGHT_RESIZED), (0, 0, 0), 3)
@@ -41,10 +42,11 @@ class RobotGui:
         cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(self.color_image, "State: " + str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         if ball_radius > const.MIN_BALL_RADIUS_TO_DETECT:
-            cv2.circle(self.color_image, (ball_x, ball_x), ball_radius, (0, 255, 255), 5)
-            cv2.circle(self.color_image, center, 5, (0, 0, 255), -1)
+            cv2.circle(self.color_image, (ball_x, ball_y), ball_radius, (0, 255, 255), 5)
+            cv2.circle(self.color_image, ball_center, 5, (0, 0, 255), -1)
             cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
+        if basket_radius > const.MINIMAL_BASKET_RADIUS_TO_DETECT:
+            cv2.circle(self.color_image, basket_center, 5, (0, 0, 255), -1)
         # show image
         try:
             cv2.imshow(const.ORIGINAL_WINDOW, self.color_image)

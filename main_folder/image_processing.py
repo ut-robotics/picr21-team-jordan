@@ -46,7 +46,7 @@ class ImageProcessing:
 
         return mask
 
-    def get_ball_coords(self, mask_image):
+    def get_obj_coords(self, mask_image):
         cnts = cv2.findContours(mask_image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cnts = imutils.grab_contours(cnts)
         center = None
