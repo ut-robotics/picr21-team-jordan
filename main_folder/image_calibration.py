@@ -8,7 +8,7 @@ from camera import Camera
 from image_processing import ImageProcessing
 
 
-class ImageCalibraion:
+class ImageCalibration:
     """
     This class calibrates threshold values to properly see all objects. Saves values to /config file
     """
@@ -79,5 +79,5 @@ class ImageCalibraion:
 
 
 if __name__ == "__main__":
-    camera_image = ImageCalibraion()
+    camera_image = ImageCalibration()
     camera_image.main()
