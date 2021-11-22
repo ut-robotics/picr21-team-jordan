@@ -62,11 +62,7 @@ class StateMachine:
             self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot)
 
     def limit_speed(self, speed):
-        if speed < -(const.MAXIMUM_SPEED):
-            speed = -(const.MAXIMUM_SPEED)
-        elif speed > const.MAXIMUM_SPEED:
-            speed = const.MAXIMUM_SPEED
-        return speed
+        return max(min(speed, const.MAXIMUM_SPEED), -const.MAXIMUM_SPEED)
 
     def calculate_rotation_speed(self, ball_x):
         """Rot speed is linear dependence"""
