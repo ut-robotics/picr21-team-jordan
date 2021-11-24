@@ -49,4 +49,4 @@ class RobotMovement:
 
 if __name__ == "__main__":
     robot = RobotMovement()
-    # robot.move_robot_XY(0, 25, 0)
+    robot.move_robot_XY()
