@@ -7,20 +7,21 @@ import file_manager
 
 
 class ImageProcessing:
-    def __init__(self) -> None:
+    def __init__(self):
         self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, const.BALL)
         self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, const.BASKET_BLUE)
         self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, const.BASKET_ROSE)
 
-        self.blobparams = cv2.SimpleBlobDetector_Params()
-        self.blobparams.minDistBetweenBlobs = const.MIN_DISTANCE_BETWEEN_BLOBS
-        self.blobparams.filterByArea = True
-        self.blobparams.minArea = const.BLOB_MIN_AREA
-        self.blobparams.maxArea = const.BLOB_MAX_AREA
-        self.blobparams.filterByInertia = False
-        self.blobparams.filterByConvexity = False
-        self.blobparams.filterByCircularity = False
-        self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
+        # TODO delete legacy, if no more blob used
+        # self.blobparams = cv2.SimpleBlobDetector_Params()
+        # self.blobparams.minDistBetweenBlobs = const.MIN_DISTANCE_BETWEEN_BLOBS
+        # self.blobparams.filterByArea = True
+        # self.blobparams.minArea = const.BLOB_MIN_AREA
+        # self.blobparams.maxArea = const.BLOB_MAX_AREA
+        # self.blobparams.filterByInertia = False
+        # self.blobparams.filterByConvexity = False
+        # self.blobparams.filterByCircularity = False
+        # self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
 
         self.color_type = cv2.COLOR_BGR2HSV
 
@@ -65,20 +66,24 @@ class ImageProcessing:
         else:
             return -1, -1, -1, -1
 
-    def get_biggest_blob_coords(self, inspected_frame):
-        keypoints: list = self.detector.detect(inspected_frame)
-        # detect all keypoints
-        kp_sizes = []
-        if len(keypoints) > 0:
-            for keypoint in keypoints:
-                kp_sizes.append(keypoint.size)
-                if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
-                    x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
+    def get_distance_to_basket(self, depth_frame, basket_center):
+        return 0
 
-        # detects biggest keypoint
-        try:
-            biggest_keypoint = keypoints[kp_sizes.index(max(kp_sizes))]
-            x, y, size = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1]), biggest_keypoint.size
-            return int(round(x)), int(round(y)), int(round(size))
-        except ValueError:
-            return -1, -1, -1
+    # TODO delete legacy, if no more blob used
+    # def get_biggest_blob_coords(self, inspected_frame):
+    #     keypoints: list = self.detector.detect(inspected_frame)
+    #     # detect all keypoints
+    #     kp_sizes = []
+    #     if len(keypoints) > 0:
+    #         for keypoint in keypoints:
+    #             kp_sizes.append(keypoint.size)
+    #             if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
+    #                 x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
+
+    #     # detects biggest keypoint
+    #     try:
+    #         biggest_keypoint = keypoints[kp_sizes.index(max(kp_sizes))]
+    #         x, y, size = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1]), biggest_keypoint.size
+    #         return int(round(x)), int(round(y)), int(round(size))
+    #     except ValueError:
+    #         return -1, -1, -1
