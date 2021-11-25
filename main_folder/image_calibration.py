@@ -4,7 +4,7 @@ import cv2
 
 import constants as const
 import file_manager
-from camera import Camera
+from my_camera import Camera
 from image_processing import ImageProcessing
 from my_enums import *
 

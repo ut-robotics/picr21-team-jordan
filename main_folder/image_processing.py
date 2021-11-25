@@ -56,5 +56,5 @@ class ImageProcessing:
             return -1, -1, -1, -1
 
     def get_distance_to_basket(self, depth_frame, basket_center):
-
+        
         return 0

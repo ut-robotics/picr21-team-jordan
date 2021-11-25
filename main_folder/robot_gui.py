@@ -8,12 +8,14 @@ from my_enums import Color, Window
 class RobotGui:
     def __init__(self):
         self.color_image: np.ndarray = None
+        self.depth_image: np.ndarray = None
         self.fps = -1
         self.ball_info = [-1, -1, -1]
         self.basket_info = [-1, -1, -1]
         self.current_state = ""
 
         cv2.namedWindow(Window.ORIGINAL)
+        cv2.namedWindow(Window.DEPTH)
 
     def update_info(self, fps, current_state, ball_info, basket_info):
         self.fps = fps
@@ -21,8 +23,9 @@ class RobotGui:
         self.ball_info = ball_info
         self.basket_info = basket_info
 
-    def update_image(self, color_image):
+    def update_image(self, color_image, depth_image):
         self.color_image = color_image
+        self.depth_image = depth_image
 
     def show_gui(self):
         ball_x = int(self.ball_info[0])
@@ -53,9 +56,17 @@ class RobotGui:
             cv2.circle(self.color_image, basket_center, 5, Color.BLUE.value, -1)
             cv2.rectangle(self.color_image, (basket_x - basket_radius, basket_y - basket_radius), (basket_x + basket_radius, basket_y + basket_radius), Color.BLUE.value, 3)
 
+        r = 10
+        x0 = int(basket_x/const.RESIZE_X) - r
+        y0 = int(basket_y/const.RESIZE_Y) - r
+        x1 = int(basket_x/const.RESIZE_X) + r
+        y1 = int(basket_y/const.RESIZE_Y) + r
+        cv2.rectangle(self.depth_image, (x0, y0), (x1, y1), Color.RED.value, 3)
+        
         # show image
         try:
             cv2.imshow(Window.ORIGINAL, self.color_image)
+            cv2.imshow(Window.DEPTH, self.depth_image)
         except Exception:  # cv2.error: (-215:Assertion failed) size.width>0 && size.height>0 in function 'imshow'
             pass
 

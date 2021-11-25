@@ -23,18 +23,18 @@ class StateMachine:
     def run_current_state(self, ball_x, ball_y, ball_radius, basket_x, basket_radius):
         # if referee_command: TODO referee commands
         #     self.state = int(referee_command)
-        if basket_x != -1 and ball_radius > const.MINIMAL_BASKET_RADIUS_TO_DETECT:
-            self.update_last_basket_pos(basket_x)
+        # if basket_x != -1 and ball_radius > const.MINIMAL_BASKET_RADIUS_TO_DETECT:
+        #     self.update_last_basket_pos(basket_x)
 
-        if self.state == State.FIND_BALL:
-            self.find_a_ball(ball_x)
+        # if self.state == State.FIND_BALL:
+        #     self.find_a_ball(ball_x)
 
-        if self.state == State.GET_TO_BALL:
-            self.get_to_ball(ball_x, ball_y, ball_radius)
+        # if self.state == State.GET_TO_BALL:
+        #     self.get_to_ball(ball_x, ball_y, ball_radius)
 
-        if self.state == State.FIND_A_BASKET:
-            self.find_a_basket(ball_x, ball_y, ball_radius, basket_x, basket_radius)
-
+        # if self.state == State.FIND_A_BASKET:
+        #     self.find_a_basket(ball_x, ball_y, ball_radius, basket_x, basket_radius)
+        self.Robot.move_robot_XY(0, 0 ,0 , 1200)
         return self.state
 
     def find_a_ball(self, ball_x):
