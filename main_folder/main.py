@@ -54,7 +54,6 @@ class Main:
             basket_x, basket_y, basket_radius, basket_center = self.ImageProcess.get_obj_coords(mask_image_basket)
 
             #TODO calculate distance
-            print(ball_center)
             distance_to_basket = self.ImageProcess.get_distance_to_basket(depth_image, basket_center)
             #
 

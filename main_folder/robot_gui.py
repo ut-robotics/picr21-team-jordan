@@ -40,8 +40,9 @@ class RobotGui:
         cv2.line(self.color_image, (const.CENTER_RANGE_X[-1], 0), (const.CENTER_RANGE_X[-1], const.HEIGHT_RESIZED), Color.GREEN.value, 3)
         cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[0]), (const.WIDTH_RESIZED, const.CENTER_RANGE_Y[0]), Color.GREEN.value, 3)
         cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[-1]), (const.WIDTH_RESIZED, const.CENTER_RANGE_Y[-1]), Color.GREEN.value, 3)
-        cv2.line(self.color_image, (0, const.CENTER_RANGE_BASKET[0]), (const.WIDTH_RESIZED, const.CENTER_RANGE_BASKET[0]), Color.BLUE.value, 3)
-        cv2.line(self.color_image, (0, const.CENTER_RANGE_BASKET[-1]), (const.WIDTH_RESIZED, const.CENTER_RANGE_BASKET[-1]), Color.BLUE.value, 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_BASKET[0], 0), (const.CENTER_RANGE_BASKET[0], const.HEIGHT_RESIZED), Color.BLUE.value, 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_BASKET[-1], 0), (const.CENTER_RANGE_BASKET[-1],const.HEIGHT_RESIZED), Color.BLUE.value, 3)
+        
         cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, Color.BLACK.value, 2)
         cv2.putText(self.color_image, str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, Color.BLACK.value, 2)
         if ball_radius > const.MIN_BALL_RADIUS_TO_DETECT:

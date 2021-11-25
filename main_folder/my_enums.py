@@ -9,7 +9,8 @@ class State(Enum):
     INITIAL = 0
     FIND_BALL = 1
     GET_TO_BALL = 2
-    CENTER_BASKET_AND_BALL = 3
+    FIND_A_BASKET = 3
+    CENTER_A_BASKET = 4
 
 
 class Color(Enum):
@@ -19,7 +20,7 @@ class Color(Enum):
     RED = (100, 0, 0)
 
 
-class Object(Enum):
+class Object():
     BALL = "trackbar_values_ball"
     BASKET_BLUE = "trackbar_values_basket_blue"
     BASKET_ROSE = "trackbar_values_basket_rose"
@@ -30,7 +31,7 @@ class Position(Enum):
     RIGHT = "right"
 
 
-class Window(Enum):
+class Window():
     ORIGINAL = "Original"
     MASKED = "Thresh"
     MASKED_BASKET = "Basket"

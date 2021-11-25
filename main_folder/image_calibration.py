@@ -17,9 +17,9 @@ class ImageCalibration:
     def __init__(self):
         self.Cam = Camera()
         self.ImageProcess = ImageProcessing()
-        self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, Object.BALL.value)
-        self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_BLUE.value)
-        self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_ROSE.value)
+        self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, Object.BALL)
+        self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_BLUE)
+        self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_ROSE)
         self.default_values_dict = {
             Object.BALL: self.default_values_ball,
             Object.BASKET_BLUE: self.default_values_basket_blue,
@@ -67,13 +67,13 @@ class ImageCalibration:
             cv2.imshow(Window.DEPTH, depth_image)
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
-                file_manager.save_default_values(const.CONFIG_PATH, type.value, [str(x) for x in default_values])
+                file_manager.save_default_values(const.CONFIG_PATH, type, [str(x) for x in default_values])
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
     def main(self):
-        self.mainloop(Object.BALL)
-        # self.mainloop(Object.BASKET_BLUE)
+        # self.mainloop(Object.BALL)
+        self.mainloop(Object.BASKET_BLUE)
         # self.mainloop(Object.BASKET_ROSE)
         self.Cam.stop_camera()
         cv2.destroyAllWindows()
