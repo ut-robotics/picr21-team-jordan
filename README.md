@@ -5,6 +5,7 @@
 `python3.7 -m pip install matplotlib`</br>
 `pyhton3.7 -m pip install -U Pillow`</br>
 `pyhton3.7 -m pip install pyrealsense2`</br>
+`pyhton3.7 -m pip install imutils`</br>
 </br>
 Important files in main folder:</br>
 `image_calibration.py`: only adjust threshold values and save them into `/config`</br>
