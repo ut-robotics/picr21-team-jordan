@@ -4,6 +4,10 @@ import pyrealsense2 as rs
 
 import constants as const
 
+WHITE_BALANCE = 3500
+EXPOSURE = 50
+ALPHA_DEPTH = 0.08
+
 
 class Camera:
     def __init__(self) -> np.asanyarray:
@@ -15,15 +19,15 @@ class Camera:
         self.color_sensor = self.profile.get_device().query_sensors()[1]
         self.color_sensor.set_option(rs.option.enable_auto_exposure, False)
         self.color_sensor.set_option(rs.option.enable_auto_white_balance, False)
-        self.color_sensor.set_option(rs.option.white_balance, const.WHITE_BALANCE)
-        self.color_sensor.set_option(rs.option.exposure, const.EXPOSURE)
+        self.color_sensor.set_option(rs.option.white_balance, WHITE_BALANCE)
+        self.color_sensor.set_option(rs.option.exposure, EXPOSURE)
 
     def get_depth_frame(self):
         """Returns numpy array that represents the depth image"""
         frames = self.pipeline.wait_for_frames()
         depth_frame = frames.get_depth_frame()
         depth_image = np.asanyarray(depth_frame.get_data())
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=const.ALPHA_DEPTH), cv2.COLORMAP_JET)
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=ALPHA_DEPTH), cv2.COLORMAP_JET)
         depth_colormap_crop = depth_colormap[const.CROP_Y1 : const.CROP_Y1 + const.CROP_Y2, 1 : 0 + const.WIDTH - 1]
 
         return depth_colormap_crop

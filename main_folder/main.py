@@ -6,6 +6,7 @@ import cv2
 import constants as const
 from camera import Camera
 from image_processing import ImageProcessing
+from my_enums import Object
 from robot_gui import RobotGui
 from socket_data_getter import SocketDataGetter
 from state_machine import StateMachine
@@ -26,7 +27,7 @@ class Main:
         self.ImageProcess = ImageProcessing()
 
         # TODO implement referee command
-        self.target_basket = const.BASKET_BLUE
+        self.target_basket = Object.BASKET_BLUE
         self.my_robot_id = -1
 
         self.fps = 0
@@ -45,7 +46,7 @@ class Main:
             color_image = self.Cam.get_rgb_frame()
             color_image = cv2.resize(color_image, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))
             depth_image = self.Cam.get_depth_frame()
-            mask_image_ball = self.ImageProcess.get_masked_image(color_image, const.BALL)
+            mask_image_ball = self.ImageProcess.get_masked_image(color_image, Object.BALL)
             mask_image_basket = self.ImageProcess.get_masked_image(color_image, self.target_basket)
 
             # running robot depends of the ball and basket coords and sizes
@@ -64,8 +65,8 @@ class Main:
                 ball_info = [ball_x, ball_y, ball_radius, ball_center]
                 basket_info = [basket_x, basket_y, basket_radius, basket_center]
 
-                self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
                 self.Gui.update_image(color_image)
+                self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
                 self.Gui.show_gui()
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
