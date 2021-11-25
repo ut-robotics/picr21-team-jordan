@@ -1,7 +1,7 @@
 import cv2
 
 import constants as const
-from camera import Camera
+from my_camera import Camera
 from image_processing import ImageProcessing
 from robot_movement import RobotMovement
 from my_enums import Object

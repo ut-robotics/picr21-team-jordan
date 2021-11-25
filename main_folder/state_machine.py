@@ -34,7 +34,7 @@ class StateMachine:
 
         if self.state == State.FIND_A_BASKET:
             self.find_a_basket(ball_x, ball_y, ball_radius, basket_x, basket_radius)
-
+        # self.Robot.move_robot_XY(0, 0 ,0 , 1200) #1.5 distance
         return self.state
 
     def find_a_ball(self, ball_x):
