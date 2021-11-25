@@ -4,35 +4,24 @@ import numpy as np
 
 import constants as const
 import file_manager
+from my_enums import Object
 
 
 class ImageProcessing:
     def __init__(self):
-        self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, const.BALL)
-        self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, const.BASKET_BLUE)
-        self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, const.BASKET_ROSE)
-
-        # TODO delete legacy, if no more blob used
-        # self.blobparams = cv2.SimpleBlobDetector_Params()
-        # self.blobparams.minDistBetweenBlobs = const.MIN_DISTANCE_BETWEEN_BLOBS
-        # self.blobparams.filterByArea = True
-        # self.blobparams.minArea = const.BLOB_MIN_AREA
-        # self.blobparams.maxArea = const.BLOB_MAX_AREA
-        # self.blobparams.filterByInertia = False
-        # self.blobparams.filterByConvexity = False
-        # self.blobparams.filterByCircularity = False
-        # self.detector = cv2.SimpleBlobDetector_create(self.blobparams)
-
+        self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, Object.BALL)
+        self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_BLUE)
+        self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_ROSE)
+        self.default_values_dict = {
+            Object.BALL: self.default_values_ball,
+            Object.BASKET_BLUE: self.default_values_basket_blue,
+            Object.BASKET_ROSE: self.default_values_basket_rose,
+        }
         self.color_type = cv2.COLOR_BGR2HSV
 
     def get_masked_image(self, frame, type, default_values=[]):
         if not default_values:
-            if type == const.BALL:
-                default_values = self.default_values_ball
-            elif type == const.BASKET_BLUE:
-                default_values = self.default_values_basket_blue
-            elif type == const.BASKET_ROSE:
-                default_values = self.default_values_basket_rose
+            default_values = self.default_values_dict[type]
 
         lowerLimits = np.array([default_values[0], default_values[1], default_values[2]])
         upperLimits = np.array([default_values[3], default_values[4], default_values[5]])
@@ -67,23 +56,5 @@ class ImageProcessing:
             return -1, -1, -1, -1
 
     def get_distance_to_basket(self, depth_frame, basket_center):
+
         return 0
-
-    # TODO delete legacy, if no more blob used
-    # def get_biggest_blob_coords(self, inspected_frame):
-    #     keypoints: list = self.detector.detect(inspected_frame)
-    #     # detect all keypoints
-    #     kp_sizes = []
-    #     if len(keypoints) > 0:
-    #         for keypoint in keypoints:
-    #             kp_sizes.append(keypoint.size)
-    #             if keypoint.size > const.MINIMAL_BALL_SIZE_TO_DETECT:
-    #                 x, y = int(keypoint.pt[0]), int(keypoint.pt[1])
-
-    #     # detects biggest keypoint
-    #     try:
-    #         biggest_keypoint = keypoints[kp_sizes.index(max(kp_sizes))]
-    #         x, y, size = int(biggest_keypoint.pt[0]), int(biggest_keypoint.pt[1]), biggest_keypoint.size
-    #         return int(round(x)), int(round(y)), int(round(size))
-    #     except ValueError:
-    #         return -1, -1, -1
