@@ -6,7 +6,7 @@ from image_processing import ImageProcessing
 from robot_movement import RobotMovement
 
 """
-Trowing test. Will help with calculating throwing function depends of the distance to the basket.
+Trowing test. Will help with calculating throwing function, that depends of the distance to the basket.
 """
 
 if __name__ == "__main__":
