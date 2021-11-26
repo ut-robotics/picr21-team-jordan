@@ -5,14 +5,13 @@ from typing import Optional
 import serial
 import serial.tools.list_ports
 
+STM_32_HWID = "USB VID:PID=0483:5740"
+WHEEL_ANGLES = [math.radians(angle) for angle in [-120, 0, 120]]
+
 
 class SerialPortNotFound(Exception):
     def __init__(self):
         super().__init__("Serial port not found")
-
-
-STM_32_HWID = "USB VID:PID=0483:5740"
-WHEEL_ANGLES = [math.radians(angle) for angle in [-120, 0, 120]]
 
 
 class RobotMovement:

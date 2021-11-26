@@ -1,38 +1,13 @@
-# frame size constants
 WIDTH = 848
 HEIGHT = 480
-WIDTH_DEPTH = 848
-HEIGHT_DEPTH = 480
-CROP_Y1 = 200
-CROP_Y2 = 300
-RESIZE_X = 1 #1.2
-RESIZE_Y = 1 #2
-WIDTH_RESIZED = int(WIDTH * RESIZE_X)
-HEIGHT_RESIZED = int(CROP_Y2 * RESIZE_Y)
 
-# constants for names of windows and string type variables
-CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
+CENTER_X = int(848 / 2)
+CENTER_Y = int(480 / 2) + 250
 
-# detection constants
-# BLUR = 5
-# MIN_BALL_RADIUS_TO_DETECT = 2
-# MIN_BALL_RADIUS_TO_STOP = 25
-# MINIMAL_BASKET_RADIUS_TO_DETECT = 16
-
-# center coordinates and range (that robot claims as center) constants
 CENTER_OFFSET_X = 30
 CENTER_OFFSET_Y = 30
 CENTER_OFFSET_BALL = 15
-CENTER_X = int(WIDTH_RESIZED / 2)
-# TODO REFACTOR
-CENTER_Y = int(HEIGHT_RESIZED / 2) + 250
+
 CENTER_RANGE_X = range(CENTER_X - CENTER_OFFSET_X, CENTER_X + CENTER_OFFSET_X, 1)
 CENTER_RANGE_Y = range(CENTER_Y - CENTER_OFFSET_Y, CENTER_Y + CENTER_OFFSET_Y, 1)
 CENTER_RANGE_BASKET = range(CENTER_X - CENTER_OFFSET_BALL, CENTER_X + CENTER_OFFSET_BALL, 1)
-
-# speed calculation constants
-MAXIMUM_SPEED = 35
-ROT_MULTIPLIER = 10
-Y_MULTIPLIER = 5
-X_MULTIPLIER = 20
-

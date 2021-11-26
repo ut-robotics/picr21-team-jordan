@@ -1,32 +1,34 @@
+import pickle as pickle
+
 import cv2
 import numpy as np
-import pickle as pickle
+
 import camera
-import image_processor
 # from Color import *
-from enums import Color
+from enums import Color, Window
 
 
 def nothing(x):
     pass
 
 
-cv2.namedWindow("image")
-cv2.namedWindow("rgb")
-cv2.namedWindow("mask")
-cv2.moveWindow("mask", 400, 0)
+CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl"
+
+cv2.namedWindow(Window.TRACKBAR)
+cv2.namedWindow(Window.ORIGINAL)
+cv2.namedWindow(Window.MASKED)
+cv2.moveWindow(Window.MASKED, 400, 0)
 
 try:
-    with open("/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl", "rb") as fh:
+    with open(CONFIG_PATH, "rb") as fh:
         colors_lookup = pickle.load(fh)
 except:
     colors_lookup = np.zeros(0x1000000, dtype=np.uint8)
 
 cap = camera.RealsenseCamera()
-# processor = image_processor.ImageProcessor(cap, debug=True)
 
-cv2.createTrackbar("brush_size", "image", 3, 10, nothing)
-cv2.createTrackbar("noise", "image", 1, 5, nothing)
+cv2.createTrackbar("brush_size", Window.TRACKBAR, 3, 10, nothing)
+cv2.createTrackbar("noise", Window.TRACKBAR, 1, 5, nothing)
 
 mouse_x = 0
 mouse_y = 0
@@ -59,14 +61,14 @@ def choose_color(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         mouse_x = x
         mouse_y = y
-        brush_size = cv2.getTrackbarPos("brush_size", "image")
-        noise = cv2.getTrackbarPos("noise", "image")
+        brush_size = cv2.getTrackbarPos("brush_size", Window.TRACKBAR)
+        noise = cv2.getTrackbarPos("noise", Window.TRACKBAR)
         change_color(noise, brush_size, mouse_x, mouse_y)
 
 
-cv2.namedWindow("rgb")
-cv2.setMouseCallback("rgb", choose_color)
-cv2.setMouseCallback("mask", choose_color)
+cv2.namedWindow(Window.ORIGINAL)
+cv2.setMouseCallback(Window.ORIGINAL, choose_color)
+cv2.setMouseCallback(Window.MASKED, choose_color)
 
 print("Quit: 'q', Save 's', Erase selected color 'e'")
 print("Balls 'g', Magenta basket='m', Blue basket='b', Field='f', White='w', Black='d', Other='o'")
@@ -75,32 +77,28 @@ cap.open()
 
 while True:
     rgb, depth = cap.get_frames()
-
-    cv2.imshow("rgb", rgb)
-
     fragmented = colors_lookup[rgb[:, :, 0] + rgb[:, :, 1] * 0x100 + rgb[:, :, 2] * 0x10000]
     frame = np.zeros((cap.rgb_height, cap.rgb_width, 3), dtype=np.uint8)
     for color in Color:
         frame[fragmented == int(color)] = color.color
 
-    cv2.imshow("mask", frame)
+    cv2.imshow(Window.ORIGINAL, rgb)
+    cv2.imshow(Window.MASKED, frame)
 
-    k = cv2.waitKey(1) & 0xFF
-
-    if k == ord("q"):
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
         break
-    elif k in keyDict:
-        col = keyDict[k]
+    elif key in keyDict:
+        col = keyDict[key]
         print(col)
         p = int(col)
-    elif k == ord("s"):
-        with open("/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl", "wb") as fh:
+    elif key == ord("s"):
+        with open(CONFIG_PATH, "wb") as fh:
             pickle.dump(colors_lookup, fh, -1)
         print("saved")
-    elif k == ord("e"):
+    elif key == ord("e"):
         print("erased")
         colors_lookup[colors_lookup == p] = 0
 
 cap.close()
-
 cv2.destroyAllWindows()

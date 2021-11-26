@@ -33,5 +33,3 @@
 #         return int(round(x)), int(round(y)), int(round(size))
 #     except ValueError:
 #         return -1, -1, -1
-
-print("2222")
