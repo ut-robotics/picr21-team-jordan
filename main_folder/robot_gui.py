@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 import constants as const
-from my_enums import Color, Window
+from my_enums import ColorRGB, Window
 
 
 class RobotGui:
@@ -39,29 +39,29 @@ class RobotGui:
         basket_center = self.basket_info[3]
 
         # draw all game info
-        cv2.line(self.color_image, (const.CENTER_RANGE_X[0], 0), (const.CENTER_RANGE_X[0], const.HEIGHT_RESIZED), Color.GREEN.value, 3)
-        cv2.line(self.color_image, (const.CENTER_RANGE_X[-1], 0), (const.CENTER_RANGE_X[-1], const.HEIGHT_RESIZED), Color.GREEN.value, 3)
-        cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[0]), (const.WIDTH_RESIZED, const.CENTER_RANGE_Y[0]), Color.GREEN.value, 3)
-        cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[-1]), (const.WIDTH_RESIZED, const.CENTER_RANGE_Y[-1]), Color.GREEN.value, 3)
-        cv2.line(self.color_image, (const.CENTER_RANGE_BASKET[0], 0), (const.CENTER_RANGE_BASKET[0], const.HEIGHT_RESIZED), Color.BLUE.value, 3)
-        cv2.line(self.color_image, (const.CENTER_RANGE_BASKET[-1], 0), (const.CENTER_RANGE_BASKET[-1],const.HEIGHT_RESIZED), Color.BLUE.value, 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_X[0], 0), (const.CENTER_RANGE_X[0], const.HEIGHT_RESIZED), ColorRGB.GREEN, 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_X[-1], 0), (const.CENTER_RANGE_X[-1], const.HEIGHT_RESIZED), ColorRGB.GREEN, 3)
+        cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[0]), (const.WIDTH_RESIZED, const.CENTER_RANGE_Y[0]), ColorRGB.GREEN, 3)
+        cv2.line(self.color_image, (0, const.CENTER_RANGE_Y[-1]), (const.WIDTH_RESIZED, const.CENTER_RANGE_Y[-1]), ColorRGB.GREEN, 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_BASKET[0], 0), (const.CENTER_RANGE_BASKET[0], const.HEIGHT_RESIZED), ColorRGB.BLUE, 3)
+        cv2.line(self.color_image, (const.CENTER_RANGE_BASKET[-1], 0), (const.CENTER_RANGE_BASKET[-1],const.HEIGHT_RESIZED), ColorRGB.BLUE, 3)
         
-        cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, Color.BLACK.value, 2)
-        cv2.putText(self.color_image, str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, Color.BLACK.value, 2)
+        cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.BLACK, 2)
+        cv2.putText(self.color_image, str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.BLACK, 2)
         if ball_radius > const.MIN_BALL_RADIUS_TO_DETECT:
-            cv2.circle(self.color_image, (ball_x, ball_y), ball_radius, Color.GREEN.value, 5)
-            cv2.circle(self.color_image, ball_center, 5, Color.GREEN.value, -1)
-            cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, Color.GREEN.value, 2)
+            cv2.circle(self.color_image, (ball_x, ball_y), ball_radius, ColorRGB.GREEN, 5)
+            cv2.circle(self.color_image, ball_center, 5, ColorRGB.GREEN, -1)
+            cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.GREEN, 2)
         if basket_radius > const.MINIMAL_BASKET_RADIUS_TO_DETECT:
-            cv2.circle(self.color_image, basket_center, 5, Color.BLUE.value, -1)
-            cv2.rectangle(self.color_image, (basket_x - basket_radius, basket_y - basket_radius), (basket_x + basket_radius, basket_y + basket_radius), Color.BLUE.value, 3)
+            cv2.circle(self.color_image, basket_center, 5, ColorRGB.BLUE, -1)
+            cv2.rectangle(self.color_image, (basket_x - basket_radius, basket_y - basket_radius), (basket_x + basket_radius, basket_y + basket_radius), ColorRGB.BLUE, 3)
 
         r = 10
         x0 = int(basket_x/const.RESIZE_X) - r
         y0 = int(basket_y/const.RESIZE_Y) - r
         x1 = int(basket_x/const.RESIZE_X) + r
         y1 = int(basket_y/const.RESIZE_Y) + r
-        cv2.rectangle(self.depth_image, (x0, y0), (x1, y1), Color.RED.value, 3)
+        cv2.rectangle(self.depth_image, (x0, y0), (x1, y1), ColorRGB.RED, 3)
         
         # show image
         try:

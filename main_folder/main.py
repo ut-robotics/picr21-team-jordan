@@ -4,8 +4,8 @@ import time
 import cv2
 
 import constants as const
-from my_camera import Camera
-from image_processing import ImageProcessing
+from __my_camera import Camera
+from __image_processing import ImageProcessing
 from my_enums import Object
 from robot_gui import RobotGui
 from socket_data_getter import SocketDataGetter
@@ -48,12 +48,7 @@ class Main:
             else:
                 referee_command = None
 
-            # get camera images
-            # color_image = self.Cam.get_rgb_frame()
-            # color_image = cv2.resize(color_image, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))
-            # depth_image = self.Cam.get_depth_frame()
-            # mask_image_ball = self.ImageProcess.get_masked_image(color_image, Object.BALL)
-            # mask_image_basket = self.ImageProcess.get_masked_image(color_image, self.target_basket)
+            # detect all objects
             results = self.image_processor.process_frame(aligned_depth=True)
             ball_x, ball_y, ball_radius = -1, -1, -1
             basket_x, basket_y, basket_radius = -1, -1, -1
@@ -73,12 +68,11 @@ class Main:
                 basket_size = basket.size
                 basket_dist = basket.distance
             print(basket_dist)
-            # running robot depends of the ball and basket coords and sizes
-            # ball_x, ball_y, ball_radius, ball_center = self.ImageProcess.get_obj_coords(mask_image_ball)
-            # basket_x, basket_y, basket_radius, basket_center = self.ImageProcess.get_obj_coords(mask_image_basket)
 
             #TODO calculate distance
             # distance_to_basket = self.ImageProcess.get_distance_to_basket(depth_image, basket_center)
+
+            # run robot
             self.current_state = self.StateMachine.run_current_state(ball_x, ball_y, ball_radius, basket_x, basket_radius)
 
             # show gui

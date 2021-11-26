@@ -13,7 +13,7 @@ class State(Enum):
     CENTER_A_BASKET = 4
 
 
-class Color(Enum):
+class ColorRGB():
     GREEN = (0, 100, 20)
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 150)

@@ -14,10 +14,10 @@ HEIGHT_RESIZED = int(CROP_Y2 * RESIZE_Y)
 CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/config/"
 
 # detection constants
-BLUR = 5
-MIN_BALL_RADIUS_TO_DETECT = 2
-MIN_BALL_RADIUS_TO_STOP = 25
-MINIMAL_BASKET_RADIUS_TO_DETECT = 16
+# BLUR = 5
+# MIN_BALL_RADIUS_TO_DETECT = 2
+# MIN_BALL_RADIUS_TO_STOP = 25
+# MINIMAL_BASKET_RADIUS_TO_DETECT = 16
 
 # center coordinates and range (that robot claims as center) constants
 CENTER_OFFSET_X = 30

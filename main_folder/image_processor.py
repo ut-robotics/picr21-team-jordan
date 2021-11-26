@@ -1,4 +1,4 @@
-import my_camera
+import __my_camera
 import segment
 import pickle as pickle
 import numpy as np
@@ -89,7 +89,7 @@ class ImageProcessor():
         for contour in contours:
 
             # ball filtering logic goes here. Example includes filtering by size and an example how to get pixels from
-            # the bottom center of the fram to the ball
+            # the bottom center of the frame to the ball
 
             size = cv2.contourArea(contour)
 
