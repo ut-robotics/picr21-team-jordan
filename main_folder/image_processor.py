@@ -1,10 +1,9 @@
-import __my_camera
-import segment
-import pickle as pickle
-import numpy as np
-import cv2
+import pickle
 
-# import Color as c
+import cv2
+import numpy as np
+import segment
+
 from enums import Color
 
 
@@ -83,17 +82,13 @@ class ImageProcessor:
         balls = []
 
         for contour in contours:
-
             # ball filtering logic goes here. Example includes filtering by size and an example how to get pixels from
             # the bottom center of the frame to the ball
-
             size = cv2.contourArea(contour)
-
             if size < 15:
                 continue
 
             x, y, w, h = cv2.boundingRect(contour)
-
             ys = np.arange(y + h, self.camera.rgb_height)
             xs = np.linspace(x + w / 2, self.camera.rgb_width / 2, num=len(ys))
             # line_array = fragments[ys, xs]
@@ -105,7 +100,6 @@ class ImageProcessor:
             if self.debug:
                 # self.debug_frame[ys, xs] = [0, 0, 0]
                 cv2.circle(self.debug_frame, (obj_x, obj_y), 10, (0, 255, 0), 2)
-
             balls.append(Object(x=obj_x, y=obj_y, size=size, distance=obj_dst, width=w, exists=True))
 
         balls.sort(key=lambda x: x.distance, reverse=True)
@@ -117,26 +111,18 @@ class ImageProcessor:
 
         baskets = []
         for contour in contours:
-
             # basket filtering logic goes here. Example includes size filtering of the basket
-
             size = cv2.contourArea(contour)
-
             if size < 100:
                 continue
-
             x, y, w, h = cv2.boundingRect(contour)
-
             obj_x = int(x + (w / 2))
             obj_y = int(y + (h / 2))
             obj_dst = depth_image[obj_y, obj_x] * self.camera.depth_scale
-
             baskets.append(Object(x=obj_x, y=obj_y, size=size, distance=obj_dst, width=w, exists=True))
 
         baskets.sort(key=lambda x: x.size)
-
         basket = next(iter(baskets), Object(exists=False))
-
         if self.debug:
             if basket.exists:
                 cv2.circle(self.debug_frame, (basket.x, basket.y), 20, debug_color, -1)
@@ -151,9 +137,7 @@ class ImageProcessor:
 
     def process_frame(self, aligned_depth=False) -> ProcessedResults:
         color_frame, depth_frame = self.get_frame_data(aligned_depth=aligned_depth)
-
         segment.segment(color_frame, self.fragmented, self.t_balls, self.t_basket_m, self.t_basket_b)
-
         if self.debug:
             self.debug_frame = np.copy(color_frame)
 
