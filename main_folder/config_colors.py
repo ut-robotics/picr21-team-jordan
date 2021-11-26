@@ -3,7 +3,8 @@ import numpy as np
 import pickle as pickle
 import camera
 import image_processor
-from Color import *
+# from Color import *
+from enums import Color
 
 
 def nothing(x):
