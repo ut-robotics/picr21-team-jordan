@@ -31,16 +31,17 @@ def accept_data(client, connection):
     while True:
         # select == Wait for I/O
         ready_sockets, _, _ = select([client], [], [], 0.01)  # 0.01 timeout
+        client.send(input().encode("utf8"))
+        print(f"sending info")
+        # if ready_sockets:
+        #     data = client.recv(4096)
+        #     decoded_data = data.decode("utf-8")
+        #     print(f"({client_ip}: {client_port}): {decoded_data}")
+        #     # message = decoded_data.split()
+        #     client.send("Test response from server".encode("utf-8"))
 
-        if ready_sockets:
-            data = client.recv(4096)
-            decoded_data = data.decode("utf-8")
-            print(f"({client_ip}: {client_port}): {decoded_data}")
-            # message = decoded_data.split()
-            client.send("Test response from server".encode("utf-8"))
-
-            if decoded_data == "exit":
-                break
+        #     if decoded_data == "exit":
+        #         break
 
     print("<{client_ip}: {client_port} Disconnected.>")
     client.close()
