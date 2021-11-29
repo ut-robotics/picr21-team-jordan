@@ -23,6 +23,9 @@ class StateMachine:
         # if referee_command: TODO referee commands
         #     self.state = int(referee_command)
         self.update_last_basket_pos(basket_x)
+        
+        self.Robot.move_robot_XY(0, MAXIMUM_SPEED, 0, 1100)
+        return "123"
 
         if self.state == State.FIND_BALL:
             self.find_a_ball(ball_x)
@@ -80,10 +83,11 @@ class StateMachine:
             self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
             
     def throw_a_ball(self, basket_distance):
-        # for i in range(999):
+        self.Robot.move_robot_XY()
+        # for i in range(25000):
         #     self.Robot.move_robot_XY(0, MAXIMUM_SPEED, 0, 1200)
         # self.state = State.FIND_BALL
-        pass
+        # pass
 
     def limit_speed(self, speed):
         return max(min(speed, MAXIMUM_SPEED), -MAXIMUM_SPEED)

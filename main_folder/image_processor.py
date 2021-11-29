@@ -118,7 +118,10 @@ class ImageProcessor:
             x, y, w, h = cv2.boundingRect(contour)
             obj_x = int(x + (w / 2))
             obj_y = int(y + (h / 2))
-            obj_dst = depth_image[obj_y, obj_x] * self.camera.depth_scale
+            # obj_dst = depth_image[obj_y, obj_x] * self.camera.depth_scale
+            #TODO Check if works (bounding limits)
+            obj_dst = np.average(depth_image[obj_y - 3:obj_y + 3, obj_x - 3:obj_x + 3]) * self.camera.depth_scale
+
             baskets.append(Object(x=obj_x, y=obj_y, size=size, distance=obj_dst, width=w, exists=True))
 
         baskets.sort(key=lambda x: x.size)

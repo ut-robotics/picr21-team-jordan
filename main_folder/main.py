@@ -70,7 +70,8 @@ class Main:
 
             # run robot
             self.current_state = self.StateMachine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
-
+            # print(basket_dist)
+            
             # show gui
             if self.enable_gui:
                 ball_info = [ball_x, ball_y, ball_radius, (ball_x, ball_y)]
