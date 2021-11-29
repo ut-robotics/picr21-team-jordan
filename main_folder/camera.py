@@ -12,6 +12,9 @@ DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FPS = RGB_WIDTH, RGB_HEIGHT, RGB_FPS
 
 class RealsenseCamera:
     def __init__(self, depth_enabled=True):
+        self.rgb_height = RGB_HEIGHT
+        self.rgb_width = RGB_WIDTH
+        
         self.pipeline = rs.pipeline()
         self.config = rs.config()
         self.config.enable_stream(rs.stream.color, RGB_WIDTH, RGB_HEIGHT, rs.format.bgr8, RGB_FPS)

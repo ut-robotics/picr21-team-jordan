@@ -28,6 +28,7 @@ class State(Enum):
     GET_TO_BALL = 2
     FIND_A_BASKET = 3
     CENTER_A_BASKET = 4
+    THROW = 5
 
 
 class ColorRGB:
