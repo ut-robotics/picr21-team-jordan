@@ -43,7 +43,7 @@ class RobotMovement:
 
     def move_robot_XY(self, speed_x=0, speed_y=0, rotation_speed=0, thrower_speed=0):
         moving_direction = math.atan2(speed_y, speed_x)
-        speed = math.hypot(speed_x, speed_y)  # vector length
+        speed = math.hypot(speed_x, speed_y)
         self.move_robot(moving_direction, speed, rotation_speed, thrower_speed)
 
 
