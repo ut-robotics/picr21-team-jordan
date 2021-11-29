@@ -1,84 +1,107 @@
-import time
-
 import cv2
+import numpy as np
+import pickle as pickle
+import camera
+import image_processor
+from enums import Color
 
-import constants as const
-import file_manager
-from my_camera import Camera
-from image_processing import ImageProcessing
-from my_enums import *
+def nothing(x):
+    pass
 
+cv2.namedWindow('image')
+cv2.namedWindow('rgb')
+cv2.namedWindow('mask')
+cv2.moveWindow('mask', 400, 0)
 
-class ImageCalibration:
-    """
-    This class calibrates threshold values to properly see all objects. Saves values to /config file
-    """
+try:
+    with open('/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl', 'rb') as fh:
+        colors_lookup = pickle.load(fh)
+except:
+    colors_lookup	= np.zeros(0x1000000, dtype=np.uint8)
 
-    def __init__(self):
-        self.Cam = Camera()
-        self.ImageProcess = ImageProcessing()
-        self.default_values_ball = file_manager.get_default_values(const.CONFIG_PATH, Object.BALL)
-        self.default_values_basket_blue = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_BLUE)
-        self.default_values_basket_rose = file_manager.get_default_values(const.CONFIG_PATH, Object.BASKET_ROSE)
-        self.default_values_dict = {
-            Object.BALL: self.default_values_ball,
-            Object.BASKET_BLUE: self.default_values_basket_blue,
-            Object.BASKET_ROSE: self.default_values_basket_rose,
-        }
-        self.fps = 0
+cap = camera.RealsenseCamera()
+# processor = image_processor.ImageProcessor(cap, debug=True)
 
-    def update_value(self, new_value):
-        self.trackbar_value = new_value
+cv2.createTrackbar('brush_size','image',3,10, nothing)
+cv2.createTrackbar('noise','image',1,5, nothing)
 
-    def mainloop(self, type):
-        default_values = self.default_values_dict[type]
+mouse_x	= 0
+mouse_y	= 0
+brush_size	= 1
+noise	= 1
+p = 0
 
-        cv2.namedWindow(Window.ORIGINAL)
-        cv2.namedWindow(Window.MASKED)
-        cv2.namedWindow(Window.TRACKBAR, cv2.WINDOW_NORMAL)
-        cv2.namedWindow(Window.DEPTH)
+keyDict = {
+    ord("g"): Color.GREEN,
+    ord("m"): Color.MAGENTA,
+    ord("b"): Color.BLUE,
+    ord("f"): Color.ORANGE,
+    ord("w"): Color.WHITE,
+    ord("d"): Color.BLACK,
+    ord("o"): Color.OTHER,
+}
 
-        for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh"]):
-            cv2.createTrackbar(value, Window.TRACKBAR, default_values[index], 255, self.update_value)
-        for index, value in enumerate(["dil1", "dil2", "clos1", "clos2"]):
-            cv2.createTrackbar(value, Window.TRACKBAR, default_values[index + 6], 50, self.update_value)
+def change_color(noise, brush_size, mouse_x, mouse_y):
+    ob	= rgb[
+        max(0, mouse_y-brush_size):min(cap.rgb_height, mouse_y+brush_size+1),
+        max(0, mouse_x-brush_size):min(cap.rgb_width, mouse_x+brush_size+1),:].reshape((-1,3)).astype('int32')
+    noises		= range(-noise, noise+1)
+    for r in noises:
+        for g in noises:
+            for b in noises:
+                colors_lookup[((ob[:,0]+r) + (ob[:,1]+g) * 0x100 + (ob[:,2]+b) * 0x10000).clip(0,0xffffff)]	= p
 
-        while True:
-            start_time = time.time()
+# mouse callback function
+def choose_color(event,x,y,flags,param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        mouse_x	= x
+        mouse_y	= y
+        brush_size	= cv2.getTrackbarPos('brush_size','image')
+        noise		= cv2.getTrackbarPos('noise','image')
+        change_color(noise, brush_size, mouse_x, mouse_y)
 
-            for index, value in enumerate(["hl", "sl", "vl", "hh", "sh", "vh", "dil1", "dil2", "clos1", "clos2"]):
-                default_values[index] = cv2.getTrackbarPos(value, Window.TRACKBAR)
+cv2.namedWindow('rgb')
+cv2.setMouseCallback('rgb', choose_color)
+cv2.setMouseCallback('mask', choose_color)
 
-            color_image = self.Cam.get_rgb_frame()
-            color_image = cv2.resize(color_image, (const.WIDTH_RESIZED, const.HEIGHT_RESIZED))
-            depth_image = self.Cam.get_depth_frame()
-            mask_image = self.ImageProcess.get_masked_image(color_image, type, default_values=default_values)
+print("Quit: 'q', Save 's', Erase selected color 'e'")
+print("Balls 'g', Magenta basket='m', Blue basket='b', Field='f', White='w', Black='d', Other='o'")
 
-            x, y, radius, center = self.ImageProcess.get_obj_coords(mask_image)
-            if radius > const.MIN_BALL_RADIUS_TO_DETECT:
-                cv2.circle(color_image, (int(x), int(y)), int(radius), (0, 255, 255), 5)
-                cv2.circle(color_image, center, 5, (0, 0, 255), -1)
-                cv2.putText(color_image, str(round(x)) + " : " + str(round(y)) + "\n" + str(round(radius)), (5, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+cap.open()
 
-            cv2.putText(color_image, str(self.fps), (5, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.putText(color_image, type, (5, 55), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            cv2.imshow(Window.ORIGINAL, color_image)
-            cv2.imshow(Window.MASKED, mask_image)
-            cv2.imshow(Window.DEPTH, depth_image)
+while(True):
+    # processedData = processor.process_frame()
 
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                file_manager.save_default_values(const.CONFIG_PATH, type, [str(x) for x in default_values])
-                break
-            self.fps = round(1.0 / (time.time() - start_time), 2)
+    rgb, depth = cap.get_frames()
 
-    def main(self):
-        # self.mainloop(Object.BALL)
-        self.mainloop(Object.BASKET_BLUE)
-        # self.mainloop(Object.BASKET_ROSE)
-        self.Cam.stop_camera()
-        cv2.destroyAllWindows()
+    cv2.imshow('rgb', rgb)
+    
+    fragmented	= colors_lookup[rgb[:,:,0] + rgb[:,:,1] * 0x100 + rgb[:,:,2] * 0x10000]
+    frame = np.zeros((cap.rgb_height, cap.rgb_width, 3), dtype=np.uint8)
 
+    for color in Color:
+        frame[fragmented == int(color)] = color.color
 
-if __name__ == "__main__":
-    camera_image = ImageCalibration()
-    camera_image.main()
+    cv2.imshow('mask', frame)
+    
+    k = cv2.waitKey(1) & 0xff
+
+    if k == ord('q'):
+        break
+    elif k in keyDict:
+        col = keyDict[k]
+        print(col)
+        p = int(col)
+    elif k == ord('s'):
+        with open('/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl', 'wb') as fh:
+            pickle.dump(colors_lookup, fh, -1)
+        print('saved')
+    elif k == ord('e'):
+        print('erased')
+        colors_lookup[colors_lookup == p]	= 0
+
+# When everything done, release the capture
+
+cap.close()
+
+cv2.destroyAllWindows()
