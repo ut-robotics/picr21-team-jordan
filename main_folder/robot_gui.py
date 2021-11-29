@@ -45,7 +45,7 @@ class RobotGui:
 
         cv2.putText(self.color_image, str(self.fps), (5, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.BLACK, 2)
         cv2.putText(self.color_image, str(self.current_state), (120, 45), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.BLACK, 2)
-        cv2.circle(self.color_image, (ball_x, ball_y), ball_radius, ColorRGB.GREEN, 5)
+        cv2.circle(self.color_image, (ball_x, ball_y), 5, ColorRGB.GREEN, 5)
         cv2.circle(self.color_image, ball_center, 5, ColorRGB.GREEN, -1)
         cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.GREEN, 2)
         cv2.circle(self.color_image, basket_center, 5, ColorRGB.BLUE, -1)

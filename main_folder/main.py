@@ -4,7 +4,7 @@ import time
 import cv2
 
 from camera import RealsenseCamera
-from enums import GameObject
+from enums import GameObject, State
 from image_processor import ImageProcessor
 from robot_gui import RobotGui
 from socket_data_getter import SocketDataGetter
@@ -27,10 +27,11 @@ class Main:
         self.image_processor = ImageProcessor(self.Cam)
 
         # TODO implement referee command
-        self.target_basket = GameObject.BASKET_BLUE
+        self.target_basket = GameObject.BASKET_ROSE
         self.my_robot_id = -1
 
         self.fps = 0
+        self.current_state = State.INITIAL
 
     def main(self, socket_data):
         while True:
@@ -43,6 +44,7 @@ class Main:
                 referee_command = None
 
             # detect all objects
+            alligned_depth = True if self.current_state == State.THROW else False
             results = self.image_processor.process_frame(aligned_depth=True)
             ball_x, ball_y, ball_radius = -1, -1, -1
             basket_x, basket_y, basket_radius = -1, -1, -1
@@ -54,8 +56,8 @@ class Main:
                 ball_radius = int(ball.width / 2)
 
             basket_dist = -1
-            if results.basket_b.exists:
-                basket = results.basket_b
+            if results.basket_m.exists:
+                basket = results.basket_m
                 basket_x = basket.x
                 basket_y = basket.y
                 basket_radius = int(basket.width / 2)
@@ -67,14 +69,14 @@ class Main:
             # distance_to_basket = self.ImageProcess.get_distance_to_basket(depth_image, basket_center)
 
             # run robot
-            self.current_state = self.StateMachine.run_current_state(ball_x, ball_y, ball_radius, basket_x, basket_radius)
+            self.current_state = self.StateMachine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
 
             # show gui
             if self.enable_gui:
                 ball_info = [ball_x, ball_y, ball_radius, (ball_x, ball_y)]
                 basket_info = [basket_x, basket_y, basket_radius, (basket_x, basket_y)]
 
-                self.Gui.update_image(results.color_frame, results.depth_frame)
+                self.Gui.update_image(results.color_frame)
                 self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
                 self.Gui.show_gui()
 
@@ -89,8 +91,9 @@ class Main:
 
 
 def socket_data_getter(out_q):
-    camera_image = SocketDataGetter()
-    camera_image.main(out_q)
+    # camera_image = SocketDataGetter()
+    # camera_image.main(out_q)
+    pass
 
 
 def image_getter(in_q):

@@ -19,7 +19,7 @@ class StateMachine:
         self.state: int = State.FIND_BALL
         self.last_basket_pos = Position.LEFT
 
-    def run_current_state(self, ball_x, ball_y, ball_radius, basket_x, basket_radius):
+    def run_current_state(self, ball_x, ball_y, basket_x, basket_distance):
         # if referee_command: TODO referee commands
         #     self.state = int(referee_command)
         self.update_last_basket_pos(basket_x)
@@ -28,10 +28,15 @@ class StateMachine:
             self.find_a_ball(ball_x)
 
         if self.state == State.GET_TO_BALL:
-            self.get_to_ball(ball_x, ball_y, ball_radius)
+            self.get_to_ball(ball_x, ball_y)
 
         if self.state == State.FIND_A_BASKET:
-            self.find_a_basket(ball_x, ball_y, ball_radius, basket_x, basket_radius)
+            self.find_a_basket(ball_x, ball_y, basket_x)
+        if self.state == State.THROW:
+            self.throw_a_ball(basket_distance)
+        
+        # else:
+        #     self.Robot.move_robot_XY()
         # self.Robot.move_robot_XY(0, 0 ,0 , 1200) #1.5 distance
         return self.state
 
@@ -45,19 +50,19 @@ class StateMachine:
         else:
             self.state = State.GET_TO_BALL
 
-    def get_to_ball(self, ball_x, ball_y, ball_radius):
+    def get_to_ball(self, ball_x, ball_y):
         """State action"""
         robot_speed_rot = self.calculate_rotation_speed(ball_x)
         robot_speed_y = self.calculate_y_speed(ball_y)
 
-        if ball_y == -1:
+        if ball_x == -1:
             self.state = State.FIND_BALL
-        elif ball_y in const.CENTER_RANGE_Y:
+        elif ball_y in const.CENTER_RANGE_Y and ball_x in const.CENTER_RANGE_X:
             self.state = State.FIND_A_BASKET
         else:
             self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot)
 
-    def find_a_basket(self, ball_x, ball_y, ball_radius, basket_x, basket_radius):
+    def find_a_basket(self, ball_x, ball_y, basket_x):
         """State action"""
         robot_speed_rot = self.calculate_rotation_speed(ball_x)
         robot_speed_y = self.calculate_y_speed(ball_y)
@@ -70,9 +75,15 @@ class StateMachine:
 
         if ball_y in const.CENTER_RANGE_Y and basket_x in const.CENTER_RANGE_BASKET:
             self.Robot.move_robot_XY(0, 0, 0)
-            # TODO approach throwing
+            self.state = State.THROW
         else:
             self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
+            
+    def throw_a_ball(self, basket_distance):
+        # for i in range(999):
+        #     self.Robot.move_robot_XY(0, MAXIMUM_SPEED, 0, 1200)
+        # self.state = State.FIND_BALL
+        pass
 
     def limit_speed(self, speed):
         return max(min(speed, MAXIMUM_SPEED), -MAXIMUM_SPEED)
