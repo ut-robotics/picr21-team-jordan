@@ -62,7 +62,7 @@ class Main:
                 basket_y = basket.y
                 basket_radius = int(basket.width / 2)
                 basket_size = basket.size
-                basket_dist = basket.distance
+                basket_dist = int(round(basket.distance*100))
             print(basket_dist)
 
             # TODO calculate distance

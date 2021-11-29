@@ -34,7 +34,7 @@ class StateMachine:
             self.find_a_basket(ball_x, ball_y, basket_x)
         if self.state == State.THROW:
             self.throw_a_ball(basket_distance)
-        
+
         # else:
         #     self.Robot.move_robot_XY()
         # self.Robot.move_robot_XY(0, 0 ,0 , 1200) #1.5 distance
@@ -78,13 +78,17 @@ class StateMachine:
             self.state = State.THROW
         else:
             self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
-            
+
     def throw_a_ball(self, basket_distance):
         self.Robot.move_robot_XY()
-        # for i in range(25000):
-        #     self.Robot.move_robot_XY(0, MAXIMUM_SPEED, 0, 1200)
-        # self.state = State.FIND_BALL
-        # pass
+        thrower_speed = self.calculate_thrower_speed(basket_distance)
+        for i in range(25000):
+            self.Robot.move_robot_XY(0, MAXIMUM_SPEED, 0, thrower_speed)
+        self.state = State.FIND_BALL
+
+    def calculate_thrower_speed(self, distance):
+        thrower_speed = int(4.5 * distance + 450)
+        return thrower_speed
 
     def limit_speed(self, speed):
         return max(min(speed, MAXIMUM_SPEED), -MAXIMUM_SPEED)
