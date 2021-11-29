@@ -23,9 +23,6 @@ class StateMachine:
         # if referee_command: TODO referee commands
         #     self.state = int(referee_command)
         self.update_last_basket_pos(basket_x)
-        
-        self.Robot.move_robot_XY(0, MAXIMUM_SPEED, 0, 1100)
-        return "123"
 
         if self.state == State.FIND_BALL:
             self.find_a_ball(ball_x)
