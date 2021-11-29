@@ -1,7 +1,7 @@
 WIDTH = 848
 HEIGHT = 480
 
-CENTER_X = int(848 / 2) + 80
+CENTER_X = int(848 / 2) + 40
 CENTER_Y = int(480 / 2) + 150
 
 CENTER_OFFSET_X = 5
