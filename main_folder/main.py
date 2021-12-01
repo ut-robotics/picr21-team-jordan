@@ -23,7 +23,6 @@ class Main:
         self.state_machine = StateMachine()
         self.cam = RealsenseCamera()
         self.cam.open()
-        # self.ImageProcess = ImageProcessing()
         self.image_processor = ImageProcessor(self.cam)
 
         # TODO implement referee command
