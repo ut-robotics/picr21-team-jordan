@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print(basket_dist)
     cam.close()
     
-    speed = int(input("Kiirus: "))
+    speed = int(input("Speed: "))
     robot = RobotMovement()
     for _ in range(25000):
         basket_dist = -1

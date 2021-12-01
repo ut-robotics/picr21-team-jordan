@@ -19,12 +19,12 @@ class Main:
 
     def __init__(self, enable_gui):
         self.enable_gui = enable_gui
-        self.Gui = RobotGui() if enable_gui else None
-        self.StateMachine = StateMachine()
-        self.Cam = RealsenseCamera()
-        self.Cam.open()
+        self.gui = RobotGui() if enable_gui else None
+        self.state_machine = StateMachine()
+        self.cam = RealsenseCamera()
+        self.cam.open()
         # self.ImageProcess = ImageProcessing()
-        self.image_processor = ImageProcessor(self.Cam)
+        self.image_processor = ImageProcessor(self.cam)
 
         # TODO implement referee command
         self.target_basket = GameObject.BASKET_ROSE
@@ -44,8 +44,8 @@ class Main:
                 referee_command = None
 
             # detect all objects
-            alligned_depth = True if self.current_state == State.THROW else False
-            results = self.image_processor.process_frame(aligned_depth=True)
+            aligned_depth = True if self.current_state == State.THROW else False
+            results = self.image_processor.process_frame(aligned_depth=aligned_depth)
             ball_x, ball_y, ball_radius = -1, -1, -1
             basket_x, basket_y, basket_radius = -1, -1, -1
 
@@ -61,34 +61,29 @@ class Main:
                 basket_x = basket.x
                 basket_y = basket.y
                 basket_radius = int(basket.width / 2)
-                basket_size = basket.size
                 basket_dist = int(round(basket.distance*100))
             print(basket_dist)
-
-            # TODO calculate distance
-            # distance_to_basket = self.ImageProcess.get_distance_to_basket(depth_image, basket_center)
-
+        
             # run robot
-            self.current_state = self.StateMachine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
-            # print(basket_dist)
+            self.current_state = self.state_machine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
             
             # show gui
             if self.enable_gui:
                 ball_info = [ball_x, ball_y, ball_radius, (ball_x, ball_y)]
                 basket_info = [basket_x, basket_y, basket_radius, (basket_x, basket_y)]
 
-                self.Gui.update_image(results.color_frame)
-                self.Gui.update_info(self.fps, self.current_state, ball_info, basket_info)
-                self.Gui.show_gui()
+                self.gui.update_image(results.color_frame)
+                self.gui.update_info(self.fps, self.current_state, ball_info, basket_info)
+                self.gui.show_gui()
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
-        self.Cam.close()
+        self.cam.close()
 
         if self.enable_gui:
-            self.Gui.kill_gui()
+            self.gui.kill_gui()
 
 
 def socket_data_getter(out_q):
@@ -98,8 +93,11 @@ def socket_data_getter(out_q):
 
 
 def image_getter(in_q):
-    state_machine = Main(enable_gui=True)
-    state_machine.main(in_q)
+    try:
+        state_machine = Main(enable_gui=True)
+        state_machine.main(in_q)
+    finally:
+        state_machine.cam.close()
 
 
 if __name__ == "__main__":
