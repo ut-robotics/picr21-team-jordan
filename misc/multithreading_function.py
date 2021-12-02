@@ -1,8 +1,5 @@
 from threading import Thread
 
-import _thread
-import time
-
 
 def get_sum(name, iterations):
     for _ in range(iterations):
