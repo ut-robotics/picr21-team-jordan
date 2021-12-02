@@ -26,7 +26,7 @@ class Main:
         self.image_processor = ImageProcessor(self.cam)
 
         # TODO implement referee command
-        self.target_basket = GameObject.BASKET_ROSE
+        self.target_basket = GameObject.BASKET_BLUE
         self.my_robot_id = -1
 
         self.fps = 0
@@ -55,13 +55,13 @@ class Main:
                 ball_radius = int(ball.width / 2)
 
             basket_dist = -1
-            if results.basket_m.exists:
-                basket = results.basket_m
+            basket = results.basket_b if self.target_basket == GameObject.BASKET_BLUE else results.basket_m
+            if basket.exists:
                 basket_x = basket.x
                 basket_y = basket.y
                 basket_radius = int(basket.width / 2)
                 basket_dist = int(round(basket.distance*100))
-            print(basket_dist)
+            # print(basket_dist)
         
             # run robot
             self.current_state = self.state_machine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
