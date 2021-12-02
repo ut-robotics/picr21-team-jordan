@@ -2,7 +2,7 @@ from enums import Position, State
 import constants as const
 from robot_movement import RobotMovement
 
-MAXIMUM_SPEED = 35
+MAXIMUM_SPEED = 45
 ROT_MULTIPLIER = 10
 Y_MULTIPLIER = 5
 X_MULTIPLIER = 20
@@ -80,6 +80,7 @@ class StateMachine:
 
     def throw_a_ball(self, basket_distance, basket_x):
         self.Robot.move_robot_XY()
+        # return
         thrower_speed = self.calculate_thrower_speed(basket_distance)
 
         # TODO counter or difference between distances
@@ -89,7 +90,7 @@ class StateMachine:
         self.state = State.FIND_BALL
 
     def calculate_thrower_speed(self, distance):
-        thrower_speed = int(1.0908*distance + 925.55)
+        thrower_speed = int(1.09*distance + 900)
 
         return thrower_speed
 
@@ -105,5 +106,5 @@ class StateMachine:
         return self.limit_speed(speed_y)
 
     def calculate_x_speed(self, basket_x):
-        speed_x = (const.CENTER_X - basket_x) / X_MULTIPLIER
+        speed_x = ((const.CENTER_X - basket_x) / X_MULTIPLIER)
         return speed_x
