@@ -34,7 +34,7 @@ if __name__ == "__main__":
             basket = results.basket_m
             basket_dist = int(round(basket.distance*100))
             basket_x = basket.x
-            robot.move_robot_XY(0, MAXIMUM_SPEED, int((464 - basket_x) / 10), speed)
+            robot.move_robot_XY(0, MAXIMUM_SPEED, int((464 - basket_x) / 4), speed)
     
     is_goal = int(input("Is goal? (1/0): "))  
     
