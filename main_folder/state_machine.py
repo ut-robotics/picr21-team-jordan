@@ -91,6 +91,7 @@ class StateMachine:
 
     def calculate_thrower_speed(self, distance):
         thrower_speed = int(1.09*distance + 900)
+        # thrower_speed = int(980 + 0.25 * distance + 0.004 * distance ** 2)
 
         return thrower_speed
 
@@ -106,5 +107,5 @@ class StateMachine:
         return self.limit_speed(speed_y)
 
     def calculate_x_speed(self, basket_x):
-        speed_x = ((const.CENTER_X - basket_x) / X_MULTIPLIER)
+        speed_x = (const.CENTER_X - basket_x) / X_MULTIPLIER
         return speed_x
