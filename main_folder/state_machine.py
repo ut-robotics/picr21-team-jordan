@@ -94,7 +94,7 @@ class StateMachine:
             self.state = State.FIND_BALL
 
     def calculate_thrower_speed(self, distance):
-        thrower_speed = int(1.09*distance + 900)
+        thrower_speed = int(2.9859*distance + 802)
         # thrower_speed = int(980 + 0.25 * distance + 0.004 * distance ** 2)
 
         return thrower_speed
