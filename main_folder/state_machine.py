@@ -6,6 +6,7 @@ MAXIMUM_SPEED = 45
 ROT_MULTIPLIER = 10
 Y_MULTIPLIER = 5
 X_MULTIPLIER = 10
+THROW_COUNTER = 50
 
 
 class StateMachine:
@@ -24,7 +25,9 @@ class StateMachine:
     def run_current_state(self, ball_x, ball_y, basket_x, basket_distance):
         # if referee_command: TODO referee commands
         #     self.state = int(referee_command)
-        self.update_last_basket_pos(basket_x)
+
+        if basket_x != -1:
+            self.update_last_basket_pos(basket_x)
 
         if self.state == State.FIND_BALL:
             self.find_a_ball(ball_x)
@@ -81,22 +84,19 @@ class StateMachine:
             self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
 
     def throw_a_ball(self, basket_distance, basket_x):
-        thrower_speed = self.calculate_thrower_speed(basket_distance)
-
         self.counter += 1
-        
-        robot_speed_x = int(MAXIMUM_SPEED/3)
+
+        thrower_speed = self.calculate_thrower_speed(basket_distance)
+        robot_speed_y = int(MAXIMUM_SPEED/3)
         robot_speed_rot = self.calculate_rotation_speed(basket_x)
-        self.Robot.move_robot_XY(0, robot_speed_x, robot_speed_rot, thrower_speed)
-        print(self.counter)
-        if self.counter > 50:
+
+        self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot, thrower_speed)
+        if self.counter > THROW_COUNTER:
             self.counter = 0
             self.state = State.FIND_BALL
 
     def calculate_thrower_speed(self, distance):
         thrower_speed = int(2.9859*distance + 700)
-        # thrower_speed = int(980 + 0.25 * distance + 0.004 * distance ** 2)
-
         return thrower_speed
 
     def limit_speed(self, speed):
