@@ -12,10 +12,8 @@ from state_machine import MAXIMUM_SPEED, ROT_MULTIPLIER
 if __name__ == "__main__":
     cam = RealsenseCamera()
     image_processor = ImageProcessor(cam)
-    
-    cam.open()
-    
 
+    cam.open()
     
     speed = int(input("Speed: "))
     robot = RobotMovement()
