@@ -26,6 +26,7 @@ class SocketDataGetter:
             ready_sockets, _, _ = select([self.client], [], [], 0.01)  # 0.01 timeout
             if ready_sockets:
                 data = self.client.recv(4096)
+                #TODO str to json
                 decoded_data = data.decode("utf-8")
                 print(decoded_data)
                 out_q.append(decoded_data)

@@ -5,7 +5,7 @@ from robot_movement import RobotMovement
 MAXIMUM_SPEED = 45
 ROT_MULTIPLIER = 10
 Y_MULTIPLIER = 5
-X_MULTIPLIER = 20
+X_MULTIPLIER = 10
 
 
 class StateMachine:
@@ -16,8 +16,10 @@ class StateMachine:
 
     def __init__(self):
         self.Robot = RobotMovement()
-        self.state: int = State.FIND_BALL
+        self.state = State.FIND_BALL
+        # self.state = State.THROW
         self.last_basket_pos = Position.LEFT
+        self.counter = 0
 
     def run_current_state(self, ball_x, ball_y, basket_x, basket_distance):
         # if referee_command: TODO referee commands
@@ -72,25 +74,27 @@ class StateMachine:
         if basket_x == -1:
             robot_speed_x == MAXIMUM_SPEED if self.last_basket_pos == Position.LEFT else -MAXIMUM_SPEED
 
-        if ball_y in const.CENTER_RANGE_Y and basket_x in const.CENTER_RANGE_BASKET:
+        if ball_x in const.CENTER_RANGE_X and basket_x in const.CENTER_RANGE_BASKET:
             self.Robot.move_robot_XY(0, 0, 0)
             self.state = State.THROW
         else:
             self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
 
     def throw_a_ball(self, basket_distance, basket_x):
-        self.Robot.move_robot_XY()
-        # return
         thrower_speed = self.calculate_thrower_speed(basket_distance)
 
-        # TODO counter or difference between distances
-        for i in range(25000):
-            robot_speed_rot = self.calculate_rotation_speed(basket_x)
-            self.Robot.move_robot_XY(0, MAXIMUM_SPEED, robot_speed_rot, thrower_speed)
-        self.state = State.FIND_BALL
+        self.counter += 1
+        
+        robot_speed_x = int(MAXIMUM_SPEED/3)
+        robot_speed_rot = self.calculate_rotation_speed(basket_x)
+        self.Robot.move_robot_XY(0, robot_speed_x, robot_speed_rot, thrower_speed)
+        print(self.counter)
+        if self.counter > 50:
+            self.counter = 0
+            self.state = State.FIND_BALL
 
     def calculate_thrower_speed(self, distance):
-        thrower_speed = int(1.09*distance + 900)
+        thrower_speed = int(2.9859*distance + 700)
         # thrower_speed = int(980 + 0.25 * distance + 0.004 * distance ** 2)
 
         return thrower_speed
