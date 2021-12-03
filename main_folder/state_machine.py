@@ -18,7 +18,6 @@ class StateMachine:
     def __init__(self):
         self.Robot = RobotMovement()
         self.state = State.FIND_BALL
-        # self.state = State.THROW
         self.last_basket_pos = Position.LEFT
         self.counter = 0
 
