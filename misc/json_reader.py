@@ -7,7 +7,7 @@ with open("command.json", "r") as json_file:
     json_obj = json.load(json_file)
 
 signal = json_obj["signal"]
-index = json_obj["targets"].index(ID)
-target_basket = json_obj["baskets"][index]
-
+if signal == "start":
+    index = json_obj["targets"].index(ID)
+    target_basket = json_obj["baskets"][index]
     
