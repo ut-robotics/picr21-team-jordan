@@ -27,7 +27,7 @@ class Main:
         self.image_processor = ImageProcessor(self.cam)
 
         # TODO implement referee command
-        self.target_basket = GameObject.BASKET_BLUE
+        self.target_basket = GameObject.BASKET_ROSE
         self.my_robot_id = -1
 
         self.fps = 0
@@ -45,10 +45,12 @@ class Main:
                 referee_command = None
 
             # detect all objects
-            aligned_depth = True if self.current_state == State.THROW else False
+            # aligned_depth = True if self.current_state == State.THROW else False
+            aligned_depth = True
             results = self.image_processor.process_frame(aligned_depth=aligned_depth)
             ball_x, ball_y, ball_radius = -1, -1, -1
             basket_x, basket_y, basket_radius = -1, -1, -1
+            basket_dist = -1
 
             if results.balls:
                 ball = results.balls[0]
@@ -56,18 +58,19 @@ class Main:
                 ball_y = ball.y
                 ball_radius = int(ball.width / 2)
 
-                basket_dist = -1
+                
                 basket = results.basket_b if self.target_basket == GameObject.BASKET_BLUE else results.basket_m
                 if basket.exists:
                     basket_x = basket.x
                     basket_y = basket.y
                     basket_radius = int(basket.width / 2)
                     basket_dist = int(round(basket.distance * 100))
+                    print(basket_dist)
             #         q.append(basket_dist)
             #         q.pop()
             # basket_dist = np.mean(q)
 
-            # print(basket_dist)
+            
 
             # run robot
             self.current_state = self.state_machine.run_current_state(ball_x, ball_y, basket_x, basket_dist)

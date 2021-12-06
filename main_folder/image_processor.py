@@ -121,12 +121,11 @@ class ImageProcessor:
 
             # obj_dst = depth_image[obj_y, obj_x] * self.camera.depth_scale
             # TODO Check if works (bounding limits)
-            offset = 3
-            y0 = obj_y - offset if (obj_y - offset) >= 0 else 0
-            y1 = obj_y + offset if (obj_y + offset) <= self.camera.rgb_height else self.camera.rgb_height
-            x0 = obj_x - offset if (obj_x - offset) >= 0 else 0
-            x1 = obj_y + offset if (obj_x + offset) <= self.camera.rgb_width else self.camera.rgb_width
-
+            offset = 15
+            y0 = obj_y - offset if obj_y - offset >= 0 else 0
+            y1 = obj_y + offset if obj_y + offset <= self.camera.rgb_height else self.camera.rgb_height
+            x0 = obj_x - offset if obj_x - offset >= 0 else 0 
+            x1 = obj_x + offset if obj_x + offset <= self.camera.rgb_width else self.camera.rgb_width
             obj_dst = np.average(depth_image[y0:y1, x0:x1]) * self.camera.depth_scale
             baskets.append(Object(x=obj_x, y=obj_y, size=size, distance=obj_dst, width=w, exists=True))
 

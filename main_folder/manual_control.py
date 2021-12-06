@@ -1,11 +1,10 @@
-import time
 from pynput import keyboard
-# from robot_movement import RobotMovement
+from robot_movement import RobotMovement
 
 
 class ManualController:
     def __init__(self):
-        # self.robot = RobotMovement()
+        self.robot = RobotMovement()
         self.max_speed = 40
         self.speed_x = 0
         self.speed_y = 0
@@ -19,13 +18,14 @@ class ManualController:
         while True:
             if self.kill:
                 break
-            print(self.speed_x, self.speed_y, self.speed_rot)
+            # print(self.speed_x, self.speed_y, self.speed_rot)
             # self.robot.move_robot_XY(self.speed_x, self.speed_y, self.speed_rot)
 
     def on_press(self, key):
         try:
             if key.char == "w":
-                self.speed_y = self.max_speed
+                self.speed_y = self.max_speed           
+                print("pressed")
             elif key.char == "s":
                 self.speed_y = -self.max_speed
             elif key.char == "d":
@@ -46,6 +46,7 @@ class ManualController:
             return False
         try:
             if key.char == "w" or key.char == "s":
+                print("released")
                 self.speed_y = 0
             elif key.char == "a" or key.char == "d":
                 self.speed_x = 0

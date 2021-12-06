@@ -49,7 +49,8 @@ class RobotGui:
         cv2.circle(self.color_image, ball_center, 5, ColorRGB.GREEN, -1)
         cv2.putText(self.color_image, str(round(ball_x)) + " : " + str(round(ball_y)), (int(ball_x), int(ball_y - ball_radius - 10)), cv2.FONT_HERSHEY_SIMPLEX, 1, ColorRGB.GREEN, 2)
         cv2.circle(self.color_image, basket_center, 5, ColorRGB.BLUE, -1)
-        cv2.rectangle(self.color_image, (basket_x - basket_radius, basket_y - basket_radius), (basket_x + basket_radius, basket_y + basket_radius), ColorRGB.BLUE, 3)
+        offset = 15
+        cv2.rectangle(self.color_image, (basket_x - offset, basket_y - offset), (basket_x + offset, basket_y + offset), ColorRGB.BLUE, 3)
 
         # show image
         try:
