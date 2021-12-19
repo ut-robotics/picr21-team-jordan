@@ -1,10 +1,14 @@
+import json
 import sys
 import socket
 from select import select
 
 
 class SocketDataGetter:
-    """This class should accept referee command data"""
+    """
+    This class should accept referee command data
+    Fills list with json object
+    """
 
     def __init__(self, ip="localhost", port=9999):
         self.client = self.connect(ip, port)
@@ -26,10 +30,9 @@ class SocketDataGetter:
             ready_sockets, _, _ = select([self.client], [], [], 0.01)  # 0.01 timeout
             if ready_sockets:
                 data = self.client.recv(4096)
-                #TODO str to json
                 decoded_data = data.decode("utf-8")
-                print(decoded_data)
-                out_q.append(decoded_data)
+                json_obj = json.load(decoded_data)
+                out_q.append(json_obj)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import json
 import threading
 import time
 
@@ -26,12 +27,12 @@ class Main:
         self.cam.open()
         self.image_processor = ImageProcessor(self.cam)
 
-        # TODO implement referee command
         self.target_basket = GameObject.BASKET_ROSE
-        self.my_robot_id = -1
+        self.robot_id = "001TRT"
+        self.current_state = State.INITIAL
+        self.run = False
 
         self.fps = 0
-        self.current_state = State.INITIAL
 
     def main(self, socket_data):
         q = [0, 0, 0]
@@ -40,7 +41,15 @@ class Main:
 
             # check for referee commands
             if socket_data:
-                referee_command = socket_data.pop(0)  # TODO implement referee command interrupt of the current state
+                referee_command = json.loads(socket_data.pop(0))
+                signal = referee_command["signal"]
+                if signal == "start":
+                    index = referee_command["targets"].index(self.robot_id)
+                    target_basket = referee_command["baskets"][index]
+                    self.target_basket = GameObject.BASKET_BLUE if target_basket == "blue" else GameObject.BASKET_ROSE
+                    self.run = True
+                elif signal == "stop":
+                    self.run = False
             else:
                 referee_command = None
 
@@ -58,22 +67,16 @@ class Main:
                 ball_y = ball.y
                 ball_radius = int(ball.width / 2)
 
-                
                 basket = results.basket_b if self.target_basket == GameObject.BASKET_BLUE else results.basket_m
                 if basket.exists:
                     basket_x = basket.x
                     basket_y = basket.y
                     basket_radius = int(basket.width / 2)
                     basket_dist = int(round(basket.distance * 100))
-                    print(basket_dist)
-            #         q.append(basket_dist)
-            #         q.pop()
-            # basket_dist = np.mean(q)
-
-            
 
             # run robot
-            self.current_state = self.state_machine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
+            if self.run:
+                self.current_state = self.state_machine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
 
             # show gui
             if self.enable_gui:
