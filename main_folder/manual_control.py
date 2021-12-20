@@ -1,32 +1,50 @@
+from pynput import keyboard
 # from robot_movement import RobotMovement
-import tkinter as tk
-import threading
 
 
-def arduino_map(x, in_min=-250, in_max=250, out_min=-40, out_max=40):
-    return int((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min)
+class ManualController:
+    def __init__(self):
+        # self.robot = RobotMovement()
+        self.max_speed = 40
+        self.speed_x = 0
+        self.speed_y = 0
+        self.speed_rot = 0
+        self.kill = False
+
+    def main(self):
+        listener = keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
+        listener.start()
+
+        while True:
+            if self.kill:
+                break
+            print(self.speed_x, self.speed_y, self.speed_rot)
+            # self.robot.move_robot_XY(self.speed_x, self.speed_y, self.speed_rot)
+
+    def on_press(self, key):
+        try:
+            if key.char == "w":
+                self.speed_y = self.max_speed if self.speed_y == 0 else 0          
+            elif key.char == "s":
+                self.speed_y = -self.max_speed if self.speed_y == 0 else 0
+            elif key.char == "d":
+                self.speed_x = self.max_speed if self.speed_x == 0 else 0
+            elif key.char == "a":
+                self.speed_x = -self.max_speed if self.speed_x == 0 else 0
+            elif key.char == "r":
+                self.speed_rot = int(self.max_speed / 4) if self.speed_rot == 0 else 0
+            elif key.char == "q":
+                self.speed_rot = int(-self.max_speed / 4) if self.speed_rot == 0 else 0
+        # special key pressed
+        except AttributeError:
+            pass
+
+    def on_release(self, key):
+        if key == keyboard.Key.esc:
+            self.kill = True
+            return False
 
 
-def motion(event):
-    x, y = int(event.x - center_x), -int(event.y - center_y)
-    move_x, move_y = arduino_map(x), arduino_map(y)
-    print(move_x, move_y)
-
-
-width = 500
-height = 500
-center_x, center_y = (width / 2, height / 2)
-offset = 10
-root = tk.Tk()
-root.geometry(f"{width}x{height}")
-
-
-canvas = tk.Canvas(root, width=width, height=height, borderwidth=0, highlightthickness=0, bg="#b5c4ff")
-canvas.create_oval((0 + offset, 0 + offset), (width - offset, height - offset), width=3, fill="#96a9f2")
-canvas.create_oval((center_x - offset * 5, center_y - offset * 5), (center_x + offset * 5, center_y + offset * 5), width=3, fill="#b5c4ff")
-canvas.grid()
-canvas.bind("<Motion>", motion)
-canvas.bind("<Button-1>", motion)
-
-
-root.mainloop()
+if __name__ == "__main__":
+    controller = ManualController()
+    controller.main()
