@@ -86,7 +86,6 @@ class StateMachine:
         thrower_speed = self.calculate_thrower_speed(basket_distance)
         robot_speed_y = int(MAXIMUM_SPEED / 3)
         robot_speed_rot = self.calculate_rotation_speed(basket_x) if basket_x != -1 else 0
-        print(robot_speed_rot, basket_x)
 
         self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot, thrower_speed)
         if self.counter > THROW_COUNTER:

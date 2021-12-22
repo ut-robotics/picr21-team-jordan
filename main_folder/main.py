@@ -30,7 +30,7 @@ class Main:
         self.target_basket = GameObject.BASKET_BLUE
         self.robot_id = "001TRT"
         self.current_state = State.INITIAL
-        self.run = True
+        self.run = False
 
         self.fps = 0
 
@@ -41,17 +41,22 @@ class Main:
 
             # check for referee commands
             if socket_data:
-                referee_command = json.loads(socket_data.pop(0))
-                signal = referee_command["signal"]
-                if signal == "start":
-                    index = referee_command["targets"].index(self.robot_id)
-                    target_basket = referee_command["baskets"][index]
-                    self.target_basket = GameObject.BASKET_BLUE if target_basket == "blue" else GameObject.BASKET_ROSE
-                    self.run = True
-                elif signal == "stop":
-                    self.run = False
-            else:
-                referee_command = None
+                command = socket_data.pop(0)
+                try:
+                    if command["signal"] == "start":
+                        index = command["targets"].index(self.robot_id)
+                        target_basket = command["baskets"][index]
+                        self.target_basket = GameObject.BASKET_BLUE if target_basket == "blue" else GameObject.BASKET_ROSE
+                        self.run = True
+                        
+                    elif command["signal"] == "stop":
+                        index = command["targets"].index(self.robot_id)
+                        self.run = False
+                except ValueError: 
+                    # target isn't our robot id
+                    pass   
+                
+            print(self.run, self.target_basket)
 
             # detect all objects
             # aligned_depth = True if self.current_state == State.THROW else False
@@ -98,8 +103,8 @@ class Main:
 
 
 def socket_data_getter(out_q):
-    # camera_image = SocketDataGetter()
-    # camera_image.main(out_q)
+    camera_image = SocketDataGetter("localhost", 9999)
+    camera_image.main(out_q)
     pass
 
 
@@ -108,7 +113,9 @@ def image_getter(in_q):
         state_machine = Main(enable_gui=True)
         state_machine.main(in_q)
     finally:
-        state_machine.cam.close()
+         if state_machine is not None:
+               state_machine.cam.close()
+
 
 
 if __name__ == "__main__":

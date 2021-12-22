@@ -31,7 +31,7 @@ class SocketDataGetter:
             if ready_sockets:
                 data = self.client.recv(4096)
                 decoded_data = data.decode("utf-8")
-                json_obj = json.load(decoded_data)
+                json_obj = json.loads(decoded_data)
                 out_q.append(json_obj)
 
 
