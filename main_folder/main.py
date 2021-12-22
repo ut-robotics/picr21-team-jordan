@@ -45,6 +45,7 @@ class Main:
             # check if manual control is enabled
             if manual_controller.is_enabled:
                 manual_controller.robot.move_robot_XY(manual_controller.speed_x, manual_controller.speed_y, manual_controller.speed_rot)
+            # enable game logic
             else:
                 # check for referee commands
                 if socket_data:
