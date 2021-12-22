@@ -27,10 +27,10 @@ class Main:
         self.cam.open()
         self.image_processor = ImageProcessor(self.cam)
 
-        self.target_basket = GameObject.BASKET_ROSE
+        self.target_basket = GameObject.BASKET_BLUE
         self.robot_id = "001TRT"
         self.current_state = State.INITIAL
-        self.run = False
+        self.run = True
 
         self.fps = 0
 
