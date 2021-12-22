@@ -112,8 +112,7 @@ class Main:
 
 
 def socket_data_getter(out_q):
-    socket_data_getter = SocketDataGetter("localhost", 9999)
-    socket_data_getter.main(out_q)
+    sock = SocketDataGetter(out_q)
 
 
 def image_getter(in_q):
@@ -127,9 +126,8 @@ def image_getter(in_q):
 
 if __name__ == "__main__":
     socket_q = []
-    image_q = []
     t1 = threading.Thread(target=socket_data_getter, args=(socket_q,))
     t1.daemon = True
-    t3 = threading.Thread(target=image_getter, args=(socket_q,))
+    t2 = threading.Thread(target=image_getter, args=(socket_q,))
     t1.start()
-    t3.start()
+    t2.start()
