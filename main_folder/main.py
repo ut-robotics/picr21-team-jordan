@@ -48,14 +48,14 @@ class Main:
                         target_basket = command["baskets"][index]
                         self.target_basket = GameObject.BASKET_BLUE if target_basket == "blue" else GameObject.BASKET_ROSE
                         self.run = True
-                        
+
                     elif command["signal"] == "stop":
                         index = command["targets"].index(self.robot_id)
                         self.run = False
-                except ValueError: 
+                except ValueError:
                     # target isn't our robot id
-                    pass   
-                
+                    pass
+
             print(self.run, self.target_basket)
 
             # detect all objects
@@ -103,9 +103,8 @@ class Main:
 
 
 def socket_data_getter(out_q):
-    camera_image = SocketDataGetter("localhost", 9999)
-    camera_image.main(out_q)
-    pass
+    socket_data_getter = SocketDataGetter("localhost", 9999)
+    socket_data_getter.main(out_q)
 
 
 def image_getter(in_q):
@@ -113,9 +112,8 @@ def image_getter(in_q):
         state_machine = Main(enable_gui=True)
         state_machine.main(in_q)
     finally:
-         if state_machine is not None:
-               state_machine.cam.close()
-
+        if state_machine is not None:
+            state_machine.cam.close()
 
 
 if __name__ == "__main__":
