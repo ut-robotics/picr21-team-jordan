@@ -1,21 +1,17 @@
 import asyncio
 import websockets
 import json
+import threading
+import time
 
 
-class SocketDataGetter:
-    def __init__(self, out_q):
-        self.out_q = out_q
-        asyncio.get_event_loop().run_until_complete(self.get_data())
-        
-    async def get_data(self):
-        async with websockets.connect("ws://localhost:8888") as websocket:
-            while True:
-                data = await websocket.recv()
-                commands = json.loads(data)
-                self.out_q.append(commands)
+async def listen():
+    async with websockets.connect("ws://localhost:8888") as websocket:
+        data = await websocket.recv()
+        commands = json.loads(data)
+        print(commands)
 
-
-if __name__ == "__main__":
-    q = []
-    sock = SocketDataGetter(q)
+while True:
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(listen())
+    print("Non blocking")

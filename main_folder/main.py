@@ -5,12 +5,20 @@ import time
 import cv2
 import numpy as np
 
+"""
 from camera import RealsenseCamera
+"""
 from enums import GameObject, State
+
+"""
 from image_processor import ImageProcessor
 from robot_gui import RobotGui
+"""
 from socket_data_getter import SocketDataGetter
+
+"""
 from state_machine import StateMachine
+"""
 from manual_control import ManualController
 
 
@@ -21,11 +29,13 @@ class Main:
     """
 
     def __init__(self, enable_gui):
+        """
         self.cam = RealsenseCamera()
         self.cam.open()
         self.gui = RobotGui() if enable_gui else None
         self.state_machine = StateMachine()
         self.image_processor = ImageProcessor(self.cam)
+        """
         self.manual_controller = ManualController()
 
         self.target_basket = GameObject.BASKET_BLUE
@@ -43,8 +53,9 @@ class Main:
             start_time = time.time()
 
             # check if manual control is enabled
-            if manual_controller.is_enabled:
-                manual_controller.robot.move_robot_XY(manual_controller.speed_x, manual_controller.speed_y, manual_controller.speed_rot)
+            if manual_controller.enable:
+                print(manual_controller.speed_x, manual_controller.speed_y, manual_controller.speed_rot)
+                """manual_controller.robot.move_robot_XY(manual_controller.speed_x, manual_controller.speed_y, manual_controller.speed_rot)"""
             # enable game logic
             else:
                 # check for referee commands
@@ -65,7 +76,7 @@ class Main:
                         pass
 
                 print(self.run, self.target_basket)
-
+        """
                 # detect all objects
                 # aligned_depth = True if self.current_state == State.THROW else False
                 aligned_depth = True
@@ -102,26 +113,34 @@ class Main:
 
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
-
+            
             self.fps = round(1.0 / (time.time() - start_time), 2)
 
         self.cam.close()
 
         if self.enable_gui:
             self.gui.kill_gui()
+        """
 
 
 def socket_data_getter(out_q):
+    """
     sock = SocketDataGetter(out_q)
+    """
+    pass
 
 
 def image_getter(in_q):
+    state_machine = Main(enable_gui=True)
+    state_machine.main(in_q)
+    """
     try:
         state_machine = Main(enable_gui=True)
         state_machine.main(in_q)
     finally:
         if state_machine is not None:
             state_machine.cam.close()
+    """
 
 
 if __name__ == "__main__":
