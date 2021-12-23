@@ -1,15 +1,16 @@
 from pynput import keyboard
 
-"""from robot_movement import RobotMovement"""
+from robot_movement import RobotMovement
 
 
 class ManualController:
     def __init__(self):
-        """self.robot = RobotMovement()"""
+        self.robot = RobotMovement()
         self.max_speed = 40
         self.speed_x = 0
         self.speed_y = 0
         self.speed_rot = 0
+        self.speed_throw = 0
         self.enable = False
         self.kill = False
 
@@ -34,12 +35,14 @@ class ManualController:
                     self.speed_x = -self.max_speed if self.speed_x == 0 else 0
                 elif key.char == "e":
                     self.speed_rot = int(-self.max_speed / 3) if self.speed_rot == 0 else 0
-                elif key.char == "r":
+                elif key.char == "q":
                     self.speed_rot = int(self.max_speed / 3) if self.speed_rot == 0 else 0
                 elif key.char == "t":
                     self.speed_rot = 0
                     self.speed_x = 0
                     self.speed_y = 0
+                elif key.char == "m":
+                    self.speed_throw = 1000 if self.speed_throw == 0 else 0
             # special key pressed
             except AttributeError:
                 pass
