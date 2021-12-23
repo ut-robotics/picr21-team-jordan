@@ -1,15 +1,15 @@
+import asyncio
 import json
-import threading
 import time
 
 import cv2
-import numpy as np
+from websockets import connect
 
 from camera import RealsenseCamera
 from enums import GameObject, State
 from image_processor import ImageProcessor
+from manual_control import ManualController
 from robot_gui import RobotGui
-from socket_data_getter import SocketDataGetter
 from state_machine import StateMachine
 
 
@@ -20,11 +20,10 @@ class Main:
     """
 
     def __init__(self, enable_gui):
-        self.enable_gui = enable_gui
-        self.gui = RobotGui() if enable_gui else None
-        self.state_machine = StateMachine()
         self.cam = RealsenseCamera()
         self.cam.open()
+        self.gui = RobotGui() if enable_gui else None
+        self.state_machine = StateMachine()
         self.image_processor = ImageProcessor(self.cam)
 
         self.target_basket = GameObject.BASKET_BLUE
@@ -32,13 +31,17 @@ class Main:
         self.current_state = State.INITIAL
         self.run = False
 
+        self.enable_gui = enable_gui
         self.fps = 0
 
-    def main(self, socket_data):
-        q = [0, 0, 0]
-        while True:
-            start_time = time.time()
+    def main(self, socket_data, manual_controller):
+        start_time = time.time()
 
+        # check if manual control is enabled
+        if manual_controller.enable:
+            manual_controller.robot.move_robot_XY(manual_controller.speed_x, manual_controller.speed_y, manual_controller.speed_rot, manual_controller.speed_throw)
+        # enable game logic
+        else:
             # check for referee commands
             if socket_data:
                 command = socket_data.pop(0)
@@ -48,16 +51,15 @@ class Main:
                         target_basket = command["baskets"][index]
                         self.target_basket = GameObject.BASKET_BLUE if target_basket == "blue" else GameObject.BASKET_ROSE
                         self.run = True
-                        
+
                     elif command["signal"] == "stop":
                         index = command["targets"].index(self.robot_id)
                         self.run = False
-                except ValueError: 
+                except ValueError:
                     # target isn't our robot id
-                    pass   
-                
-            print(self.run, self.target_basket)
+                    pass
 
+            print(f"Run: {self.run} Basket: {self.target_basket[-4:]}")
             # detect all objects
             # aligned_depth = True if self.current_state == State.THROW else False
             aligned_depth = True
@@ -91,38 +93,33 @@ class Main:
                 self.gui.update_image(results.color_frame)
                 self.gui.update_info(self.fps, self.current_state, ball_info, basket_info)
                 self.gui.show_gui()
-
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-            self.fps = round(1.0 / (time.time() - start_time), 2)
-
-        self.cam.close()
-
-        if self.enable_gui:
-            self.gui.kill_gui()
+        self.fps = round(1.0 / (time.time() - start_time), 2)
 
 
-def socket_data_getter(out_q):
-    camera_image = SocketDataGetter("localhost", 9999)
-    camera_image.main(out_q)
-    pass
+async def run_listener(out_q):
+    async with connect("ws://localhost:8888") as websocket:
+        while True:
+            server_data = await websocket.recv()
+            command = json.loads(server_data)
+            out_q.append(command)
 
 
-def image_getter(in_q):
-    try:
-        state_machine = Main(enable_gui=True)
-        state_machine.main(in_q)
-    finally:
-         if state_machine is not None:
-               state_machine.cam.close()
+async def run_game_logic(in_q):
+    state_machine = Main(enable_gui=True)
+    manual_controller = ManualController()
+    manual_controller.main()
+    while True:
+        state_machine.main(in_q, manual_controller)
+        await asyncio.sleep(0.0001)
+        if cv2.waitKey(1) & 0xFF == ord("x"):
+            break
+    state_machine.cam.close()
+    if state_machine.enable_gui:
+        state_machine.gui.kill_gui()
 
 
-
-if __name__ == "__main__":
-    socket_q = []
-    image_q = []
-    t1 = threading.Thread(target=socket_data_getter, args=(socket_q,))
-    t1.daemon = True
-    t3 = threading.Thread(target=image_getter, args=(socket_q,))
-    t1.start()
-    t3.start()
+loop = asyncio.get_event_loop()
+q = []
+loop.create_task(run_game_logic(q))
+loop.create_task(run_listener(q))
+loop.run_forever()
