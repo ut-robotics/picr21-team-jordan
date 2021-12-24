@@ -13,7 +13,7 @@ from robot_gui import RobotGui
 from state_machine import StateMachine
 
 
-class Main:
+class GameLogic:
     """
     Main class. Gets frames, applyes image processing to get:
     Ball coord, ball size, basket coord, basket size. Sends values to the StateMachine class
@@ -105,17 +105,17 @@ async def run_listener(out_q):
 
 
 async def run_game_logic(in_q):
-    state_machine = Main(enable_gui=True)
+    game_logic = GameLogic(enable_gui=True)
     manual_controller = ManualController()
     manual_controller.main()
     while True:
-        state_machine.main(in_q, manual_controller)
+        game_logic.main(in_q, manual_controller)
         await asyncio.sleep(0.0001)
         if cv2.waitKey(1) & 0xFF == ord("x"):
             break
-    state_machine.cam.close()
-    if state_machine.enable_gui:
-        state_machine.gui.kill_gui()
+    game_logic.cam.close()
+    if game_logic.enable_gui:
+        game_logic.gui.kill_gui()
 
 
 loop = asyncio.get_event_loop()
