@@ -12,6 +12,10 @@ from manual_control import ManualController
 from robot_gui import RobotGui
 from state_machine import StateMachine
 
+IP = "localhost"
+PORT = 8888
+ROBOT_ID = "001TRT"
+
 
 class GameLogic:
     """
@@ -27,7 +31,7 @@ class GameLogic:
         self.image_processor = ImageProcessor(self.cam)
 
         self.target_basket = GameObject.BASKET_BLUE
-        self.robot_id = "001TRT"
+        self.robot_id = ROBOT_ID
         self.current_state = State.INITIAL
         self.run = False
 
@@ -97,7 +101,8 @@ class GameLogic:
 
 
 async def run_listener(out_q):
-    async with connect("ws://localhost:8888") as websocket:
+    server = f"ws://{IP}:{PORT}"
+    async with connect(server) as websocket:
         while True:
             server_data = await websocket.recv()
             command = json.loads(server_data)
