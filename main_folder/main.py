@@ -29,7 +29,7 @@ class GameLogic:
         self.cam.open()
         self.gui = RobotGui() if enable_gui else None
         self.robot_movement = RobotMovement()
-        self.manual_controller = ManualController(self.robot_movement)
+        self.manual_controller = ManualController()
         self.manual_controller.main()
         self.state_machine = StateMachine(self.robot_movement)
         self.image_processor = ImageProcessor(self.cam)
@@ -47,7 +47,7 @@ class GameLogic:
 
         # check if manual control is enabled
         if self.manual_controller.enable:
-            self.manual_controller.robot.move_robot_XY(self.manual_controller.speed_x, self.manual_controller.speed_y, self.manual_controller.speed_rot, self.manual_controller.speed_throw)
+            self.robot_movement.move_robot_XY(self.manual_controller.speed_x, self.manual_controller.speed_y, self.manual_controller.speed_rot, self.manual_controller.speed_throw)
         # enable game logic
         else:
             # check for referee commands
