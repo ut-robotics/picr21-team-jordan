@@ -4,8 +4,8 @@ from robot_movement import RobotMovement
 
 
 class ManualController:
-    def __init__(self):
-        self.robot = RobotMovement()
+    def __init__(self, robot_movement):
+        self.robot = robot_movement
         self.max_speed = 40
         self.speed_x = 0
         self.speed_y = 0

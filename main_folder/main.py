@@ -10,6 +10,7 @@ from enums import GameObject, State
 from image_processor import ImageProcessor
 from manual_control import ManualController
 from robot_gui import RobotGui
+from robot_movement import RobotMovement
 from state_machine import StateMachine
 
 IP = "localhost"
@@ -27,7 +28,10 @@ class GameLogic:
         self.cam = RealsenseCamera()
         self.cam.open()
         self.gui = RobotGui() if enable_gui else None
-        self.state_machine = StateMachine()
+        self.robot_movement = RobotMovement()
+        self.manual_controller = ManualController(self.robot_movement)
+        self.manual_controller.main()
+        self.state_machine = StateMachine(self.robot_movement)
         self.image_processor = ImageProcessor(self.cam)
 
         self.target_basket = GameObject.BASKET_BLUE
@@ -38,12 +42,12 @@ class GameLogic:
         self.enable_gui = enable_gui
         self.fps = 0
 
-    def main(self, socket_data, manual_controller):
+    def main(self, socket_data):
         start_time = time.time()
 
         # check if manual control is enabled
-        if manual_controller.enable:
-            manual_controller.robot.move_robot_XY(manual_controller.speed_x, manual_controller.speed_y, manual_controller.speed_rot, manual_controller.speed_throw)
+        if self.manual_controller.enable:
+            self.manual_controller.robot.move_robot_XY(self.manual_controller.speed_x, self.manual_controller.speed_y, self.manual_controller.speed_rot, self.manual_controller.speed_throw)
         # enable game logic
         else:
             # check for referee commands
@@ -111,10 +115,9 @@ async def run_listener(out_q):
 
 async def run_game_logic(in_q):
     game_logic = GameLogic(enable_gui=True)
-    manual_controller = ManualController()
-    manual_controller.main()
+
     while True:
-        game_logic.main(in_q, manual_controller)
+        game_logic.main(in_q)
         await asyncio.sleep(0.0001)
         if cv2.waitKey(1) & 0xFF == ord("x"):
             break

@@ -15,8 +15,8 @@ class StateMachine:
     Manipulating is mechanical (turn left, right, etc.)
     """
 
-    def __init__(self):
-        self.Robot = RobotMovement()
+    def __init__(self, robot_movement):
+        self.robot_movement = robot_movement
         self.state = State.FIND_BALL
         self.last_basket_pos = Position.LEFT
         self.counter = 0
@@ -46,7 +46,7 @@ class StateMachine:
     def find_a_ball(self, ball_x):
         """State action"""
         if ball_x == -1:
-            self.Robot.move_robot_XY(0, 0, 15)
+            self.robot_movement.move_robot_XY(0, 0, 15)
         else:
             self.state = State.GET_TO_BALL
 
@@ -61,7 +61,7 @@ class StateMachine:
         elif ball_y in const.CENTER_RANGE_Y and ball_x in const.CENTER_RANGE_X:
             self.state = State.FIND_A_BASKET
         else:
-            self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
+            self.robot_movement.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
 
     def find_a_basket(self, ball_x, ball_y, basket_x):
         """State action"""
@@ -75,10 +75,10 @@ class StateMachine:
             robot_speed_x == MAXIMUM_SPEED if self.last_basket_pos == Position.LEFT else -MAXIMUM_SPEED
 
         if ball_x in const.CENTER_RANGE_X and basket_x in const.CENTER_RANGE_BASKET:
-            self.Robot.move_robot_XY(0, 0, 0)
+            self.robot_movement.move_robot_XY(0, 0, 0)
             self.state = State.THROW
         else:
-            self.Robot.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
+            self.robot_movement.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
 
     def throw_a_ball(self, basket_distance, basket_x):
         self.counter += 1
@@ -87,7 +87,7 @@ class StateMachine:
         robot_speed_y = int(MAXIMUM_SPEED / 3)
         robot_speed_rot = self.calculate_rotation_speed(basket_x) if basket_x != -1 else 0
 
-        self.Robot.move_robot_XY(0, robot_speed_y, robot_speed_rot, thrower_speed)
+        self.robot_movement.move_robot_XY(0, robot_speed_y, robot_speed_rot, thrower_speed)
         if self.counter > THROW_COUNTER:
             self.counter = 0
             self.state = State.FIND_BALL
