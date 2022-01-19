@@ -69,9 +69,9 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN 0 */
 
  //Frequency Register f_main = 160MHz  ARR = 65535  -> f_main/ARR ~2444
-float P_factor = 3;
-float D_factor = 0.2;
-float I_factor = 0.2;
+float P_factor = 0.4;
+float D_factor = 0.002;
+float I_factor = 0.002;
 
 typedef struct Command { //
   int16_t speed1;
@@ -127,7 +127,7 @@ Motor_speed_send motor_speed_send = {.speed_send_M1 = 0, .speed_send_M2 = 0, .sp
 
 void PID_Controller(){
 
-	float time_call = 1/100 // this is the time between function calls
+	float time_call = 1/100; // this is the time between function calls
 
 	motor_pose_change.pose_change_M1 = motor_pose.pose_M1 - motor_pose_prev.pose_prev_M1;
 	motor_pose_change.pose_change_M2 = motor_pose.pose_M2 - motor_pose_prev.pose_prev_M2;
@@ -148,10 +148,7 @@ void PID_Controller(){
 
 void processing_values(){
 
-	// scale the value
-	setpoints.speed1 = command.speed1 / 100 * 65535;
-	setpoints.speed2 = command.speed2 / 100 * 65535;
-	setpoints.speed3 = command.speed3 / 100 * 65535;
+
 
 	// direction of the rotation
 	if (command.speed1 >= 0){
@@ -193,17 +190,21 @@ void out_put_sleep (){
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     // ######### control Thrower ##########
-	TIM15->CCR2 = command.throwerSpeed;
+//	TIM15->CCR2 = command.throwerSpeed;
 
 	// ################# read Encoder values ##################
 	motor_pose.pose_M1 = (int16_t)TIM1->CNT;
 	motor_pose.pose_M2 = (int16_t)TIM4->CNT;
 	motor_pose.pose_M3 = (int16_t)TIM8->CNT;
 
+	// scale the value
+	setpoints.speed1 = command.speed1 / 100 * 65535;
+	setpoints.speed2 = command.speed2 / 100 * 65535;
+	setpoints.speed3 = command.speed3 / 100 * 65535;
 
-	processing_values(); // scales and manages directions
-	PID_Controller();	 // calculate velocities based on a PID controller
 	out_put_sleep();	 // nSleep control
+	PID_Controller();	 // calculate velocities based on a PID controller
+	processing_values(); // scales and manages directions
 
 	// changes duty cycle of the motors
 	TIM2->CCR1  = motor_speed_send.speed_send_M1;
@@ -295,9 +296,9 @@ HAL_Delay(1000);
 HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
 
 
-HAL_GPIO_WritePin(DIR_M1_GPIO_Port, DIR_M1_Pin,1);
-HAL_GPIO_WritePin(DIR_M2_GPIO_Port, DIR_M2_Pin,1);
-HAL_GPIO_WritePin(DIR_M3_GPIO_Port, DIR_M3_Pin,1);
+//HAL_GPIO_WritePin(DIR_M1_GPIO_Port, DIR_M1_Pin,1);
+//HAL_GPIO_WritePin(DIR_M2_GPIO_Port, DIR_M2_Pin,1);
+//HAL_GPIO_WritePin(DIR_M3_GPIO_Port, DIR_M3_Pin,1);
 
 //TIM2->CCR1 = 9000;
 //TIM2->CCR2 = 9600;
@@ -320,23 +321,26 @@ TIM15->CCR2 = 9500;
 	      HAL_Delay(100);
 	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
 
-//	      feedback.speed1 = motor1Control.speed;      // (4)
-//	      feedback.speed2 = motor2Control.speed;
-//	      feedback.speed3 = motor3Control.speed;
-
 	      TIM15->CCR2 = command.throwerSpeed;
 
-	      TIM2->CCR1 = command.speed1;
-	      TIM2->CCR2 = command.speed2;
-	      TIM2->CCR3 = command.speed3;
+//	      TIM2->CCR1 = command.speed1;
+//	      TIM2->CCR2 = command.speed2;
+//	      TIM2->CCR3 = command.speed3;
 
-	      feedback.speed1 = motor_pose_change.pose_change_M1;
-	      feedback.speed2 = motor_pose_change.pose_change_M2;
-	      feedback.speed3 = motor_pose_change.pose_change_M3;
+	      setpoints.speed1 = command.speed1;
+	      setpoints.speed2 = command.speed2;
+	      setpoints.speed3 = command.speed3;
 
-//	      feedback.speed1 = (int16_t)TIM1->CNT;
-//	      feedback.speed2 = (int16_t)TIM4->CNT;
-//	      feedback.speed3 = (int16_t)TIM8->CNT;
+//	      feedback.speed1 = motor_pose_change.pose_change_M1;
+//	      feedback.speed2 = motor_pose_change.pose_change_M2;
+//	      feedback.speed3 = motor_pose_change.pose_change_M3;
+
+//	      motor_pose.pose_M1 = (int16_t)TIM1->CNT;
+//		  motor_pose.pose_M2 = (int16_t)TIM4->CNT;
+//		  motor_pose.pose_M3 = (int16_t)TIM8->CNT;
+	      feedback.speed1 = motor_pose.pose_M1;
+	      feedback.speed2 = motor_pose.pose_M2;
+	      feedback.speed3 = motor_pose.pose_M3;
 
 	      CDC_Transmit_FS(&feedback, sizeof(feedback)); //
 
