@@ -117,18 +117,65 @@ typedef struct Motor_pose_change { //
 } Motor_pose_change;
 Motor_pose_change motor_pose_change = {.pose_change_M1 = 0, .pose_change_M2 = 0, .pose_change_M3 = 0};
 
-void PID_Controller(uint32_t *channel_M1, uint32_t *channel_M2, uint32_t *channel_M3){
+typedef struct Motor_speed_send { //
+  int16_t speed_send_M1;
+  int16_t speed_send_M2;
+  int16_t speed_send_M3;
+} Motor_speed_send;
+Motor_speed_send motor_speed_send = {.speed_send_M1 = 0, .speed_send_M2 = 0, .speed_send_M3 = 0};
 
-	*channel_M1 = (setpoints.speed1 - motor_pose_change.pose_change_M1*100)*P_factor \
-				+ (setpoints.speed1 - motor_pose_change.pose_change_M1*100)*100*D_factor \
-				+ (setpoints.speed1 - motor_pose_change.pose_change_M1*100)/100*I_factor;
-	*channel_M2 = (setpoints.speed2 - motor_pose_change.pose_change_M2*100)*P_factor \
-				+ (setpoints.speed2 - motor_pose_change.pose_change_M2*100)*100*D_factor \
-				+ (setpoints.speed2 - motor_pose_change.pose_change_M2*100)/100*I_factor;
-	*channel_M3 = (setpoints.speed3 - motor_pose_change.pose_change_M3*100)*P_factor \
-			    + (setpoints.speed3 - motor_pose_change.pose_change_M3*100)*100 * D_factor \
-				+ (setpoints.speed3 - motor_pose_change.pose_change_M3*100)/100*I_factor;
+
+void PID_Controller(){
+
+	float time_call = 1/100 // this is the time between function calls
+
+	motor_pose_change.pose_change_M1 = motor_pose.pose_M1 - motor_pose_prev.pose_prev_M1;
+	motor_pose_change.pose_change_M2 = motor_pose.pose_M2 - motor_pose_prev.pose_prev_M2;
+	motor_pose_change.pose_change_M3 = motor_pose.pose_M3 - motor_pose_prev.pose_prev_M3;
+
+	motor_speed_send.speed_send_M1 = (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)*P_factor \
+				+ (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)/time_call*D_factor \
+				+ (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)*time_call*I_factor;
+
+	motor_speed_send.speed_send_M2 = (setpoints.speed2 - motor_pose_change.pose_change_M2/time_call)*P_factor \
+				+ (setpoints.speed2 - motor_pose_change.pose_change_M2/time_call)/time_call*D_factor \
+				+ (setpoints.speed2 - motor_pose_change.pose_change_M2/time_call)*time_call*I_factor;
+
+	motor_speed_send.speed_send_M3 = (setpoints.speed3 - motor_pose_change.pose_change_M3/time_call)*P_factor \
+				+ (setpoints.speed3 - motor_pose_change.pose_change_M3/time_call)/time_call*D_factor \
+				+ (setpoints.speed3 - motor_pose_change.pose_change_M3/time_call)*time_call*I_factor;
 }
+
+void processing_values(){
+
+	// scale the value
+	setpoints.speed1 = command.speed1 / 100 * 65535;
+	setpoints.speed2 = command.speed2 / 100 * 65535;
+	setpoints.speed3 = command.speed3 / 100 * 65535;
+
+	// direction of the rotation
+	if (command.speed1 >= 0){
+		HAL_GPIO_WritePin(DIR_M1_GPIO_Port, DIR_M1_Pin, 1);
+	}
+	else{
+		HAL_GPIO_WritePin(DIR_M1_GPIO_Port, DIR_M1_Pin, 0);
+	}
+
+	if (command.speed2 >= 0){
+		HAL_GPIO_WritePin(DIR_M2_GPIO_Port, DIR_M2_Pin, 1);
+	}
+	else{
+		HAL_GPIO_WritePin(DIR_M2_GPIO_Port, DIR_M2_Pin, 0);
+	}
+
+	if (command.speed2 >= 0){
+		HAL_GPIO_WritePin(DIR_M3_GPIO_Port, DIR_M3_Pin, 1);
+	}
+	else{
+		HAL_GPIO_WritePin(DIR_M3_GPIO_Port, DIR_M3_Pin, 0);
+	}
+}
+
 
 void out_put_sleep (){
 
@@ -145,24 +192,23 @@ void out_put_sleep (){
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    // ######### control Thrower ##########
+	TIM15->CCR2 = command.throwerSpeed;
+
 	// ################# read Encoder values ##################
 	motor_pose.pose_M1 = (int16_t)TIM1->CNT;
 	motor_pose.pose_M2 = (int16_t)TIM4->CNT;
 	motor_pose.pose_M3 = (int16_t)TIM8->CNT;
 
-	motor_pose_change.pose_change_M1 = motor_pose.pose_M1 - motor_pose_prev.pose_prev_M1;
-	motor_pose_change.pose_change_M2 = motor_pose.pose_M2 - motor_pose_prev.pose_prev_M2;
-	motor_pose_change.pose_change_M3 = motor_pose.pose_M3 - motor_pose_prev.pose_prev_M3;
 
-    // ######### changing the thrower duty cycle ##########
-//	TIM15->CCR2 = command.throwerSpeed/100*65535;
-//	TIM15->CCR2 = 9000;
+	processing_values(); // scales and manages directions
+	PID_Controller();	 // calculate velocities based on a PID controller
+	out_put_sleep();	 // nSleep control
 
-	setpoints.speed1 = command.speed1/100*65535;
-	setpoints.speed2 = command.speed2/100*65535;
-	setpoints.speed3 = command.speed3/100*65535;
-
-	PID_Controller(&(TIM1->CCR2), &(TIM2->CCR2), &(TIM15->CCR1));
+	// changes duty cycle of the motors
+	TIM2->CCR1  = motor_speed_send.speed_send_M1;
+ 	TIM2->CCR2  = motor_speed_send.speed_send_M2;
+	TIM2->CCR3  = motor_speed_send.speed_send_M3;
 
 	motor_pose_prev.pose_prev_M1 = motor_pose.pose_M1;
 	motor_pose_prev.pose_prev_M2 = motor_pose.pose_M2;
@@ -171,11 +217,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 volatile uint8_t isCommandReceived = 0; // (5)
 
-void CDC_On_Receive(uint8_t* buffer, uint32_t* length) { // (6)
-  if (*length == sizeof(Command)) { // (7)
-    memcpy(&command, buffer, sizeof(Command)); // (8)
+void CDC_On_Receive(uint8_t* buffer, uint32_t* length) {
+	// for testing the serial communication
+  if (*length == sizeof(Command)) {
+    memcpy(&command, buffer, sizeof(Command));
 
-    if (command.delimiter == 0xAAAA) { // (9)
+    if (command.delimiter == 0xAAAA) {
       isCommandReceived = 1;
     }
   }
@@ -189,7 +236,6 @@ void CDC_On_Receive(uint8_t* buffer, uint32_t* length) { // (6)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -218,6 +264,7 @@ int main(void)
   MX_USB_Device_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+
   Feedback feedback = { // (1)
       .speed1 = 0,
       .speed2 = 0,
@@ -229,8 +276,8 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1 | TIM_CHANNEL_2);	// Encoder 3
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);	// Motor 1
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2); // Motor 2
-  HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_1); // Motor 3
-  HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2); // thrower motor   maybe error since same timer as motor3
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Motor 3
+  HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2); // thrower motor
   HAL_TIM_Base_Start_IT(&htim6); // Timer for which indicates when to update the motor speeds
 
 
@@ -240,28 +287,62 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-// HAL_GPIO_WritePin(Debug_LED_GPIO_Port, Debug_LED_Pin,1);
-//HAL_GPIO_WritePin(DIR_M1_GPIO_Port, DIR_M1_Pin,1);
+
+HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
+HAL_Delay(1000);
+HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
+HAL_Delay(1000);
+HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
+
+
+HAL_GPIO_WritePin(DIR_M1_GPIO_Port, DIR_M1_Pin,1);
+HAL_GPIO_WritePin(DIR_M2_GPIO_Port, DIR_M2_Pin,1);
+HAL_GPIO_WritePin(DIR_M3_GPIO_Port, DIR_M3_Pin,1);
+
+//TIM2->CCR1 = 9000;
+//TIM2->CCR2 = 9600;
+//TIM2->CCR3 = 9500;
 TIM15->CCR2 = 9500;
+
+
+
   while (1)
   {
+	HAL_Delay(10);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//      	TIM15->CCR1 = 9000;
 	    if (isCommandReceived) { // (2)
 	      isCommandReceived = 0;
+	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
+	      HAL_Delay(100);
 	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
 
 //	      feedback.speed1 = motor1Control.speed;      // (4)
 //	      feedback.speed2 = motor2Control.speed;
 //	      feedback.speed3 = motor3Control.speed;
-	      feedback.speed1 = 0x11;
-	      feedback.speed2 = 0x22;
-	      feedback.speed3 = 0x32;
-	      CDC_Transmit_FS(&feedback, sizeof(feedback)); // (5)
+
+	      TIM15->CCR2 = command.throwerSpeed;
+
+	      TIM2->CCR1 = command.speed1;
+	      TIM2->CCR2 = command.speed2;
+	      TIM2->CCR3 = command.speed3;
+
+	      feedback.speed1 = motor_pose_change.pose_change_M1;
+	      feedback.speed2 = motor_pose_change.pose_change_M2;
+	      feedback.speed3 = motor_pose_change.pose_change_M3;
+
+//	      feedback.speed1 = (int16_t)TIM1->CNT;
+//	      feedback.speed2 = (int16_t)TIM4->CNT;
+//	      feedback.speed3 = (int16_t)TIM8->CNT;
+
+	      CDC_Transmit_FS(&feedback, sizeof(feedback)); //
+
 	    }
-	// HAL_GPIO_WritePin(Debug_LED_GPIO_Port, Debug_LED_Pin, 1);
-	// update_thrower(&(TIM15->CCR2), command.throwerSpeed);
+	    out_put_sleep();
+
   	  }
   /* USER CODE END 3 */
 }
@@ -419,6 +500,11 @@ static void MX_TIM2_Init(void)
   }
   sConfigOC.OCMode = TIM_OCMODE_TIMING;
   if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -587,16 +673,12 @@ static void MX_TIM15_Init(void)
 
   /* USER CODE END TIM15_Init 1 */
   htim15.Instance = TIM15;
-  htim15.Init.Prescaler = 0;
+  htim15.Init.Prescaler = 49;
   htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim15.Init.Period = 65535;
+  htim15.Init.Period = 63999;
   htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim15.Init.RepetitionCounter = 0;
   htim15.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_OC_Init(&htim15) != HAL_OK)
-  {
-    Error_Handler();
-  }
   if (HAL_TIM_PWM_Init(&htim15) != HAL_OK)
   {
     Error_Handler();
@@ -607,18 +689,13 @@ static void MX_TIM15_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_OC_ConfigChannel(&htim15, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
   if (HAL_TIM_PWM_ConfigChannel(&htim15, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
@@ -656,13 +733,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, DIR_M1_Pin|DIR_M2_Pin|DIR_M3_Pin|Debug_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, DIR_M2_Pin|DIR_M1_Pin|DIR_M3_Pin|Debug_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : DIR_M1_Pin DIR_M2_Pin DIR_M3_Pin Debug_LED_Pin */
-  GPIO_InitStruct.Pin = DIR_M1_Pin|DIR_M2_Pin|DIR_M3_Pin|Debug_LED_Pin;
+  /*Configure GPIO pins : DIR_M2_Pin DIR_M1_Pin DIR_M3_Pin Debug_LED_Pin */
+  GPIO_InitStruct.Pin = DIR_M2_Pin|DIR_M1_Pin|DIR_M3_Pin|Debug_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
