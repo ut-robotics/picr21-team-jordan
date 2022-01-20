@@ -27,6 +27,8 @@ class RobotMovement:
             if STM_32_HWID in hwid:
                 serial_port = devices[hwid]
                 break
+            
+        
 
         if serial_port is None:
             raise SerialPortNotFound
@@ -38,6 +40,8 @@ class RobotMovement:
     def move_robot(self, moving_direction=0, speed=0, rotation_speed=0, thrower_speed=0, failsafe=0):
         speed1, speed2, speed3 = [self.calculate_speed(angle, moving_direction, speed, rotation_speed) for angle in WHEEL_ANGLES]
         send_data = struct.pack("<hhhHBH", speed1, speed2, speed3, thrower_speed, failsafe, 0xAAAA)
+        send_data = struct.pack("<hhhHH", speed1, speed2, speed3, thrower_speed, 0xAAAA)
+
         self.ser.write(send_data)
 
     def move_robot_XY(self, speed_x=0, speed_y=0, rotation_speed=0, thrower_speed=0):
@@ -47,6 +51,5 @@ class RobotMovement:
 
 
 if __name__ == "__main__":
-    for i in range(25000):
-        robot = RobotMovement()
-        robot.move_robot_XY(0, 30, 1)
+    robot = RobotMovement()
+    robot.move_robot_XY(0, 0, 0, 500)
