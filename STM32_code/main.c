@@ -69,13 +69,13 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN 0 */
 
  //Frequency Register f_main = 160MHz  ARR = 65535  -> f_main/ARR ~2444
-float P_factor = 0.3;
-float D_factor = 0.01;
-float I_factor = 0.01;
+float P_factor = 2500;
+float D_factor = 10;
+float I_factor = 0;
 
-int16_t cumulativeError_M1 = 0;
-int16_t cumulativeError_M2 = 0;
-int16_t cumulativeError_M3 = 0;
+int32_t cumulativeError_M1 = 0;
+int32_t cumulativeError_M2 = 0;
+int32_t cumulativeError_M3 = 0;
 
 
 
@@ -124,13 +124,15 @@ typedef struct Motor_pose_change { //
 Motor_pose_change motor_pose_change = {.pose_change_M1 = 0, .pose_change_M2 = 0, .pose_change_M3 = 0};
 
 typedef struct Motor_speed_send { //
-  int16_t speed_send_M1;
-  int16_t speed_send_M2;
-  int16_t speed_send_M3;
+	int32_t speed_send_M1;
+	int32_t speed_send_M2;
+	int32_t speed_send_M3;
 } Motor_speed_send;
 Motor_speed_send motor_speed_send = {.speed_send_M1 = 0, .speed_send_M2 = 0, .speed_send_M3 = 0};
 
-
+int32_t currentError_M1  = 0;
+int32_t currentError_M2 = 0;
+int32_t currentError_M3 = 0;
 void PID_Controller(){
 
 	float time_call = 1/100; // this is the time between function calls
@@ -139,45 +141,30 @@ void PID_Controller(){
 	motor_pose_change.pose_change_M2 = motor_pose.pose_M2 - motor_pose_prev.pose_prev_M2;
 	motor_pose_change.pose_change_M3 = motor_pose.pose_M3 - motor_pose_prev.pose_prev_M3;
 
-	int16_t currentError_M1 = setpoints.speed1 - motor_pose_change.pose_change_M1;
-	int16_t currentError_M2 = setpoints.speed2 - motor_pose_change.pose_change_M2;
-	int16_t currentError_M3 = setpoints.speed3 - motor_pose_change.pose_change_M3;
+	currentError_M1 = setpoints.speed1 - motor_pose_change.pose_change_M1;
+	currentError_M2 = setpoints.speed2 - motor_pose_change.pose_change_M2;
+	currentError_M3 = setpoints.speed3 - motor_pose_change.pose_change_M3;
 
 	cumulativeError_M1 += currentError_M1;
 	cumulativeError_M2 += currentError_M2;
 	cumulativeError_M3 += currentError_M3;
 
-	motor_speed_send.speed_send_M1 = currentError_M1 * P_factor + \
+	motor_speed_send.speed_send_M1 = currentError_M1 * P_factor - \
 			        D_factor * motor_pose_change.pose_change_M1 + \
 					I_factor * cumulativeError_M1;
 
-	motor_speed_send.speed_send_M2 = currentError_M2 * P_factor + \
+	motor_speed_send.speed_send_M2 = currentError_M2 * P_factor - \
 			        D_factor * motor_pose_change.pose_change_M2 + \
 					I_factor * cumulativeError_M2;
 
-	motor_speed_send.speed_send_M3 = currentError_M3 * P_factor + \
+	motor_speed_send.speed_send_M3 = currentError_M3 * P_factor - \
 			        D_factor * motor_pose_change.pose_change_M3 + \
 					I_factor * cumulativeError_M3;
 
+	motor_pose_prev.pose_prev_M1 = motor_pose.pose_M1;
+	motor_pose_prev.pose_prev_M2 = motor_pose.pose_M2;
+	motor_pose_prev.pose_prev_M3 = motor_pose.pose_M3;
 
-
-//	motor_speed_send.speed_send_M1 = (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)*P_factor;
-	//
-	////				+ (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)/time_call*D_factor
-	////				+ (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)*time_call*I_factor;
-
-//	motor_speed_send.speed_send_M1 = (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)*P_factor;
-//
-////				+ (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)/time_call*D_factor
-////				+ (setpoints.speed1 - motor_pose_change.pose_change_M1/time_call)*time_call*I_factor;
-//
-//	motor_speed_send.speed_send_M2 = (setpoints.speed2 - motor_pose_change.pose_change_M2/time_call)*P_factor \
-//				+ (setpoints.speed2 - motor_pose_change.pose_change_M2/time_call)/time_call*D_factor \
-//				+ (setpoints.speed2 - motor_pose_change.pose_change_M2/time_call)*time_call*I_factor;
-//
-//	motor_speed_send.speed_send_M3 = (setpoints.speed3 - motor_pose_change.pose_change_M3/time_call)*P_factor \
-//				+ (setpoints.speed3 - motor_pose_change.pose_change_M3/time_call)/time_call*D_factor \
-//				+ (setpoints.speed3 - motor_pose_change.pose_change_M3/time_call)*time_call*I_factor;
 }
 
 void processing_values(){
@@ -223,6 +210,28 @@ void processing_values(){
 		}
 		motor_speed_send.speed_send_M3 = -motor_speed_send.speed_send_M3;
 	}
+
+	if (cumulativeError_M1 >= 65535/I_factor) {
+		cumulativeError_M1 = 65535/I_factor;
+	}
+	if (cumulativeError_M2 >= 65535/I_factor) {
+		cumulativeError_M2 = 65535/I_factor;
+	}
+	if (cumulativeError_M3 >= 65535/I_factor) {
+		cumulativeError_M3 = 65535/I_factor;
+	}
+
+	if (cumulativeError_M1 <= -65535/I_factor) {
+		cumulativeError_M1 = -65535/I_factor;
+	}
+	if (cumulativeError_M2 <= -65535/I_factor) {
+		cumulativeError_M2 = -65535/I_factor;
+	}
+	if (cumulativeError_M3 <= -65535/I_factor) {
+		cumulativeError_M3 = -65535/I_factor;
+	}
+
+
 }
 
 void out_put_sleep (){
@@ -241,23 +250,21 @@ void out_put_sleep (){
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	// ################# read Encoder values ##################
-	motor_pose.pose_M1 = (int16_t)TIM1->CNT;
-	motor_pose.pose_M2 = (int16_t)TIM4->CNT;
-	motor_pose.pose_M3 = (int16_t)TIM8->CNT;
+	motor_pose.pose_M1 = (int16_t)TIM4->CNT;
+	motor_pose.pose_M2 = (int16_t)TIM8->CNT;
+	motor_pose.pose_M3 = (int16_t)TIM1->CNT;
 
 	// scale the value
 	out_put_sleep();	 // nSleep control
 	PID_Controller();	 // calculate velocities based on a PID controller
 	processing_values(); // direction control
 
-//	// changes duty cycle of the motors
-//	TIM2->CCR1 = motor_speed_send.speed_send_M1;
-// 	TIM2->CCR2 = motor_speed_send.speed_send_M2;
-//	TIM2->CCR3 = motor_speed_send.speed_send_M3;
+	// changes duty cycle of the motors
+	TIM2->CCR2 = motor_speed_send.speed_send_M1;
+ 	TIM2->CCR1 = motor_speed_send.speed_send_M2;
+	TIM2->CCR3 = motor_speed_send.speed_send_M3;
 
-	motor_pose_prev.pose_prev_M1 = motor_pose.pose_M1;
-	motor_pose_prev.pose_prev_M2 = motor_pose.pose_M2;
-	motor_pose_prev.pose_prev_M3 = motor_pose.pose_M3;
+
 }
 
 volatile uint8_t isCommandReceived = 0; // (5)
@@ -319,8 +326,8 @@ int main(void)
   HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1 | TIM_CHANNEL_2); // Encoder 1
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1 | TIM_CHANNEL_2); // Encoder 2
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1 | TIM_CHANNEL_2);	// Encoder 3
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);	// Motor 1
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2); // Motor 2
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);	// Motor 2
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2); // Motor 1
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3); // Motor 3
   HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_2); // thrower motor
   HAL_TIM_Base_Start_IT(&htim6); // Timer for which indicates when to update the motor speeds
@@ -336,9 +343,9 @@ int main(void)
 
 
 HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
-HAL_Delay(1000);
+HAL_Delay(200);
 HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
-HAL_Delay(1000);
+HAL_Delay(200);
 HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
 
 
@@ -358,6 +365,7 @@ TIM15->CCR2 = 3000; // for initialization of the ESP 3000 -> below 1 ms
 	HAL_Delay(20);
 
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
 //      	TIM15->CCR1 = 9000;
 	    if (isCommandReceived) {
@@ -365,27 +373,22 @@ TIM15->CCR2 = 3000; // for initialization of the ESP 3000 -> below 1 ms
 	      TIM15->CCR2 = command.throwerSpeed;
 
 	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
-	      HAL_Delay(500);
-	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
+//	      HAL_Delay(3);
+//	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
 
 	      setpoints.speed1 = command.speed1;
 	      setpoints.speed2 = command.speed2;
 	      setpoints.speed3 = command.speed3;
 
-	      feedback.speed1 = motor_pose_change.pose_change_M1;
-	      feedback.speed2 = motor_speed_send.speed_send_M1;
-	      feedback.speed3 = setpoints.speed1 - motor_pose_change.pose_change_M1*100;
+	      feedback.speed1 = motor_pose_change.pose_change_M3; // -> is motor pose 1
+	      feedback.speed2 = currentError_M3; // -> is motor pose 2
+	      feedback.speed3 = motor_speed_send.speed_send_M3; // -> is motor pose 3
 
-//	      TIM2->CCR1  = motor_speed_send.speed_send_M1;
-//	      TIM2->CCR2  = motor_speed_send.speed_send_M2;
-//	      TIM2->CCR3  = motor_speed_send.speed_send_M3;
 
-		  TIM2->CCR1 = command.speed1;
-		  TIM2->CCR2 = command.speed2;
-		  TIM2->CCR3 = command.speed3;
-//	      feedback.speed1 = motor_speed_send.speed_send_M1;
-//	      feedback.speed2 = motor_speed_send.speed_send_M2;
-//	      feedback.speed3 = motor_speed_send.speed_send_M3;
+//		  TIM2->CCR2 = command.speed1;
+//		  TIM2->CCR1 = command.speed2;
+//		  TIM2->CCR3 = command.speed3;
+
 
 	      CDC_Transmit_FS(&feedback, sizeof(feedback));
 	    }
@@ -528,10 +531,6 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_OC_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
@@ -546,12 +545,10 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
   {
     Error_Handler();
