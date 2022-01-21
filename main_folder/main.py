@@ -92,7 +92,9 @@ class GameLogic:
             # run robot
             if self.run:
                 self.current_state = self.state_machine.run_current_state(ball_x, ball_y, basket_x, basket_dist)
-
+            else:
+                self.robot_movement.move_robot_XY(0, 0, 0, 0)
+                
             # show gui
             if self.enable_gui:
                 ball_info = [ball_x, ball_y, ball_radius, (ball_x, ball_y)]

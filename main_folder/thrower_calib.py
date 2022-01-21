@@ -42,5 +42,6 @@ if __name__ == "__main__":
             f.write(str(speed) + " " + str(basket_dist) + "\n")
             
     cam.close()
+    robot.move_robot_XY(0,0,0,0)
     
     
