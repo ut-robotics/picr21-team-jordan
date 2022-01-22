@@ -1,11 +1,8 @@
 from pynput import keyboard
 
-from robot_movement import RobotMovement
-
 
 class ManualController:
     def __init__(self):
-        self.robot = RobotMovement()
         self.max_speed = 40
         self.speed_x = 0
         self.speed_y = 0
@@ -49,8 +46,3 @@ class ManualController:
 
     def nothing(self, key):
         pass
-
-
-if __name__ == "__main__":
-    controller = ManualController()
-    controller.main()

@@ -95,6 +95,9 @@ class ImageProcessor:
 
             obj_x = int(x + (w / 2))
             obj_y = int(y + (h / 2))
+            #TODO this ignores top pixels
+            if obj_y < 30: 
+                continue
             obj_dst = obj_y
 
             if self.debug:

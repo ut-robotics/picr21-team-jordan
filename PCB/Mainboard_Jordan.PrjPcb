@@ -177,6 +177,23 @@ GenerateClassCluster=0
 DocumentUniqueId=GSGYTUDN
 
 [Document9]
+DocumentPath=PCB1.PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=MIOLWQPB
+
+[Document10]
 DocumentPath=STM32G441KBT6.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -193,7 +210,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=UHUYGAMW
 
-[Document10]
+[Document11]
 DocumentPath=MAX12930BASA&plus_.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -210,7 +227,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=BEOIIRPG
 
-[Document11]
+[Document12]
 DocumentPath=Con_encoder_4.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -227,7 +244,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=BHNKQABT
 
-[Document12]
+[Document13]
 DocumentPath=MAX14930AASE&plus_.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -244,7 +261,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=RTSDBCBZ
 
-[Document13]
+[Document14]
 DocumentPath=MAX14930AASE&plus_.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -261,7 +278,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=GPMEIMRG
 
-[Document14]
+[Document15]
 DocumentPath=TE_7-215079-4.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -278,7 +295,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VVKPEQSI
 
-[Document15]
+[Document16]
 DocumentPath=SAMTEC_FTSH-105-XX-X-DV.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -295,7 +312,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=HTSHUFKE
 
-[Document16]
+[Document17]
 DocumentPath=TRANS_PSMN5R5-60YS_115.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -312,7 +329,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=UMLKSRSH
 
-[Document17]
+[Document18]
 DocumentPath=FTSH-105-XX-X-DV.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -329,7 +346,24 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=CHSXDCVH
 
-[Document18]
+[Document19]
+DocumentPath=STM32G441KBT6.PcbLib
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=HPRIQKBJ
+
+[Document20]
 DocumentPath=CM1223_ESD.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -346,7 +380,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=WACSEGFQ
 
-[Document19]
+[Document21]
 DocumentPath=CM1223_ESD.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -363,7 +397,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=NCREVCOH
 
-[Document20]
+[Document22]
 DocumentPath=NCP164CSN330T1G_Voltage_regulator.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -380,7 +414,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=EAMGYVLP
 
-[Document21]
+[Document23]
 DocumentPath=NCV8730_voltage_16to5V.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -397,7 +431,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ATYEQNKX
 
-[Document22]
+[Document24]
 DocumentPath=con_soldering.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -414,7 +448,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=TRNKGGCR
 
-[Document23]
+[Document25]
 DocumentPath=con_soldering.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -430,65 +464,6 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=NLHTAOYX
-
-[Document24]
-DocumentPath=Mainboard_Jordan.Annotation
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document25]
-DocumentPath=BUK6Y10-30P.SchLib
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=WMAWUDLB
-
-[Document26]
-DocumentPath=PCB1.PcbDoc
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=YOJAKPNX
-
-[GeneratedDocument1]
-DocumentPath=Project Outputs for Mainboard_Jordan\Design Rule Check - PCB1.html
-DItemRevisionGUID=
-
-[GeneratedDocument2]
-DocumentPath=Project Outputs for Mainboard_Jordan\Footprint Comparison - PCB1.html
-DItemRevisionGUID=
 
 [Configuration1]
 Name=Sources
@@ -806,10 +781,6 @@ OutputDocumentPath4=
 OutputVariantName4=[No Variations]
 OutputDefault4=0
 PageOptions4=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
-Configuration4_Name1=ForceUpdateSettings
-Configuration4_Item1=False
-Configuration4_Name2=OutputConfigurationParameter1
-Configuration4_Item2=Record=ExportCommentsView|IncludeEntireDesign=False|IncludeOriginalScreenshot=False|DocumentPath=[Project]
 OutputType5=ReportHierarchy
 OutputName5=Report Project Hierarchy
 OutputDocumentPath5=
@@ -1091,7 +1062,7 @@ Type32=1
 Type33=1
 Type34=1
 Type35=1
-Type36=0
+Type36=1
 Type37=1
 Type38=1
 Type39=1
@@ -1418,90 +1389,6 @@ SelectedOnly=0
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
-ComponentLibIdentifierKind0=Library Name And Type
-ComponentLibraryIdentifier0=BUK6Y10-30P.SchLib
-ComponentDesignItemID0=BUK6Y10-30P
-ComponentSymbolReference0=BUK6Y10-30P
-ComponentUpdate0=1
-ComponentIsDeviceSheet0=0
-ComponentLibIdentifierKind1=Library Name And Type
-ComponentLibraryIdentifier1=CM1223_ESD.SchLib
-ComponentDesignItemID1=CM1223_ESD
-ComponentSymbolReference1=CM1223_ESD
-ComponentUpdate1=1
-ComponentIsDeviceSheet1=0
-ComponentLibIdentifierKind2=Library Name And Type
-ComponentLibraryIdentifier2=Con_encoder_4.SchLib
-ComponentDesignItemID2=Con_4_encoder
-ComponentSymbolReference2=Con_4_encoder
-ComponentUpdate2=1
-ComponentIsDeviceSheet2=0
-ComponentLibIdentifierKind3=Library Name And Type
-ComponentLibraryIdentifier3=con_soldering.SchLib
-ComponentDesignItemID3=Con_soldering
-ComponentSymbolReference3=Con_soldering
-ComponentUpdate3=1
-ComponentIsDeviceSheet3=0
-ComponentLibIdentifierKind4=Library Name And Type
-ComponentLibraryIdentifier4=DRV8243-Q1.SchLib
-ComponentDesignItemID4=PDRV8243HRXYQ1
-ComponentSymbolReference4=PDRV8243HRXYQ1
-ComponentUpdate4=1
-ComponentIsDeviceSheet4=0
-ComponentLibIdentifierKind5=Library Name And Type
-ComponentLibraryIdentifier5=FTSH-105-XX-X-DV.SchLib
-ComponentDesignItemID5=FTSH-105-XX-X-DV
-ComponentSymbolReference5=FTSH-105-XX-X-DV
-ComponentUpdate5=1
-ComponentIsDeviceSheet5=0
-ComponentLibIdentifierKind6=Library Name And Type
-ComponentLibraryIdentifier6=MAX14930AASE&plus_.SchLib
-ComponentDesignItemID6=MAX14930AASE+
-ComponentSymbolReference6=MAX14930AASE+
-ComponentUpdate6=1
-ComponentIsDeviceSheet6=0
-ComponentLibIdentifierKind7=Library Name And Type
-ComponentLibraryIdentifier7=Miscellaneous Devices.IntLib
-ComponentDesignItemID7=Cap Semi
-ComponentSymbolReference7=Cap Semi
-ComponentUpdate7=1
-ComponentIsDeviceSheet7=0
-ComponentLibIdentifierKind8=Library Name And Type
-ComponentLibraryIdentifier8=Miscellaneous Devices.IntLib
-ComponentDesignItemID8=Res3
-ComponentSymbolReference8=Res3
-ComponentUpdate8=1
-ComponentIsDeviceSheet8=0
-ComponentLibIdentifierKind9=Library Name And Type
-ComponentLibraryIdentifier9=NCP164_voltage_5to3V3.SchLib
-ComponentDesignItemID9=NCP164
-ComponentSymbolReference9=NCP164
-ComponentUpdate9=1
-ComponentIsDeviceSheet9=0
-ComponentLibIdentifierKind10=Library Name And Type
-ComponentLibraryIdentifier10=NCV8730.SchLib
-ComponentDesignItemID10=NCV8730
-ComponentSymbolReference10=NCV8730
-ComponentUpdate10=1
-ComponentIsDeviceSheet10=0
-ComponentLibIdentifierKind11=Library Name And Type
-ComponentLibraryIdentifier11=SnapEDAsch.SchLib
-ComponentDesignItemID11=10118193-0001LF
-ComponentSymbolReference11=10118193-0001LF
-ComponentUpdate11=1
-ComponentIsDeviceSheet11=0
-ComponentLibIdentifierKind12=Library Name And Type
-ComponentLibraryIdentifier12=STM32G441KBT6.SchLib
-ComponentDesignItemID12=STM32G441KBT6
-ComponentSymbolReference12=STM32G441KBT6
-ComponentUpdate12=1
-ComponentIsDeviceSheet12=0
-ComponentLibIdentifierKind13=Library Name Only
-ComponentLibraryIdentifier13=Altium Content Vault
-ComponentDesignItemID13=CMP-22017-000005-2
-ComponentSymbolReference13=8706943c75ba83719d021d2fdc84c58
-ComponentUpdate13=1
-ComponentIsDeviceSheet13=0
 FullReplace=1
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1515,196 +1402,6 @@ RemoveParameters=0
 AddModels=1
 RemoveModels=1
 UpdateCurrentModels=1
-ParameterName0=Availability
-ParameterUpdate0=1
-ParameterName1=Case Code (Imperial)
-ParameterUpdate1=1
-ParameterName2=Case Code (Metric)
-ParameterUpdate2=1
-ParameterName3=Case/Package
-ParameterUpdate3=1
-ParameterName4=Color
-ParameterUpdate4=1
-ParameterName5=Comment
-ParameterUpdate5=1
-ParameterName6=Component Kind
-ParameterUpdate6=1
-ParameterName7=Copyright
-ParameterUpdate7=1
-ParameterName8=Depth
-ParameterUpdate8=1
-ParameterName9=Description
-ParameterUpdate9=1
-ParameterName10=Digi-Key_Part_Number_1
-ParameterUpdate10=1
-ParameterName11=Dominant Wavelength
-ParameterUpdate11=1
-ParameterName12=Forward Current
-ParameterUpdate12=1
-ParameterName13=Forward Voltage
-ParameterUpdate13=1
-ParameterName14=Height
-ParameterUpdate14=1
-ParameterName15=Illumination Color
-ParameterUpdate15=1
-ParameterName16=LatestRevisionDate
-ParameterUpdate16=1
-ParameterName17=LatestRevisionNote
-ParameterUpdate17=1
-ParameterName18=Lead Free
-ParameterUpdate18=1
-ParameterName19=Length
-ParameterUpdate19=1
-ParameterName20=Lens Color
-ParameterUpdate20=1
-ParameterName21=Lens Style
-ParameterUpdate21=1
-ParameterName22=Lens Transparency
-ParameterUpdate22=1
-ParameterName23=Library Reference
-ParameterUpdate23=1
-ParameterName24=Luminous Intensity
-ParameterUpdate24=1
-ParameterName25=Manufacturer_Part_Number
-ParameterUpdate25=1
-ParameterName26=Max Operating Temperature
-ParameterUpdate26=1
-ParameterName27=MF
-ParameterUpdate27=1
-ParameterName28=Mfr_Name
-ParameterUpdate28=1
-ParameterName29=Min Operating Temperature
-ParameterUpdate29=1
-ParameterName30=Mount
-ParameterUpdate30=1
-ParameterName31=MP
-ParameterUpdate31=1
-ParameterName32=Number of Elements
-ParameterUpdate32=1
-ParameterName33=Number of LEDs
-ParameterUpdate33=1
-ParameterName34=Number of Pins
-ParameterUpdate34=1
-ParameterName35=Package
-ParameterUpdate35=1
-ParameterName36=Package Quantity
-ParameterUpdate36=1
-ParameterName37=PackageDescription
-ParameterUpdate37=1
-ParameterName38=PackageReference
-ParameterUpdate38=1
-ParameterName39=Packaging
-ParameterUpdate39=1
-ParameterName40=Power Dissipation
-ParameterUpdate40=1
-ParameterName41=Power Rating
-ParameterUpdate41=1
-ParameterName42=Price
-ParameterUpdate42=1
-ParameterName43=Published
-ParameterUpdate43=1
-ParameterName44=Publisher
-ParameterUpdate44=1
-ParameterName45=Radiation Hardening
-ParameterUpdate45=1
-ParameterName46=RefDes
-ParameterUpdate46=1
-ParameterName47=Reverse Voltage
-ParameterUpdate47=1
-ParameterName48=SnapEDA_Link
-ParameterUpdate48=1
-ParameterName49=Test Current
-ParameterUpdate49=1
-ParameterName50=Type
-ParameterUpdate50=1
-ParameterName51=Value
-ParameterUpdate51=1
-ParameterName52=Viewing Angle
-ParameterUpdate52=1
-ParameterName53=Voltage
-ParameterUpdate53=1
-ParameterName54=Wavelength
-ParameterUpdate54=1
-ParameterName55=Width
-ParameterUpdate55=1
-ModelTypeGroup0=PCBLIB
-ModelTypeUpdate0=1
-ModelType0=PCBLIB
-ModelName0=0402
-ModelUpdate0=1
-ModelType1=PCBLIB
-ModelName1=12Z-2010
-ModelUpdate1=1
-ModelType2=PCBLIB
-ModelName2=14-1210
-ModelUpdate2=1
-ModelType3=PCBLIB
-ModelName3=1608[0603]
-ModelUpdate3=1
-ModelType4=PCBLIB
-ModelName4=21-0041_S16+1_MXM
-ModelUpdate4=1
-ModelType5=PCBLIB
-ModelName5=C1206
-ModelUpdate5=1
-ModelType6=PCBLIB
-ModelName6=C1210
-ModelUpdate6=1
-ModelType7=PCBLIB
-ModelName7=C2512
-ModelUpdate7=1
-ModelType8=PCBLIB
-ModelName8=CM1223_ESD
-ModelUpdate8=1
-ModelType9=PCBLIB
-ModelName9=con_soldering
-ModelUpdate9=1
-ModelType10=PCBLIB
-ModelName10=DRV8243_motor_driver
-ModelUpdate10=1
-ModelType11=PCBLIB
-ModelName11=FCI_10118193-0001LF
-ModelUpdate11=1
-ModelType12=PCBLIB
-ModelName12=FP-LTST-C190GKT-MFG
-ModelUpdate12=1
-ModelType13=PCBLIB
-ModelName13=J1-0603
-ModelUpdate13=1
-ModelType14=PCBLIB
-ModelName14=LQFP-32
-ModelUpdate14=1
-ModelType15=PCBLIB
-ModelName15=NCP164CSN330T1G_Voltage_regulator
-ModelUpdate15=1
-ModelType16=PCBLIB
-ModelName16=RESC6332
-ModelUpdate16=1
-ModelType17=PCBLIB
-ModelName17=SAMTEC_FTSH-105-XX-X-DV
-ModelUpdate17=1
-ModelType18=PCBLIB
-ModelName18=TE_7-215079-4
-ModelUpdate18=1
-ModelType19=PCBLIB
-ModelName19=TRANS_PSMN5R5-60YS,115
-ModelUpdate19=1
-ModelTypeGroup1=SI
-ModelTypeUpdate1=1
-ModelType20=SI
-ModelName20=Cap Semi
-ModelUpdate20=1
-ModelType21=SI
-ModelName21=Res
-ModelUpdate21=1
-ModelTypeGroup2=SIM
-ModelTypeUpdate2=1
-ModelType22=SIM
-ModelName22=CAP
-ModelUpdate22=1
-ModelType23=SIM
-ModelName23=RESISTOR
-ModelUpdate23=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
