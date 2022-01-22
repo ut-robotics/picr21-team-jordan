@@ -39,7 +39,11 @@ class ManualController:
                     self.speed_x = 0
                     self.speed_y = 0
                 elif key.char == "m":
-                    self.speed_throw = 1000 if self.speed_throw == 0 else 0
+                    self.speed_throw += 10 if self.speed_throw != 3000 else 3000
+                    print(self.speed_throw)
+                elif key.char == "n":
+                    self.speed_throw -= 10 if self.speed_throw != 0 else 0
+                    print(self.speed_throw)
             # special key pressed
             except AttributeError:
                 pass

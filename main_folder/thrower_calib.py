@@ -6,6 +6,7 @@ import cv2
 from camera import RealsenseCamera
 from enums import GameObject, State
 from image_processor import ImageProcessor
+from manual_control import ManualController
 from robot_movement import RobotMovement
 from state_machine import MAXIMUM_SPEED, ROT_MULTIPLIER
 
@@ -14,34 +15,22 @@ if __name__ == "__main__":
     image_processor = ImageProcessor(cam)
 
     cam.open()
-    
-    speed = int(input("Speed: "))
+
     robot = RobotMovement()
-    counter = 0
-    robot_speed_x = int(MAXIMUM_SPEED/3)
-    dist = []
-    
-    while counter < 100:
-        results = image_processor.process_frame(aligned_depth=True)
-        counter += 1
-        CENTER_X = int(848 / 2)
-        basket_dist = -1
-        basket_x = 0
-        if results.basket_b.exists:
-            basket = results.basket_b
-            basket_dist = int(round(basket.distance*100))
-            dist.append(basket_dist)
-            basket_x = basket.x
-            robot_speed_rot = (CENTER_X - basket_x) / ROT_MULTIPLIER
-            robot.move_robot_XY(0, robot_speed_x, robot_speed_rot, speed)
-    print(dist[0])
-    is_goal = int(input("Is goal? (1/0): "))  
-    
-    if is_goal == 1:
-        with open("thrower.txt", "a") as f:
-            f.write(str(speed) + " " + str(basket_dist) + "\n")
-            
-    cam.close()
-    robot.move_robot_XY(0,0,0,0)
+    manual_controller = ManualController()
+    manual_controller.main()
+    try:
+        while True:
+            robot.move_robot_XY(0, 0, 0, manual_controller.speed_throw)
+            results = image_processor.process_frame(aligned_depth=True)
+            CENTER_X = int(848 / 2)
+            basket_dist = -1
+            basket_x = 0
+            if results.basket_m.exists:
+                basket = results.basket_m
+                basket_dist = int(round(basket.distance*100))
+            print(manual_controller.speed_throw, basket_dist)
+    finally:
+        cam.close()      
     
     
