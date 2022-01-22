@@ -4,6 +4,7 @@
 Move to project folder and run `python3.7 -m pip install -r requirements.txt`
 Then go to the `.segment_module` folder and run `pip install .` 
 Doesen't tested on other python version.</br>
+
 **Used modules/libraries:**</br>
 `Numpy` for image processing operations.</br>
 `OpenCV` as optional GUI module.</br>
