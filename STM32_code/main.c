@@ -71,7 +71,7 @@ static void MX_TIM6_Init(void);
  //Frequency Register f_main = 160MHz  ARR = 65535  -> f_main/ARR ~2444
 int16_t P_factor = 2500;
 int16_t D_factor = 10;
-int16_t I_factor = 0;
+int16_t I_factor = 2;
 
 int32_t cumulativeError_M1 = 0;
 int32_t cumulativeError_M2 = 0;
