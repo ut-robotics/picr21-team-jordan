@@ -69,9 +69,9 @@ static void MX_TIM6_Init(void);
 /* USER CODE BEGIN 0 */
 
  //Frequency Register f_main = 160MHz  ARR = 65535  -> f_main/ARR ~2444
-float P_factor = 2500;
-float D_factor = 10;
-float I_factor = 0;
+int16_t P_factor = 2500;
+int16_t D_factor = 10;
+int16_t I_factor = 0;
 
 int32_t cumulativeError_M1 = 0;
 int32_t cumulativeError_M2 = 0;
@@ -255,7 +255,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	motor_pose.pose_M3 = (int16_t)TIM1->CNT;
 
 	// scale the value
-	out_put_sleep();	 // nSleep control
+
 	PID_Controller();	 // calculate velocities based on a PID controller
 	processing_values(); // direction control
 
@@ -362,12 +362,9 @@ TIM15->CCR2 = 3000; // for initialization of the ESP 3000 -> below 1 ms
 
   while (1)
   {
-	HAL_Delay(20);
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//      	TIM15->CCR1 = 9000;
 	    if (isCommandReceived) {
 	      isCommandReceived = 0;
 	      TIM15->CCR2 = command.throwerSpeed;
@@ -376,6 +373,7 @@ TIM15->CCR2 = 3000; // for initialization of the ESP 3000 -> below 1 ms
 //	      HAL_Delay(3);
 //	      HAL_GPIO_TogglePin(Debug_LED_GPIO_Port, Debug_LED_Pin); // (3)
 
+	      out_put_sleep();	 // nSleep control
 	      setpoints.speed1 = command.speed1;
 	      setpoints.speed2 = command.speed2;
 	      setpoints.speed3 = command.speed3;
@@ -392,8 +390,6 @@ TIM15->CCR2 = 3000; // for initialization of the ESP 3000 -> below 1 ms
 
 	      CDC_Transmit_FS(&feedback, sizeof(feedback));
 	    }
-	    out_put_sleep();
-
   	  }
   /* USER CODE END 3 */
 }
