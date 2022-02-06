@@ -24,7 +24,7 @@ Basically, there are two threads (asyncio coroutines), socket listener thread li
 -   find a basket (rotate around the wall until basket and the ball isn't centered)
 -   throw (calculate throwing speed depends on the distance, linear dependency as well)
 
-<img src="/images/block_diagram.png" width=85% height="auto"/></br>
+<img src="/images/block_diagram.png" width=95% height="auto"/></br>
 
 **Credits:**</br>
 Electronics and firmware - **Valentin Resapow** </br>
