@@ -15,3 +15,7 @@ Doesen't tested on other python version.</br>
 
 **How to run the robot?:**</br>
 Make sure, that you run first `image_calibration.py` file. Adjust all colors to be detected. Edit ip and port of the referee in `main.py` file, then run it. It you don't have any referees with their servers near by, run `_referee_server.py` . In server shell, you can send commands like "blue", "rose", and "stop", that will run the robot. In main shell, you can press the G to take manual control.
+
+**Credits:**</br>
+Electronics and firmware - Valentin Resapow </br>
+Main folder - Leonid Tsigrinski </br>
