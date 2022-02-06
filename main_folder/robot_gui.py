@@ -6,6 +6,9 @@ from enums import ColorRGB, Window
 
 
 class RobotGui:
+    """
+    This is optional GUI class to show camera image and detected game objects.
+    """
     def __init__(self):
         self.color_image: np.ndarray = None
         self.fps = -1

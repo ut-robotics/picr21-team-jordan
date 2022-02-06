@@ -13,13 +13,11 @@ class SerialPortNotFound(Exception):
     def __init__(self):
         super().__init__("Serial port not found")
 
-
-class ThrowerSpeedInvalidValue(Exception):
-    def __init__(self, thrower_speed):
-        super().__init__(f"HW safety limit. Value {thrower_speed} not in range 3000-9000.")
-
-
 class RobotMovement:
+    """
+    This class controls motors and thrower by sending encoded speed values to the hardware by USB.
+    Uses Omni-Motion to calculate speed.
+    """
     def __init__(self):
         serial_port: Optional[str] = None
         ports = serial.tools.list_ports.comports()
@@ -57,5 +55,4 @@ class RobotMovement:
         
 if __name__ == "__main__":
     robot = RobotMovement() 
-    # robot.move_robot_XY(0, 0, 1000)
     robot.move_robot_XY(0, 0, 0, 0)
