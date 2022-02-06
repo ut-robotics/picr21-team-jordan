@@ -16,6 +16,15 @@ Doesen't tested on other python version.</br>
 **How to run the robot?:**</br>
 Make sure, that you run first `image_calibration.py` file. Adjust all colors to be detected. Edit ip and port of the referee in `main.py` file, then run it. It you don't have any referees with their servers near by, run `_referee_server.py` . In server shell, you can send commands like "blue", "rose", and "stop", that will run the robot. In main shell, you can press the G to take manual control.
 
+**Game logic:**  
+Basically, there are two threads (asyncio coroutines), socket listener thread listens to to referee JSON data and fills global queue variable with it. Game Logic thread firstly checks if manual control enabled. Then checks if global queue variable were filled with commands. If it's a start command (with target basket), then the robot reads the camera image, gets the depth of the basked as well as coordinates of the basket and the balls. Then the robot selects the closest ball and moves to it, and for one iteration enables state machine algorithm. Every iteration state remains remembered. State machine by itself, it's just few steps:
+
+-   find a ball (basically rotate)
+-   get to a ball (calculate distance between ball x, y coords and the center coords. Distance is in linear dependency with axes speed)
+-   find a basket (rotate around the wall until basket and the ball isn't centered)
+-   throw (calculate throwing speed depends on the distance, linear dependency as well)
+<img src="/images/block_diagram.png" width=85% height="auto"/></br>
+
 **Credits:**</br>
-Electronics and firmware - Valentin Resapow </br>
-Main folder - Leonid Tsigrinski </br>
+Electronics and firmware - **Valentin Resapow** </br>
+Main folder - **Leonid Tsigrinski** </br>

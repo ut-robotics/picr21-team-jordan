@@ -4,10 +4,10 @@ import pickle as pickle
 import camera
 from enums import Color
 
+# TODO refactor this code as class
 
 def nothing(x):
     pass
-
 
 cv2.namedWindow("image")
 cv2.namedWindow("rgb")

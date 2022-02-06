@@ -2,7 +2,11 @@ from pynput import keyboard
 
 
 class ManualController:
+    """
+    Class that listens to key input and changes robot speed values.
+    """
     def __init__(self):
+        self.thrower_max_speed = 3000
         self.max_speed = 40
         self.speed_x = 0
         self.speed_y = 0
@@ -17,8 +21,8 @@ class ManualController:
 
     def on_press(self, key):
         if key.char == "g":
-            print("pressed key G")
             self.enable = True if self.enable == False else False
+            print(f"Running manual control = {self.enable}")
 
         if self.enable:
             try:
@@ -39,7 +43,7 @@ class ManualController:
                     self.speed_x = 0
                     self.speed_y = 0
                 elif key.char == "m":
-                    self.speed_throw += 10 if self.speed_throw != 3000 else 3000
+                    self.speed_throw += 10 if self.speed_throw != self.thrower_max_speed else self.thrower_max_speed
                     print(self.speed_throw)
                 elif key.char == "n":
                     self.speed_throw -= 10 if self.speed_throw != 0 else 0

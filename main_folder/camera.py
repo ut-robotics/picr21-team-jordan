@@ -11,6 +11,10 @@ DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FPS = RGB_WIDTH, RGB_HEIGHT, RGB_FPS
 
 
 class RealsenseCamera:
+    """
+    Camera class, can be replaced if you don't have realsense camera.
+    Returns frames as arrays.
+    """
     def __init__(self, depth_enabled=True):
         self.rgb_height = RGB_HEIGHT
         self.rgb_width = RGB_WIDTH
@@ -42,6 +46,9 @@ class RealsenseCamera:
         return self.depth_enabled
 
     def get_frames(self, aligned=False):
+        """
+        Returns rgb frame and depth frame
+        """
         frames = self.pipeline.wait_for_frames()
         if aligned:
             frames = self.align.process(frames)

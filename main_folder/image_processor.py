@@ -6,6 +6,10 @@ import segment
 
 from enums import Color
 
+CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl"
+IGNORED_PIXELS = 15
+CENTER_OFFSET = 15
+
 
 class Object:
     def __init__(self, x=-1, y=-1, size=-1, distance=-1, exists=False, width=0):
@@ -18,13 +22,15 @@ class Object:
 
     def __str__(self) -> str:
         return "[Object: x={}; y={}; size={}; distance={}; exists={}]".format(self.x, self.y, self.size, self.distance, self.exists)
-
+        
     def __repr__(self) -> str:
         return "[Object: x={}; y={}; size={}; distance={}; exists={}]".format(self.x, self.y, self.size, self.distance, self.exists)
 
 
-# results object of image processing. contains coordinates of objects and frame data used for these results
 class ProcessedResults:
+    """
+    Results object of image processing. contains coordinates of objects and frame data used for these results
+    """
     def __init__(self, balls=[], basket_b=Object(exists=False), basket_m=Object(exists=False), color_frame=[], depth_frame=[], fragmented=[], debug_frame=[]) -> None:
 
         self.balls = balls
@@ -38,25 +44,22 @@ class ProcessedResults:
         self.debug_frame = debug_frame
 
 
-# Main processor class. processes segmented information
 class ImageProcessor:
-    def __init__(self, camera, color_config="/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl", debug=False):
+    """
+    Main processor class. Processes segmented information
+    """
+    def __init__(self, camera, color_config=CONFIG_PATH, debug=False):
         self.camera = camera
-
         self.color_config = color_config
         with open(self.color_config, "rb") as conf:
             self.colors_lookup = pickle.load(conf)
             self.set_segmentation_table(self.colors_lookup)
-
         self.fragmented = np.zeros((self.camera.rgb_height, self.camera.rgb_width), dtype=np.uint8)
-
         self.t_balls = np.zeros((self.camera.rgb_height, self.camera.rgb_width), dtype=np.uint8)
         self.t_basket_b = np.zeros((self.camera.rgb_height, self.camera.rgb_width), dtype=np.uint8)
         self.t_basket_m = np.zeros((self.camera.rgb_height, self.camera.rgb_width), dtype=np.uint8)
-
         self.debug = debug
         self.debug_frame = np.zeros((self.camera.rgb_height, self.camera.rgb_width), dtype=np.uint8)
-
         self.kernel = np.array(
             [
                 [0, 1, 0],
@@ -77,61 +80,51 @@ class ImageProcessor:
 
     def analyze_balls(self, t_balls, fragments) -> list:
         t_balls = cv2.dilate(t_balls, self.kernel, iterations=1)
-        contours, hierarchy = cv2.findContours(t_balls, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        contours, _ = cv2.findContours(t_balls, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         balls = []
 
         for contour in contours:
-            # ball filtering logic goes here. Example includes filtering by size and an example how to get pixels from
-            # the bottom center of the frame to the ball
             size = cv2.contourArea(contour)
-            if size < 15:
+            if size < IGNORED_PIXELS:
                 continue
 
             x, y, w, h = cv2.boundingRect(contour)
             ys = np.arange(y + h, self.camera.rgb_height)
             xs = np.linspace(x + w / 2, self.camera.rgb_width / 2, num=len(ys))
-            # line_array = fragments[ys, xs]
 
             obj_x = int(x + (w / 2))
             obj_y = int(y + (h / 2))
-            #TODO this ignores top pixels
-            if obj_y < 30: 
+
+            if obj_y < IGNORED_PIXELS * 2: 
                 continue
             obj_dst = obj_y
 
             if self.debug:
-                # self.debug_frame[ys, xs] = [0, 0, 0]
                 cv2.circle(self.debug_frame, (obj_x, obj_y), 10, (0, 255, 0), 2)
             balls.append(Object(x=obj_x, y=obj_y, size=size, distance=obj_dst, width=w, exists=True))
-
         balls.sort(key=lambda x: x.distance, reverse=True)
 
         return balls
 
     def analyze_baskets(self, depth_image, t_basket, debug_color=(0, 255, 255)) -> list:
-        contours, hierarchy = cv2.findContours(t_basket, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+        contours, _ = cv2.findContours(t_basket, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         baskets = []
+        
         for contour in contours:
-            # basket filtering logic goes here. Example includes size filtering of the basket
             size = cv2.contourArea(contour)
             if size < 100:
                 continue
+
             x, y, w, h = cv2.boundingRect(contour)
             obj_x = int(x + (w / 2))
             obj_y = int(y + (h / 2))
 
-            # obj_dst = depth_image[obj_y, obj_x] * self.camera.depth_scale
-            # TODO Check if works (bounding limits)
-            offset = 15
-            y0 = obj_y - offset if obj_y - offset >= 0 else 0
-            y1 = obj_y + offset if obj_y + offset <= self.camera.rgb_height else self.camera.rgb_height
-            x0 = obj_x - offset if obj_x - offset >= 0 else 0 
-            x1 = obj_x + offset if obj_x + offset <= self.camera.rgb_width else self.camera.rgb_width
+            y0 = obj_y - CENTER_OFFSET if obj_y - CENTER_OFFSET >= 0 else 0
+            y1 = obj_y + CENTER_OFFSET if obj_y + CENTER_OFFSET <= self.camera.rgb_height else self.camera.rgb_height
+            x0 = obj_x - CENTER_OFFSET if obj_x - CENTER_OFFSET >= 0 else 0 
+            x1 = obj_x + CENTER_OFFSET if obj_x + CENTER_OFFSET <= self.camera.rgb_width else self.camera.rgb_width
             obj_dst = np.average(depth_image[y0:y1, x0:x1]) * self.camera.depth_scale
             baskets.append(Object(x=obj_x, y=obj_y, size=size, distance=obj_dst, width=w, exists=True))
-
         baskets.sort(key=lambda x: x.size)
         basket = next(iter(baskets), Object(exists=False))
         if self.debug:
@@ -151,7 +144,6 @@ class ImageProcessor:
         segment.segment(color_frame, self.fragmented, self.t_balls, self.t_basket_m, self.t_basket_b)
         if self.debug:
             self.debug_frame = np.copy(color_frame)
-
         balls = self.analyze_balls(self.t_balls, self.fragmented)
         basket_b = self.analyze_baskets(depth_frame, self.t_basket_b, debug_color=Color.BLUE.color.tolist())
         basket_m = self.analyze_baskets(depth_frame, self.t_basket_m, debug_color=Color.MAGENTA.color.tolist())

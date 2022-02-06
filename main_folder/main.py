@@ -1,5 +1,6 @@
 import asyncio
 import time
+import json
 
 import cv2
 from websockets import connect
@@ -66,10 +67,8 @@ class GameLogic:
                     # target isn't our robot id
                     pass
 
-            # print(f"Run: {self.run} Basket: {self.target_basket[-4:]}")
             # detect all objects
-            # aligned_depth = True if self.current_state == State.THROW else False
-            aligned_depth = True
+            aligned_depth = True if self.current_state == State.THROW else False
             results = self.image_processor.process_frame(aligned_depth=aligned_depth)
             ball_x, ball_y, ball_radius = -1, -1, -1
             basket_x, basket_y, basket_radius = -1, -1, -1
@@ -106,13 +105,12 @@ class GameLogic:
 
 
 async def run_listener(out_q):
-    pass  # TODO REMOVE COMMENT
-    # server = f"ws://{IP}:{PORT}"
-    # async with connect(server) as websocket:
-    #     while True:
-    #         server_data = await websocket.recv()
-    #         command = json.loads(server_data)
-    #         out_q.append(command)
+    server = f"ws://{IP}:{PORT}"
+    async with connect(server) as websocket:
+        while True:
+            server_data = await websocket.recv()
+            command = json.loads(server_data)
+            out_q.append(command)
 
 
 async def run_game_logic(in_q):

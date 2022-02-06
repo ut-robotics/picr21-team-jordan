@@ -1,6 +1,8 @@
+# resolution
 WIDTH = 848
 HEIGHT = 480
 
+# positions on the frame in order to aim
 CENTER_X = int(848 / 2)
 CENTER_BASKET = int(848 / 2)
 CENTER_Y = int(480 / 2) + 150

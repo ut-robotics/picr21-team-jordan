@@ -1,6 +1,9 @@
 import asyncio
 import websockets
 
+"""
+In order to send commands to robot, you can use this code.
+"""
 
 async def main(websocket, path):
     print("Connection.")

@@ -1,5 +1,5 @@
 from enums import Position, State
-import constants as const
+from enums import Constants as const
 from robot_movement import RobotMovement
 
 MAXIMUM_SPEED = 45
@@ -67,7 +67,7 @@ class StateMachine:
             self.robot_movement.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
 
     def find_a_basket(self, ball_x, ball_y, basket_x, basket_distance):
-        # """State action"""
+        """State action"""
         robot_speed_rot = self.calculate_rotation_speed(ball_x)
         robot_speed_y = int(self.calculate_y_speed(ball_y)/1.3)
         robot_speed_x = int(self.calculate_x_speed(basket_x)/1.3)
@@ -85,6 +85,7 @@ class StateMachine:
             self.robot_movement.move_robot_XY(robot_speed_x, robot_speed_y, robot_speed_rot)
 
     def throw_a_ball(self, basket_x):
+        """State action"""
         if self.basket_distance == -1:
             return
         
