@@ -1,3 +1,7 @@
+**Credits:**</br>
+Programming - **Leonid Tsigrinski** </br>
+Electronics and firmware - **Valentin Resapow** </br>
+
 
 ## Project in competitive robotics 2021
 **Installation:**</br>
@@ -25,7 +29,3 @@ Basically, there are two threads (asyncio coroutines), socket listener thread li
 -   throw (calculate throwing speed depends on the distance, linear dependency as well)
 
 <img src="/images/block_diagram.png" width=100% height="auto"/></br>
-
-**Credits:**</br>
-Electronics and firmware - **Valentin Resapow** </br>
-Main folder - **Leonid Tsigrinski** </br>
