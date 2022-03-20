@@ -1,5 +1,5 @@
 **Credits:**</br>
-Programming - **Leonid Tsigrinski**
+Programming - **Leonid Tsigrinski**</br>
 Mechanics - **Veronika Podliesnova** </br>
 Electronics and firmware - **Valentin Resapow** </br>
 
