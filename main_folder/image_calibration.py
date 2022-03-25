@@ -5,6 +5,7 @@ import camera
 from enums import Color
 
 # TODO refactor this code as class
+CONFIG_PATH = "/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl"
 
 def nothing(x):
     pass
@@ -15,7 +16,7 @@ cv2.namedWindow("mask")
 cv2.moveWindow("mask", 400, 0)
 
 try:
-    with open("/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl", "rb") as fh:
+    with open(CONFIG_PATH, "rb") as fh:
         colors_lookup = pickle.load(fh)
 except:
     colors_lookup = np.zeros(0x1000000, dtype=np.uint8)
@@ -25,6 +26,7 @@ cap = camera.RealsenseCamera()
 cv2.createTrackbar("brush_size", "image", 3, 10, nothing)
 cv2.createTrackbar("noise", "image", 1, 5, nothing)
 
+# brush settings
 mouse_x = 0
 mouse_y = 0
 brush_size = 1
@@ -92,7 +94,7 @@ while True:
         print(col)
         p = int(col)
     elif k == ord("s"):
-        with open("/home/jordan_team/picr21-team-jordan/main_folder/colors/colors.pkl", "wb") as fh:
+        with open(CONFIG_PATH, "wb") as fh:
             pickle.dump(colors_lookup, fh, -1)
         print("saved")
     elif k == ord("e"):

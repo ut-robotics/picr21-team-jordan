@@ -13,7 +13,7 @@ DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FPS = RGB_WIDTH, RGB_HEIGHT, RGB_FPS
 class RealsenseCamera:
     """
     Camera class, can be replaced if you don't have realsense camera.
-    Returns frames as arrays.
+    Returns frames (rgb and depth) as np arrays.
     """
     def __init__(self, depth_enabled=True):
         self.rgb_height = RGB_HEIGHT

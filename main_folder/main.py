@@ -13,7 +13,7 @@ from robot_gui import RobotGui
 from robot_movement import RobotMovement
 from state_machine import StateMachine
 
-IP = "localhost"
+IP = "172.17.89.147"
 PORT = 8888
 ROBOT_ID = "001TRT"
 
@@ -80,12 +80,12 @@ class GameLogic:
                 ball_y = ball.y
                 ball_radius = int(ball.width / 2)
 
-                basket = results.basket_b if self.target_basket == GameObject.BASKET_BLUE else results.basket_m
-                if basket.exists:
-                    basket_x = basket.x
-                    basket_y = basket.y
-                    basket_radius = int(basket.width / 2)
-                    basket_dist = int(round(basket.distance * 100))
+            basket = results.basket_b if self.target_basket == GameObject.BASKET_BLUE else results.basket_m
+            if basket.exists:
+                basket_x = basket.x
+                basket_y = basket.y
+                basket_radius = int(basket.width / 2)
+                basket_dist = int(round(basket.distance * 100))
                     
             # run robot
             if self.run:
@@ -127,8 +127,9 @@ async def run_game_logic(in_q):
         game_logic.gui.kill_gui()
 
 
-loop = asyncio.get_event_loop()
-q = []
-loop.create_task(run_game_logic(q))
-loop.create_task(run_listener(q))
-loop.run_forever()
+if __name__ == "__main__":
+    loop = asyncio.get_event_loop()
+    q = []
+    loop.create_task(run_game_logic(q))
+    loop.create_task(run_listener(q))
+    loop.run_forever()

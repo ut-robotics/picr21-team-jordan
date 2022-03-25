@@ -1,2 +1,2 @@
 #!/bin/sh
-chmod 777 /dev/ttyACM0
+chmod 666 /dev/ttyACM0
