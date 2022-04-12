@@ -3,6 +3,10 @@ Programming - **Leonid Tsigrinski**</br>
 Mechanics - **Veronika Podliesnova** </br>
 Electronics and firmware - **Valentin Resapow** </br>
 
+<details><summary>Court</summary>
+<img src="/images/court.svg" width=95% height="auto"/></br>
+</details>
+
 <details><summary>Photos of Robot and PCB</summary>
 <img src="/images/robot.jpg" width=35% height="auto"/></br>
 <img src="/images/pcb1.jpg" width=35% height="auto"/></br>
