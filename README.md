@@ -1,9 +1,10 @@
+## Project in competitive robotics 2021
+<img src="/images/court.svg" width=95% height="auto"/></br>
+
 **Credits:**</br>
 Programming - **Leonid Tsigrinski**</br>
 Mechanics - **Veronika Podliesnova** </br>
 Electronics and firmware - **Valentin Resapow** </br>
-
-<img src="/images/court.svg" width=95% height="auto"/></br>
 
 <details><summary>Photos of Robot and PCB</summary>
 <img src="/images/robot.jpg" width=35% height="auto"/></br>
@@ -11,7 +12,7 @@ Electronics and firmware - **Valentin Resapow** </br>
 <img src="/images/pcb2.jpg" width=35% height="auto"/></br>
 </details>
 
-## Project in competitive robotics 2021
+
 **Installation:**</br>
 Move to project folder and run `python3.7 -m pip install -r requirements.txt`
 Then go to the `.segment_module` folder and run `pip install .` 
