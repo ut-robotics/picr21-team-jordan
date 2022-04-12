@@ -3,7 +3,7 @@ Programming - **Leonid Tsigrinski**</br>
 Mechanics - **Veronika Podliesnova** </br>
 Electronics and firmware - **Valentin Resapow** </br>
 
-<details><summary>**Photos of Robot and PCB**</summary>
+<details><summary>Photos of Robot and PCB</summary>
 <img src="/images/robot.jpg" width=35% height="auto"/></br>
 <img src="/images/pcb1.jpg" width=35% height="auto"/></br>
 <img src="/images/pcb2.jpg" width=35% height="auto"/></br>
