@@ -34,7 +34,7 @@ Basically, there are two threads (asyncio coroutines), socket listener thread li
 
 -   find a ball (basically rotate)
 -   get to a ball (calculate distance between ball x, y coords and the center coords. Distance is in linear dependency with axes speed)
--   find a basket (rotate around the wall until basket and the ball isn't centered)
+-   find a basket (rotate around the ball until basket and the ball isn't centered)
 -   throw (calculate throwing speed depends on the distance, linear dependency as well)
 
 <img src="/images/block_diagram.png" width=100% height="auto"/></br>
